@@ -1,0 +1,33 @@
+settings.gradle.kts
+  s_a03029761b6e5f::t_4c52a5ddec1536 12-14,16-17
+  s_a03029761b6e5f::t_2094de06bd4335 15
+modules/kxs-ts-gen-core/src/commonTest/kotlin/dev/adamko/kxstsgen/core/KxsTsGeneratorSerializersModuleTest.kt
+  s_a03029761b6e5f::t_8f29cac6f802c0 1-107
+modules/kxs-ts-gen-core/src/commonMain/kotlin/dev/adamko/kxstsgen/core/SerializerDescriptorsExtractor.kt
+  s_a03029761b6e5f::t_1a542e39b940c5 119-129
+  s_a03029761b6e5f::t_643b3cfa559953 130-133
+  s_a03029761b6e5f::t_864875471d1850 160,166-167
+  s_a03029761b6e5f::t_b6d95b7cb7320f 138-147,152-153
+  s_a03029761b6e5f::t_4903150bf9e0d8 62-74
+modules/kxs-ts-gen-core/src/commonTest/kotlin/dev/adamko/kxstsgen/core/SerializerDescriptorsExtractorTest.kt
+  s_a03029761b6e5f::t_a311c74afab16d 10
+  s_a03029761b6e5f::t_1d166039bfa49d 200-201,204-207,210-213
+  s_a03029761b6e5f::t_a19dc9aedce721 71,73,77,79-82,84-90
+  s_a03029761b6e5f::t_fff1386a352f6d 92-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.3",
+  "base_commit_sha": "0a96b6b2f5cf035b97cda6348d740cec8fd713fc",
+  "prompts": {},
+  "sessions": {
+    "s_a03029761b6e5f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0ee04665bffenMa9p6sBsGY0VR",
+        "model": "glm-5.1"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
