@@ -9,6 +9,12 @@ pluginManagement {
   }
 }
 
+plugins {
+  // Allow Gradle to auto-download JVM toolchains (e.g. JDK 11 for :docs:code) when they
+  // are not installed locally. https://docs.gradle.org/current/userguide/toolchains.html
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
 

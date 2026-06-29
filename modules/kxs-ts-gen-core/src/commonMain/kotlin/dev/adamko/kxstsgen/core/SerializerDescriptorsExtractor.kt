@@ -59,7 +59,19 @@ fun interface SerializerDescriptorsExtractor {
       } else {
         val currentDescriptors = elementDescriptorsExtractor.elementDescriptors(current, moduleDescriptors)
         queue.addAll(currentDescriptors - extracted)
-        extractDescriptors(queue.removeFirstOrNull(), queue, extracted + current, moduleDescriptors)
+
+        // A contextual descriptor is just a placeholder (e.g. `ContextualSerializer<Foo>`).
+        // When it resolves to a concrete descriptor via the SerializersModule, that concrete
+        // descriptor (e.g. `interface Foo`) is already queued above. The placeholder itself
+        // must NOT be emitted as a declaration, otherwise it renders as `type Foo = any` and
+        // collides with the resolved `interface Foo` (TS2300 duplicate identifier). When it
+        // cannot be resolved we keep it, so the referencing field still resolves to
+        // `type Foo = any` rather than an undefined type.
+        val nextExtracted =
+          if (current.kind == SerialKind.CONTEXTUAL && currentDescriptors.any()) extracted
+          else extracted + current
+
+        extractDescriptors(queue.removeFirstOrNull(), queue, nextExtracted, moduleDescriptors)
       }
     }
   }
@@ -104,35 +116,55 @@ interface TsElementDescriptorsExtractor {
             StructureKind.MAP,
             StructureKind.OBJECT -> descriptor.elementDescriptors
 
-            PolymorphicKind.SEALED,
-            PolymorphicKind.OPEN  -> {
+            PolymorphicKind.SEALED ->
+              // Sealed subclasses are already part of the descriptor (sealed classes are closed)
+              // and are rendered as a discriminated namespace by TsElementConverter. We only
+              // traverse INTO the subclasses to pick up their property types - the subclass
+              // declarations themselves must not be extracted, or they'd be emitted again as
+              // top-level interfaces, duplicating the namespaced ones.
+              descriptor.elementDescriptors
+                .flatMap { it.elementDescriptors }
+                .flatMap { it.elementDescriptors }
+
+            PolymorphicKind.OPEN  ->
+              // TODO OPEN-polymorphism-via-module is not implemented. resolvePolymorphicDescriptors
+              //  relies on isSubclassOf, which fails because the base type's package is lost when
+              //  the base name is parsed out of `<...>`. Until fixed, an @Polymorphic field whose
+              //  base type is only known via the module resolves to `type <Base> = any`.
               resolvePolymorphicDescriptors(descriptor, moduleDescriptors)
-            }
           }
         }
 
+        /**
+         * Resolve a contextual placeholder (e.g. `ContextualSerializer<Foo>`) to the concrete
+         * descriptors registered in the [SerializersModule], by matching the placeholder's type
+         * parameter (a simple name) against each module descriptor's serial name.
+         *
+         * The match requires a package/separator boundary before the simple name, so that a
+         * placeholder for `Foo` does not also match `BarFoo`. (A loose `endsWith(simpleName)`
+         * match can resolve to more than one descriptor; if two of those share a rendered name
+         * the generator emits a TS2300 duplicate identifier.)
+         */
         private fun resolveContextualDescriptor(descriptor: SerialDescriptor, moduleDescriptors: Set<SerialDescriptor>): Iterable<SerialDescriptor> {
           val typeParameters = getTypeParametersFromDescriptor(descriptor)
           return typeParameters.flatMap { typeParam ->
             moduleDescriptors.filter { moduleDesc ->
-              moduleDesc.serialName.endsWith(typeParam) || 
-              moduleDesc.serialName.endsWith(".$typeParam")
+              val serialName = moduleDesc.serialName
+              serialName == typeParam || serialName.endsWith(".$typeParam")
             }
           }
         }
 
         private fun resolvePolymorphicDescriptors(descriptor: SerialDescriptor, moduleDescriptors: Set<SerialDescriptor>): Iterable<SerialDescriptor> {
           val baseType = getPolymorphicBaseType(descriptor) ?: descriptor.serialName
-          
+
           val subclassDescriptors = moduleDescriptors.filter { moduleDesc ->
             moduleDesc.kind.let { it is StructureKind.CLASS || it is StructureKind.OBJECT } &&
             isSubclassOf(moduleDesc.serialName, baseType)
           }
 
-          return subclassDescriptors + subclassDescriptors.flatMap { it.elementDescriptors } + 
-                 descriptor.elementDescriptors
-                   .flatMap { it.elementDescriptors }
-                   .flatMap { it.elementDescriptors }
+          // Emit each discovered subclass, plus its property-type descriptors.
+          return subclassDescriptors + subclassDescriptors.flatMap { it.elementDescriptors }
         }
 
         private fun getTypeParametersFromDescriptor(descriptor: SerialDescriptor): List<String> {

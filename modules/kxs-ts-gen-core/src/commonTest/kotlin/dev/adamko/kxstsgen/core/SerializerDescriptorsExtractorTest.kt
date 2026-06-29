@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldBe
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.modules.SerializersModule
 
 class SerializerDescriptorsExtractorTest : FunSpec({
@@ -67,22 +68,46 @@ class SerializerDescriptorsExtractorTest : FunSpec({
     }
   }
 
-  test("Example5: polymorphic subclasses are extracted from SerializersModule") {
+  test("Example4b: contextual placeholder is suppressed when resolvable from the module") {
     val module = SerializersModule {
-      polymorphic(Example5.Parent::class, Example5.SubClass::class, Example5.SubClass.serializer())
+      contextual(Example4.SomeType::class, Example4.SomeType.serializer())
     }
     val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val actual = extractor(Example5.Parent.serializer())
+    val actual = extractor(Example4.TypeHolder.serializer())
 
-    val subClassDescriptor = Example5.SubClass.serializer().descriptor
-    withClue("Should contain SubClass descriptor from module") {
-      actual.any { it.serialName == subClassDescriptor.serialName } shouldBe true
+    // the resolved SomeType descriptor must be present...
+    val someTypeDescriptor = Example4.SomeType.serializer().descriptor
+    withClue("resolved SomeType descriptor should be present") {
+      actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe true
     }
+    // ...and the contextual placeholder must NOT survive into the extracted set - otherwise it
+    // renders as `type SomeType = any`, colliding with the resolved `interface SomeType`
+    // (TS2300 duplicate identifier).
+    withClue("no contextual placeholder should remain") {
+      actual.none { it.kind == SerialKind.CONTEXTUAL } shouldBe true
+    }
+  }
 
-    val stringDescriptor = String.serializer().descriptor
-    withClue("Should contain String descriptor from SubClass property") {
-      actual.any { it.serialName == stringDescriptor.serialName } shouldBe true
+  test("Example4c: contextual resolution matches by name boundary, not a loose suffix") {
+    val module = SerializersModule {
+      contextual(Example4c.Foo::class, Example4c.Foo.serializer())
+      contextual(Example4c.BarFoo::class, Example4c.BarFoo.serializer())
+    }
+    val extractor = SerializerDescriptorsExtractor.default(module)
+
+    val actual = extractor(Example4c.Holder.serializer())
+
+    val fooDescriptor = Example4c.Foo.serializer().descriptor
+    val barFooDescriptor = Example4c.BarFoo.serializer().descriptor
+
+    // A `@Contextual Foo` must resolve to Foo only, and must NOT also pick up the unrelated
+    // BarFoo, whose simple name merely ends in "Foo".
+    withClue("Should contain Foo") {
+      actual.any { it.serialName == fooDescriptor.serialName } shouldBe true
+    }
+    withClue("Should NOT contain BarFoo") {
+      actual.any { it.serialName == barFooDescriptor.serialName } shouldBe false
     }
   }
 
@@ -95,18 +120,6 @@ class SerializerDescriptorsExtractorTest : FunSpec({
     val someTypeDescriptor = Example4.SomeType.serializer().descriptor
     withClue("Should NOT contain SomeType descriptor when not registered") {
       actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe false
-    }
-  }
-
-  test("Example7: polymorphic without module registration does not extract subclasses") {
-    val emptyModule = SerializersModule { }
-    val extractor = SerializerDescriptorsExtractor.default(emptyModule)
-
-    val actual = extractor(Example5.Parent.serializer())
-
-    val subClassDescriptor = Example5.SubClass.serializer().descriptor
-    withClue("Should NOT contain SubClass descriptor when not registered") {
-      actual.any { it.serialName == subClassDescriptor.serialName } shouldBe false
     }
   }
 
@@ -184,11 +197,18 @@ private object Example4 {
 }
 
 
-private object Example5 {
+@Suppress("unused")
+private object Example4c {
 
   @Serializable
-  sealed class Parent
+  class Foo(val a: String)
 
   @Serializable
-  class SubClass(val x: String) : Parent()
+  class BarFoo(val b: String)
+
+  @Serializable
+  class Holder(
+    @kotlinx.serialization.Contextual
+    val x: Foo,
+  )
 }
