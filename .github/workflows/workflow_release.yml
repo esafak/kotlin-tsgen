@@ -3,6 +3,7 @@ name: Releases
 
 on:
   push:
+    branches: [ main ]
     tags: [ 'v*.*.*' ]
 
 
@@ -21,8 +22,8 @@ jobs:
 
   publish-maven:
     needs: tests
-    # only publish for version tags
-    if: startsWith(github.ref, 'refs/tags/v')
+    # publish snapshots from main and releases from version tags
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/run_publish_maven.yml
     permissions:
       checks: write
