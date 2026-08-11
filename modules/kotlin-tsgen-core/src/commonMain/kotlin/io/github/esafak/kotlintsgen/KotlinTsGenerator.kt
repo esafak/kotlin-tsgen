@@ -14,8 +14,6 @@ import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.nullable
-import kotlinx.serialization.modules.EmptySerializersModule
-import kotlinx.serialization.modules.SerializersModule
 
 
 /**
@@ -31,7 +29,6 @@ import kotlinx.serialization.modules.SerializersModule
 open class KotlinTsGenerator(
   open val config: KotlinTsConfig = KotlinTsConfig(),
   open val sourceCodeGenerator: TsSourceCodeGenerator = TsSourceCodeGenerator.Default(config),
-  open val serializersModule: SerializersModule = EmptySerializersModule(),
 ) {
 
 
@@ -62,8 +59,7 @@ open class KotlinTsGenerator(
 
 
   open val descriptorsExtractor = object : SerializerDescriptorsExtractor {
-    val extractor: SerializerDescriptorsExtractor =
-      SerializerDescriptorsExtractor.default(serializersModule)
+    val extractor: SerializerDescriptorsExtractor = SerializerDescriptorsExtractor.Default
     val cache: MutableMap<KSerializer<*>, Set<SerialDescriptor>> = mutableMapOf()
 
     override fun invoke(serializer: KSerializer<*>): Set<SerialDescriptor> =
