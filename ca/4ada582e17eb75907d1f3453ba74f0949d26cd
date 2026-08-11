@@ -1,0 +1,20 @@
+.github/workflows/run_gradle_task.yml
+  h_ea91e2db23540f 96
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 62
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractor.kt
+  h_ea91e2db23540f 3,18,23,28,37,39,44-84
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractorTest.kt
+  h_ea91e2db23540f 20,33,46,50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ca4ada582e17eb75907d1f3453ba74f0949d26cd",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
