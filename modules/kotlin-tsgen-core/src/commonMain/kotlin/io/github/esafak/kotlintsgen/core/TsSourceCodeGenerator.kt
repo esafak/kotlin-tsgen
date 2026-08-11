@@ -116,7 +116,12 @@ interface TsSourceCodeGenerator {
     ): String {
       val separator = if (property.optional) "?: " else ": "
       val propertyType = generateTypeReference(property.typeRef)
-      return "${property.name}${separator}${propertyType};"
+      val propertyName = if (TsIdentifierValidator.isValidIdentifierSyntax(property.name)) {
+        property.name
+      } else {
+        quotePropertyName(property.name)
+      }
+      return "${propertyName}${separator}${propertyType};"
     }
 
 
@@ -168,17 +173,44 @@ interface TsSourceCodeGenerator {
 
     override fun generateTuple(tuple: TsDeclaration.TsTuple): String {
 
-      val types = tuple.elements.joinToString(separator = "\n") { property ->
+      val types = tuple.elements.mapIndexed { index, property ->
         val optionalMarker = if (property.optional) "?" else ""
         val typeRef = generateTypeReference(property.typeRef)
-        "${config.indent}${property.name}: $typeRef$optionalMarker,"
-      }
+        val propertyName = if (TsIdentifierValidator.isValidIdentifierSyntax(property.name)) {
+          property.name
+        } else {
+          "element$index"
+        }
+        "${config.indent}${propertyName}$optionalMarker: $typeRef,"
+      }.joinToString(separator = "\n")
 
       return """
         ¦export type ${tuple.id.name} = [
         ¦$types
         ¦];
       """.trimMargin("¦")
+    }
+
+
+    private fun quotePropertyName(name: String): String = buildString {
+      append('"')
+      name.forEach { character ->
+        when (character) {
+          '\\' -> append("\\\\")
+          '"'  -> append("\\\"")
+          '\b' -> append("\\b")
+          '\u000C' -> append("\\f")
+          '\n' -> append("\\n")
+          '\r' -> append("\\r")
+          '\t' -> append("\\t")
+          else -> if (character.code < 0x20) {
+            append("\\u${character.code.toString(16).padStart(4, '0')}")
+          } else {
+            append(character)
+          }
+        }
+      }
+      append('"')
     }
 
 

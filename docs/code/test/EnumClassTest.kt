@@ -61,4 +61,29 @@ class EnumClassTest : FunSpec({
       actual.shouldTypeScriptCompile(caseName)
     }
   }
+
+  context("ExampleEnumClass03") {
+    val caseName = testCase.name.name
+
+    val actual = captureOutput(caseName) {
+      io.github.esafak.kotlintsgen.example.exampleEnumClass03.main()
+    }.normalizeJoin()
+
+    test("expect actual matches TypeScript") {
+      actual.shouldBe(
+        // language=TypeScript
+        """
+          |export enum WireType {
+          |  discussion = "discussion",
+          |  chat_room = "chat_room",
+          |}
+        """.trimMargin()
+        .normalize()
+      )
+    }
+
+    test("expect actual compiles").config(tags = tsCompile) {
+      actual.shouldTypeScriptCompile(caseName)
+    }
+  }
 })

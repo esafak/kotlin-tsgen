@@ -66,3 +66,35 @@ export enum SomeType2 {
 ```
 
 <!--- TEST -->
+
+### Enum with serial names
+
+`@SerialName` controls the serialized enum member value and the generated
+TypeScript member name. Names used as TypeScript identifiers must be valid;
+invalid names fail generation with a clear error.
+
+```kotlin
+@Serializable
+enum class WireType {
+  @SerialName("discussion")
+  DISCUSSION,
+  @SerialName("chat_room")
+  CHAT_ROOM,
+}
+
+fun main() {
+  val tsGenerator = KotlinTsGenerator()
+  println(tsGenerator.generate(WireType.serializer()))
+}
+```
+
+> You can get the full code [here](./code/example/example-enum-class-03.kt).
+
+```typescript
+export enum WireType {
+  discussion = "discussion",
+  chat_room = "chat_room",
+}
+```
+
+<!--- TEST -->

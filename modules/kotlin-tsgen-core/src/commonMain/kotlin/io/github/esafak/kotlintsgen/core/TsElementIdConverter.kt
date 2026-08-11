@@ -12,12 +12,23 @@ fun interface TsElementIdConverter {
 
       val serialName = descriptor.serialName.removeSuffix("?")
 
-      val namespace = serialName.substringBeforeLast('.')
+      val lastDot = serialName.lastIndexOf('.')
+      val namespace = if (lastDot == -1) "" else serialName.substring(0, lastDot)
 
       val id = serialName
-        .substringAfterLast('.')
+        .substring(lastDot + 1)
         .substringAfter("<")
         .substringBeforeLast(">")
+
+      TsIdentifierValidator.assertValidIdentifier(id, "type name from serial name '$serialName'")
+      if (namespace.isNotBlank()) {
+        namespace.split('.').forEach { segment ->
+          TsIdentifierValidator.assertValidIdentifier(
+            segment,
+            "namespace segment from serial name '$serialName'",
+          )
+        }
+      }
 
       return when {
         namespace.isBlank() -> TsElementId(id)
