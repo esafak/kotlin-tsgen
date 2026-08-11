@@ -53,12 +53,16 @@ fun interface SerializerDescriptorsExtractor {
       current: SerialDescriptor? = null,
       queue: ArrayDeque<SerialDescriptor> = ArrayDeque(),
       extracted: Set<SerialDescriptor> = emptySet(),
+      visited: Set<SerialDescriptor> = emptySet(),
     ): Set<SerialDescriptor> {
       return if (current == null) {
         extracted
+      } else if (current in visited) {
+        extractDescriptors(queue.removeFirstOrNull(), queue, extracted, visited)
       } else {
+        val visitedWithCurrent = visited + current
         val currentDescriptors = elementDescriptorsExtractor.elementDescriptors(current)
-        queue.addAll(currentDescriptors - extracted)
+        queue.addAll(currentDescriptors - visitedWithCurrent)
 
         // A contextual descriptor is just a placeholder (e.g. `ContextualSerializer<Foo>`).
         // When it resolves to a concrete descriptor via the SerializersModule, that concrete
@@ -71,7 +75,7 @@ fun interface SerializerDescriptorsExtractor {
           if (current.kind == SerialKind.CONTEXTUAL && currentDescriptors.any()) extracted
           else extracted + current
 
-        extractDescriptors(queue.removeFirstOrNull(), queue, nextExtracted)
+        extractDescriptors(queue.removeFirstOrNull(), queue, nextExtracted, visitedWithCurrent)
       }
     }
   }
