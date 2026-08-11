@@ -181,7 +181,7 @@ interface TsSourceCodeGenerator {
         } else {
           "element$index"
         }
-        "${config.indent}${propertyName}: $typeRef$optionalMarker,"
+        "${config.indent}${propertyName}$optionalMarker: $typeRef,"
       }.joinToString(separator = "\n")
 
       return """

@@ -1,10 +1,12 @@
 package io.github.esafak.kotlintsgen.core
 
 import io.github.esafak.kotlintsgen.KotlinTsGenerator
+import io.github.esafak.kotlintsgen.KotlinTsConfig
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -114,6 +116,24 @@ class TsIdentifierValidationTest : FunSpec({
     val ts = KotlinTsGenerator().generate(InvalidPropertyName.serializer())
 
     ts shouldContain "\"invalid-property\": string;"
+  }
+
+  test("optional tuple elements place the marker on the label") {
+    val tuple = TsDeclaration.TsTuple(
+      id = TsElementId("OptionalTuple"),
+      elements = setOf(
+        TsProperty(
+          name = "value",
+          typeRef = TsTypeRef.Literal(TsLiteral.Primitive.TsString, nullable = false),
+          optional = true,
+        ),
+      ),
+    )
+
+    val ts = TsSourceCodeGenerator.Default(KotlinTsConfig()).generateDeclaration(tuple)
+
+    ts shouldContain "value?: string,"
+    ts shouldNotContain "value: string?,"
   }
 
   test("malformed generic serial names fail rather than emit an invalid identifier") {
