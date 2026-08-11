@@ -1,0 +1,20 @@
+AGENTS.md
+  h_ea91e2db23540f 25
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 40-44
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractor.kt
+  h_ea91e2db23540f 6,24,30-40
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/KotlinTsGeneratorSerializersModuleTest.kt
+  h_ea91e2db23540f 27,52,54,62,64,75,77,90,104,106,117,119,127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2452f99554d5903c3e92502d2a7b31e61bcd734d",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
