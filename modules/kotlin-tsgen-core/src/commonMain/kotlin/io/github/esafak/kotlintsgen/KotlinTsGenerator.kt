@@ -13,11 +13,27 @@ import io.github.esafak.kotlintsgen.core.TsTypeRef
 import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.nullable
+import kotlinx.serialization.descriptors.getContextualDescriptor
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.overwriteWith
+
+
+private val builtInPrimitiveSerialNames = setOf(
+  "kotlin.Boolean",
+  "kotlin.Byte",
+  "kotlin.Char",
+  "kotlin.Double",
+  "kotlin.Float",
+  "kotlin.Int",
+  "kotlin.Long",
+  "kotlin.Short",
+  "kotlin.String",
+)
 
 
 /**
@@ -150,9 +166,40 @@ open class KotlinTsGenerator(
   }
 
 
+  private fun rootPrimitiveAlias(
+    descriptor: SerialDescriptor,
+  ): TsDeclaration.TsTypeAlias? {
+    if (descriptor.kind !is PrimitiveKind) return null
+    if (descriptor.serialName in builtInPrimitiveSerialNames) return null
+    if (findOverride(descriptor) != null) return null
+
+    return TsDeclaration.TsTypeAlias(
+      id = elementIdConverter(descriptor),
+      typeRef = typeRefConverter(descriptor),
+    )
+  }
+
+
+  private fun rootDescriptors(serializer: KSerializer<*>): Set<SerialDescriptor> {
+    serializerDescriptorOverrides[serializer]?.let { return it }
+
+    val descriptor = serializer.descriptor
+    if (descriptor.kind != SerialKind.CONTEXTUAL) return setOf(descriptor)
+
+    return runCatching {
+      effectiveSerializersModule.getContextualDescriptor(descriptor)
+    }.getOrNull()?.let(::setOf) ?: setOf(descriptor)
+  }
+
+
   open fun generate(vararg serializers: KSerializer<*>): String {
-    return serializers
-      .toSet()
+    val rootSerializers = serializers.toSet()
+    val rootPrimitiveAliases = rootSerializers
+      .flatMap(::rootDescriptors)
+      .mapNotNull(::rootPrimitiveAlias)
+      .distinctBy { it.id }
+
+    return rootSerializers
 
       // 1. get all SerialDescriptors from a KSerializer
       .flatMap { serializer -> descriptorsExtractor(serializer) }
@@ -161,6 +208,7 @@ open class KotlinTsGenerator(
       // 2. convert each SerialDescriptor to some TsElements
       .flatMap { descriptor -> elementConverter(descriptor) }
       .toSet()
+      .plus(rootPrimitiveAliases)
 
       // 3. group by namespaces
       .groupBy { element -> sourceCodeGenerator.groupElementsBy(element) }
