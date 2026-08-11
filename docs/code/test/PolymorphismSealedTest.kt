@@ -1,8 +1,8 @@
 // This file was automatically generated from polymorphism-sealed.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class PolymorphismSealedTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePolymorphicStaticTypes01.main()
+      io.github.esafak.kotlintsgen.example.examplePolymorphicStaticTypes01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -38,7 +38,7 @@ class PolymorphismSealedTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePolymorphicStaticTypes02.main()
+      io.github.esafak.kotlintsgen.example.examplePolymorphicStaticTypes02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -68,7 +68,7 @@ class PolymorphismSealedTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePolymorphicSealedClass01.main()
+      io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -81,7 +81,7 @@ class PolymorphismSealedTest : FunSpec({
           |
           |export namespace Project {
           |  export enum Type {
-          |    DeprecatedProject = "dev.adamko.kxstsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
+          |    DeprecatedProject = "io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
           |    OProj = "OProj",
           |  }
           |
@@ -111,7 +111,7 @@ class PolymorphismSealedTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePolymorphicSealedClass02.main()
+      io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -199,7 +199,7 @@ class PolymorphismSealedTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePolymorphicObjects01.main()
+      io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -212,8 +212,8 @@ class PolymorphismSealedTest : FunSpec({
           |
           |export namespace Response {
           |  export enum Type {
-          |    EmptyResponse = "dev.adamko.kxstsgen.example.examplePolymorphicObjects01.EmptyResponse",
-          |    TextResponse = "dev.adamko.kxstsgen.example.examplePolymorphicObjects01.TextResponse",
+          |    EmptyResponse = "io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01.EmptyResponse",
+          |    TextResponse = "io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01.TextResponse",
           |  }
           |
           |  export interface EmptyResponse {

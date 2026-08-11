@@ -6,7 +6,7 @@ polymorphic, instead prefer [sealed polymorphism](./polymorphism-sealed.md).
 <!--- TEST_NAME PolymorphismOpenTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Abstract class with a single field
@@ -16,7 +16,7 @@ import dev.adamko.kxstsgen.*
 abstract class Color(val rgb: Int)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Color.serializer()))
 }
 ```
@@ -45,7 +45,7 @@ abstract class SimpleTypes(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }
 ```
@@ -77,7 +77,7 @@ abstract class AbstractSimpleTypes {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(AbstractSimpleTypes.serializer()))
 }
 ```
@@ -97,7 +97,7 @@ export type AbstractSimpleTypes = any;
 
 ### Generics
 
-Kotlinx Serialization doesn't have 'generic' SerialDescriptors, so KxsTsGen can't generate generic
+Kotlinx Serialization doesn't have 'generic' SerialDescriptors, so KotlinTsGen can't generate generic
 TypeScript classes.
 
 ```kotlin
@@ -109,7 +109,7 @@ class Box<T : Number>(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   println(
     tsGenerator.generate(
@@ -158,7 +158,7 @@ object ProjectSerializer : JsonContentPolymorphicSerializer<Project>(Project::cl
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(ProjectSerializer))
 }
 ```

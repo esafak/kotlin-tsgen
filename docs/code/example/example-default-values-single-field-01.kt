@@ -1,14 +1,14 @@
 // This file was automatically generated from default-values.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleDefaultValuesSingleField01
+package io.github.esafak.kotlintsgen.example.exampleDefaultValuesSingleField01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 class Colour(val rgb: Int = 12345)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Colour.serializer()))
 }

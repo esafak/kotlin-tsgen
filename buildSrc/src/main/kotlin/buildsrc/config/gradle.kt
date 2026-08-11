@@ -1,15 +1,7 @@
 package buildsrc.config
 
-import org.gradle.api.Action
-import org.gradle.api.Project
-import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.file.ProjectLayout
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.plugins.ide.idea.model.IdeaModule
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 
 /** exclude generated Gradle code, so it doesn't clog up search results */
@@ -28,18 +20,4 @@ fun IdeaModule.excludeGeneratedGradleDsl(layout: ProjectLayout) {
       "buildSrc/build/pluginUnderTestMetadata",
     )
   )
-}
-
-
-// https://github.com/gradle/gradle/issues/20925
-fun ProviderFactory.credentialsAction(
-  repositoryName: String
-): Provider<Action<PasswordCredentials>> = zip(
-  gradleProperty("${repositoryName}Username"),
-  gradleProperty("${repositoryName}Password"),
-)  { user, pass ->
-  Action<PasswordCredentials> {
-    username = user
-    password = pass
-  }
 }

@@ -1,8 +1,8 @@
 // This file was automatically generated from edgecases.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class EdgeCasesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleEdgecaseRecursiveReferences01.main()
+      io.github.esafak.kotlintsgen.example.exampleEdgecaseRecursiveReferences01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -42,7 +42,7 @@ class EdgeCasesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleEdgecaseRecursiveReferences02.main()
+      io.github.esafak.kotlintsgen.example.exampleEdgecaseRecursiveReferences02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -70,7 +70,7 @@ class EdgeCasesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleEdgecaseRecursiveReferences03.main()
+      io.github.esafak.kotlintsgen.example.exampleEdgecaseRecursiveReferences03.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

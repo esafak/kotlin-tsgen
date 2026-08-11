@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-sealed.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.examplePolymorphicObjects01
+package io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 sealed class Response
@@ -15,7 +15,7 @@ object EmptyResponse : Response()
 class TextResponse(val text: String) : Response()
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(
     tsGenerator.generate(Response.serializer())
   )

@@ -1,12 +1,12 @@
 // This file was automatically generated from customising-output.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleCustomisingOutput01
+package io.github.esafak.kotlintsgen.example.exampleCustomisingOutput01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.builtins.serializer
-import dev.adamko.kxstsgen.core.*
+import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
 data class Item(
@@ -15,7 +15,7 @@ data class Item(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
     Double.serializer().descriptor to TsDeclaration.TsTypeAlias(

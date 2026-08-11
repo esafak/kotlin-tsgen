@@ -1,9 +1,9 @@
 // This file was automatically generated from tuples.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleTuple02
+package io.github.esafak.kotlintsgen.example.exampleTuple02
 
-import dev.adamko.kxstsgen.*
-import dev.adamko.kxstsgen.core.experiments.TupleSerializer
+import io.github.esafak.kotlintsgen.*
+import io.github.esafak.kotlintsgen.core.experiments.TupleSerializer
 import kotlinx.serialization.*
 
 @Serializable(with = PostalAddressUSA.Serializer::class)
@@ -33,6 +33,6 @@ data class PostalAddressUSA(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(PostalAddressUSA.serializer()))
 }

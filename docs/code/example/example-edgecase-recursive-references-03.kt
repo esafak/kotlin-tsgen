@@ -1,9 +1,9 @@
 // This file was automatically generated from edgecases.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleEdgecaseRecursiveReferences03
+package io.github.esafak.kotlintsgen.example.exampleEdgecaseRecursiveReferences03
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 class A(
@@ -16,6 +16,6 @@ class B(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(A.serializer(), B.serializer()))
 }

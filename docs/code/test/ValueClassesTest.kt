@@ -1,8 +1,8 @@
 // This file was automatically generated from value-classes.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class ValueClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleValueClasses01.main()
+      io.github.esafak.kotlintsgen.example.exampleValueClasses01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -36,7 +36,7 @@ class ValueClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleValueClasses02.main()
+      io.github.esafak.kotlintsgen.example.exampleValueClasses02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -64,7 +64,7 @@ class ValueClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleValueClasses03.main()
+      io.github.esafak.kotlintsgen.example.exampleValueClasses03.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -86,7 +86,7 @@ class ValueClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleValueClasses04.main()
+      io.github.esafak.kotlintsgen.example.exampleValueClasses04.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

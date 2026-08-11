@@ -20,4 +20,4 @@ fun Configuration.asConsumer() {
 
 
 fun AttributeContainer.knitDocsAttributes(objects: ObjectFactory): AttributeContainer =
-  attribute(USAGE_ATTRIBUTE, objects.named("kxs-ts-gen.knit-docs"))
+  attribute(USAGE_ATTRIBUTE, objects.named("kotlin-tsgen.knit-docs"))

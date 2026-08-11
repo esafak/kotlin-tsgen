@@ -1,12 +1,18 @@
 @file:Suppress("UnstableApiUsage")
 
-rootProject.name = "kotlinx-serialization-typescript-generator"
+rootProject.name = "kotlin-tsgen"
 
 pluginManagement {
   repositories {
     mavenCentral()
     gradlePluginPortal()
   }
+}
+
+plugins {
+  // Allow Gradle to auto-download JVM toolchains (e.g. JDK 21 for :docs:code) when they
+  // are not installed locally. https://docs.gradle.org/current/userguide/toolchains.html
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {
@@ -44,8 +50,8 @@ dependencyResolutionManagement {
 }
 
 include(
-  ":modules:kxs-ts-gen-core",
-//  ":modules:kxs-ts-gen-processor",
+  ":modules:kotlin-tsgen-core",
+//  ":modules:kotlin-tsgen-processor",
   ":modules:versions-platform",
   ":docs:code",
   ":site",

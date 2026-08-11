@@ -1,6 +1,6 @@
 package buildsrc.convention
 
-import buildsrc.config.KxsTsGenBuildSettings
+import buildsrc.config.KotlinTsGenBuildSettings
 import java.time.Duration
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -13,7 +13,7 @@ if (project != rootProject) {
   project.version = rootProject.version
 }
 
-extensions.create<KxsTsGenBuildSettings>(KxsTsGenBuildSettings.NAME)
+extensions.create<KotlinTsGenBuildSettings>(KotlinTsGenBuildSettings.NAME)
 
 tasks.withType<AbstractArchiveTask>().configureEach {
   // https://docs.gradle.org/current/userguide/working_with_files.html#sec:reproducible_archives

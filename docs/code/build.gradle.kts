@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
   implementation(platform(projects.modules.versionsPlatform))
-  implementation(projects.modules.kxsTsGenCore)
+  implementation(projects.modules.kotlinTsgenCore)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.kotlinx.coroutines.core)
@@ -66,7 +66,7 @@ tasks.withType<Test>().configureEach {
 
 tasks.test {
   // TSCompile tests are slow, they don't need to run every time
-  if (kxsTsGenSettings.enableTsCompileTests.get()) {
+  if (kotlinTsGenSettings.enableTsCompileTests.get()) {
     val npmInstallDir = tasks.npmSetup.map { it.npmDir.get().asFile.canonicalPath }
     inputs.dir(npmInstallDir)
     environment("NPM_INSTALL_DIR", npmInstallDir.get())

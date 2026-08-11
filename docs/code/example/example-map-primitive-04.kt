@@ -1,9 +1,9 @@
 // This file was automatically generated from maps.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleMapPrimitive04
+package io.github.esafak.kotlintsgen.example.exampleMapPrimitive04
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 @JvmInline
@@ -15,6 +15,6 @@ class MyDataClass(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyDataClass.serializer()))
 }

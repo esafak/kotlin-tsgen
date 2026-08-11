@@ -4,7 +4,7 @@
 
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Simple enum
@@ -18,7 +18,7 @@ enum class SomeType {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SomeType.serializer()))
 }
 ```
@@ -50,7 +50,7 @@ enum class SomeType2(val coolName: String) {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SomeType2.serializer()))
 }
 ```

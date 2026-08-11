@@ -3,7 +3,7 @@
 <!--- TEST_NAME PolymorphismSealedTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/polymorphism.md#closed-polymorphism
@@ -17,7 +17,7 @@ open class Project(val name: String)
 class OwnedProject(name: String, val owner: String) : Project(name)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Project.serializer()))
 }
 ```
@@ -52,9 +52,9 @@ val module = SerializersModule {
 }
 
 fun main() {
-  val config = KxsTsConfig(serializersModule = module)
+  val config = KotlinTsConfig(serializersModule = module)
 
-  val tsGenerator = KxsTsGenerator(config)
+  val tsGenerator = KotlinTsGenerator(config)
 
   println(tsGenerator.generate(Project.serializer()))
 }
@@ -101,7 +101,7 @@ class OwnedProject(override val name: String, val owner: String) : Project()
 class DeprecatedProject(override val name: String, val reason: String) : Project()
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Project.serializer()))
 }
 ```
@@ -115,7 +115,7 @@ export type Project =
 
 export namespace Project {
   export enum Type {
-    DeprecatedProject = "dev.adamko.kxstsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
+    DeprecatedProject = "io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
     OProj = "OProj",
   }
 
@@ -174,7 +174,7 @@ sealed class Dog {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Dog.serializer()))
 }
 ```
@@ -266,7 +266,7 @@ object EmptyResponse : Response()
 class TextResponse(val text: String) : Response()
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(
     tsGenerator.generate(Response.serializer())
   )
@@ -282,8 +282,8 @@ export type Response =
 
 export namespace Response {
   export enum Type {
-    EmptyResponse = "dev.adamko.kxstsgen.example.examplePolymorphicObjects01.EmptyResponse",
-    TextResponse = "dev.adamko.kxstsgen.example.examplePolymorphicObjects01.TextResponse",
+    EmptyResponse = "io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01.EmptyResponse",
+    TextResponse = "io.github.esafak.kotlintsgen.example.examplePolymorphicObjects01.TextResponse",
   }
 
   export interface EmptyResponse {

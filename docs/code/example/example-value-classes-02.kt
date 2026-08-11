@@ -1,14 +1,14 @@
 // This file was automatically generated from value-classes.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleValueClasses02
+package io.github.esafak.kotlintsgen.example.exampleValueClasses02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.builtins.serializer
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(
     tsGenerator.generate(
       UByte.serializer(),

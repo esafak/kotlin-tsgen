@@ -1,9 +1,9 @@
 // This file was automatically generated from tuples.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleTuple01
+package io.github.esafak.kotlintsgen.example.exampleTuple01
 
-import dev.adamko.kxstsgen.*
-import dev.adamko.kxstsgen.core.experiments.TupleSerializer
+import io.github.esafak.kotlintsgen.*
+import io.github.esafak.kotlintsgen.core.experiments.TupleSerializer
 import kotlinx.serialization.*
 
 @Serializable(with = SimpleTypes.SimpleTypesSerializer::class)
@@ -41,6 +41,6 @@ data class SimpleTypes(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }

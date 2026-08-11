@@ -1,7 +1,7 @@
 ---
 id: getting-started
 title: Getting Started
-description: Installing kxs-ts-gen
+description: Installing kotlin-tsgen
 sidebar_position: 1
 slug: /
 ---
@@ -10,7 +10,7 @@ slug: /
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-kxs-ts-gen is published to [Maven Central](https://search.maven.org/search?q=g:dev.adamko.kxstsgen).
+kotlin-tsgen is published to [Maven Central](https://search.maven.org/search?q=g:io.github.esafak.kotlintsgen).
 
 Be sure to apply the [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization) plugin.
 
@@ -29,12 +29,12 @@ Be sure to apply the [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.s
 
 ```kts
 plugins {
-  kotlin("jvm") version "1.8.0"
-  kotlin("plugin.serialization") version "1.8.0"
+  kotlin("jvm") version "2.3.0"
+  kotlin("plugin.serialization") version "2.3.0"
 }
 
 dependencies {
-  implementation("dev.adamko.kxstsgen:kxs-ts-gen-core:0.2.1")
+  implementation("io.github.esafak.kotlintsgen:kotlin-tsgen-core:0.2.5")
 }
 ```
 
@@ -43,12 +43,12 @@ dependencies {
 
 ```groovy
 plugins {
-  id "org.jetbrains.kotlin.jvm" version "1.8.0"
-  id "org.jetbrains.kotlin.plugin.serialization" version "1.8.0"
+  id "org.jetbrains.kotlin.jvm" version "2.3.0"
+  id "org.jetbrains.kotlin.plugin.serialization" version "2.3.0"
 }
 
 dependencies {
-  implementation("dev.adamko.kxstsgen:kxs-ts-gen-core:0.2.1")
+  implementation("io.github.esafak.kotlintsgen:kotlin-tsgen-core:0.2.5")
 }
 ```
 
@@ -63,9 +63,9 @@ Maven must postfix the module name with the target variant, for example: `-jvm`
 
 ```xml
 <dependency>
-  <groupId>dev.adamko.kxstsgen</groupId>
-  <artifactId>kxs-ts-gen-core-jvm</artifactId>
-  <version>0.2.1</version>
+  <groupId>io.github.esafak.kotlintsgen</groupId>
+  <artifactId>kotlin-tsgen-core-jvm</artifactId>
+  <version>0.2.5</version>
 </dependency>
 ```
 

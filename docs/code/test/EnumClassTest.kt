@@ -1,8 +1,8 @@
 // This file was automatically generated from enums.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class EnumClassTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleEnumClass01.main()
+      io.github.esafak.kotlintsgen.example.exampleEnumClass01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -40,7 +40,7 @@ class EnumClassTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleEnumClass02.main()
+      io.github.esafak.kotlintsgen.example.exampleEnumClass02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

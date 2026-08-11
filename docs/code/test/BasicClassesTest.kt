@@ -1,8 +1,8 @@
 // This file was automatically generated from basic-classes.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class BasicClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePlainClassSingleField01.main()
+      io.github.esafak.kotlintsgen.example.examplePlainClassSingleField01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -38,7 +38,7 @@ class BasicClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePlainClassPrimitiveFields01.main()
+      io.github.esafak.kotlintsgen.example.examplePlainClassPrimitiveFields01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -66,7 +66,7 @@ class BasicClassesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.examplePlainDataClass01.main()
+      io.github.esafak.kotlintsgen.example.examplePlainDataClass01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

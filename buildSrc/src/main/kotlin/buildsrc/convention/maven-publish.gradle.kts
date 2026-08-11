@@ -1,28 +1,20 @@
 package buildsrc.convention
 
-import buildsrc.config.credentialsAction
-
 plugins {
   `maven-publish`
   signing
   id("com.gradleup.nmcp")
 }
 
-val sonatypeRepositoryCredentials: Provider<Action<PasswordCredentials>> =
-  providers.credentialsAction("sonatypeRepository")
-
-val projectVersion: Provider<String> = provider { project.version.toString() }
-
-
 //region Signing
 val signingKeyId: Provider<String> =
-  providers.gradleProperty("dev.adamko.kxstsgen.signing.keyId")
+  providers.gradleProperty("io.github.esafak.kotlintsgen.signing.keyId")
     .orElse(providers.environmentVariable("MAVEN_SONATYPE_SIGNING_KEY_ID"))
 val signingKey: Provider<String> =
-  providers.gradleProperty("dev.adamko.kxstsgen.signing.key")
+  providers.gradleProperty("io.github.esafak.kotlintsgen.signing.key")
     .orElse(providers.environmentVariable("MAVEN_SONATYPE_SIGNING_KEY"))
 val signingPassword: Provider<String> =
-  providers.gradleProperty("dev.adamko.kxstsgen.signing.password")
+  providers.gradleProperty("io.github.esafak.kotlintsgen.signing.password")
     .orElse(providers.environmentVariable("MAVEN_SONATYPE_SIGNING_PASSWORD"))
 
 signing {
@@ -76,9 +68,9 @@ publishing {
   }
   publications.withType<MavenPublication>().configureEach {
     pom {
-      name.set("Kotlinx Serialization Typescript Generator")
-      description.set("KxsTsGen creates TypeScript interfaces from Kotlinx Serialization @Serializable classes")
-      url.set("https://github.com/adamko-dev/kotlinx-serialization-typescript-generator")
+      name.set("kotlin-tsgen")
+      description.set("kotlin-tsgen creates TypeScript interfaces from Kotlinx Serialization @Serializable classes")
+      url.set("https://github.com/esafak/kotlin-tsgen")
 
       licenses {
         license {
@@ -89,14 +81,16 @@ publishing {
 
       developers {
         developer {
-          email.set("adam@adamko.dev")
+          id.set("esafak")
+          name.set("Emre Safak")
+          url.set("https://github.com/esafak")
         }
       }
 
       scm {
-        connection.set("scm:git:git://github.com/adamko-dev/kotlinx-serialization-typescript-generator.git")
-        developerConnection.set("scm:git:ssh://github.com:adamko-dev/kotlinx-serialization-typescript-generator.git")
-        url.set("https://github.com/adamko-dev/kotlinx-serialization-typescript-generator")
+        connection.set("scm:git:git://github.com/esafak/kotlin-tsgen.git")
+        developerConnection.set("scm:git:ssh://github.com:esafak/kotlin-tsgen.git")
+        url.set("https://github.com/esafak/kotlin-tsgen")
       }
     }
     artifact(javadocJarStub)

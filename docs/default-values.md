@@ -5,7 +5,7 @@ Some properties of a class are optional, or nullable, or both.
 <!--- TEST_NAME DefaultValuesTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 
@@ -19,7 +19,7 @@ it will be marked as optional using the `?:` notation.
 class Colour(val rgb: Int = 12345)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Colour.serializer()))
 }
 ```
@@ -44,7 +44,7 @@ a type union that includes `null`.
 class Colour(val rgb: Int?) // 'rgb' is required, but the value can be null
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Colour.serializer()))
 }
 ```
@@ -77,7 +77,7 @@ data class ContactDetails(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(ContactDetails.serializer()))
 }
 ```
@@ -117,7 +117,7 @@ data class ContactDetails(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(ContactDetails.serializer()))
 }
 ```

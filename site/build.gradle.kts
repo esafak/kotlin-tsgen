@@ -8,7 +8,7 @@ plugins {
   buildsrc.convention.`knit-files`
 }
 
-description = "builds the kxs-ts-gen website"
+description = "builds the kotlin-tsgen website"
 
 dependencies {
   knitDocs(projects.docs.code)
@@ -40,7 +40,7 @@ val updateSiteKnitDocs by tasks.registering(Sync::class) {
       line.replace(Regex("""\((?<file>(?:.\/|..\/)\S+[^.md])\)""")) { match ->
         val (file) = match.destructured
         val uri = URI
-          .create("https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/blob/main/docs/$file")
+          .create("https://github.com/esafak/kotlin-tsgen/blob/main/docs/$file")
           .normalize()
         "($uri)"
       }
