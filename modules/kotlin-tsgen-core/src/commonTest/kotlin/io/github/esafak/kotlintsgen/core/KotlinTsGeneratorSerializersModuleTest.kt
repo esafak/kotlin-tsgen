@@ -7,6 +7,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import kotlin.jvm.JvmInline
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -85,6 +86,20 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "required: string;"
       ts shouldContain "optional: string | null;"
       ts shouldNotContain "EntityType"
+  }
+
+  test("custom primitive serializer - a root enum is emitted as a named type alias") {
+      val ts = KotlinTsGenerator()
+        .generate(PrimitiveContextualExample.EntityType.serializer())
+
+      ts shouldBe "export type EntityType = string;"
+  }
+
+  test("custom primitive serializer - a root value class is emitted as a named type alias") {
+      val ts = KotlinTsGenerator()
+        .generate(CustomPrimitiveExample.StringId.serializer())
+
+      ts shouldBe "export type StringId = string;"
   }
 
   test("open polymorphic - registered subclasses are emitted as a union") {
@@ -231,5 +246,23 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       @kotlinx.serialization.Contextual
       val optional: EntityType?,
     )
+  }
+
+  @Suppress("unused")
+  private object CustomPrimitiveExample {
+    @Serializable(with = StringIdSerializer::class)
+    @JvmInline
+    value class StringId(val value: String)
+
+    object StringIdSerializer : KSerializer<StringId> {
+      override val descriptor = PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING)
+
+      override fun serialize(encoder: Encoder, value: StringId) {
+        encoder.encodeString(value.value)
+      }
+
+      override fun deserialize(decoder: Decoder): StringId =
+        StringId(decoder.decodeString())
+    }
   }
 }
