@@ -3,17 +3,7 @@ name: Publish Maven
 
 on:
   workflow_dispatch:
-    inputs:
-      checkout-ref:
-        description: "The branch, tag or SHA to checkout. See actions/checkout 'ref'."
-        required: false
-        type: string
   workflow_call:
-    inputs:
-      checkout-ref:
-        description: "The branch, tag or SHA to checkout. See actions/checkout 'ref'."
-        required: false
-        type: string
 
 
 concurrency:
@@ -35,8 +25,6 @@ jobs:
     environment: maven
     permissions:
       contents: read
-      packages: write
-      checks: write
     name: "./gradlew nmcpPublish @ macos-latest"
     timeout-minutes: 60
     steps:
@@ -44,7 +32,8 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.checkout-ref || github.ref }}
+          persist-credentials: false
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       - name: Validate Gradle Wrapper
