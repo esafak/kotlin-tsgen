@@ -1,0 +1,14 @@
+.github/workflows/run_publish_maven.yml
+  h_ea91e2db23540f 34-35,40-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ad8194b3da0a67009286237b209f81144b14cb36",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
