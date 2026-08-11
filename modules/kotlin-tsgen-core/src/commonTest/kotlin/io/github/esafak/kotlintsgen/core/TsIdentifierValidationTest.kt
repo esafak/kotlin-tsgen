@@ -71,8 +71,16 @@ class TsIdentifierValidationTest : FunSpec({
   }
 
   test("serial names on enum members are validated") {
+    val elementIdConverter = TsElementIdConverter { TsElementId("InvalidEnum") }
+    val typeRefConverter = TsTypeRefConverter.Default(elementIdConverter)
+    val converter = TsElementConverter.Default(
+      elementIdConverter = elementIdConverter,
+      mapTypeConverter = TsMapTypeConverter.Default,
+      typeRefConverter = typeRefConverter,
+    )
+
     val exception = shouldThrow<InvalidTsIdentifierException> {
-      KotlinTsGenerator().generate(InvalidEnum.serializer())
+      converter(InvalidEnum.serializer().descriptor)
     }
 
     exception.identifier shouldBe "invalid-member"
@@ -105,7 +113,7 @@ class TsIdentifierValidationTest : FunSpec({
   test("invalid serialized property names remain outside identifier validation") {
     val ts = KotlinTsGenerator().generate(InvalidPropertyName.serializer())
 
-    ts shouldContain "invalid-property: string;"
+    ts shouldContain "\"invalid-property\": string;"
   }
 
   test("malformed generic serial names fail rather than emit an invalid identifier") {
@@ -116,6 +124,7 @@ class TsIdentifierValidationTest : FunSpec({
     exception.message.orEmpty() shouldContain "Map<kotlin"
   }
 
+}) {
   @Serializable
   private class ValidType(val value: String)
 
@@ -171,4 +180,5 @@ class TsIdentifierValidationTest : FunSpec({
 
     override fun deserialize(decoder: Decoder): String = decoder.decodeString()
   }
-})
+
+}

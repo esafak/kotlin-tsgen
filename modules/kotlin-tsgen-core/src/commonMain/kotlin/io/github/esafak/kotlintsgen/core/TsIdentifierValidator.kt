@@ -100,11 +100,13 @@ internal object TsIdentifierValidator {
     context: String,
   ) {
     val reason = when {
-      !identifierPattern.matches(identifier) ->
-        "it must match ^[A-Za-z_$][A-Za-z0-9_$]*$"
+      !isValidIdentifier(identifier) -> when {
+        !identifierPattern.matches(identifier) ->
+          "it must match ^[A-Za-z_$][A-Za-z0-9_$]*$"
 
-      identifier in reservedNames ->
-        "it is reserved by TypeScript or conflicts with a generated primitive type"
+        else ->
+          "it is reserved by TypeScript or conflicts with a generated primitive type"
+      }
 
       else -> null
     }
@@ -112,5 +114,13 @@ internal object TsIdentifierValidator {
     if (reason != null) {
       throw InvalidTsIdentifierException(identifier, context, reason)
     }
+  }
+
+  fun isValidIdentifier(identifier: String): Boolean {
+    return isValidIdentifierSyntax(identifier) && identifier !in reservedNames
+  }
+
+  fun isValidIdentifierSyntax(identifier: String): Boolean {
+    return identifierPattern.matches(identifier)
   }
 }
