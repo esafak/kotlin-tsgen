@@ -64,6 +64,8 @@ open class KotlinTsGenerator(
   val serializerDescriptorOverrides: MutableMap<KSerializer<*>, Set<SerialDescriptor>> =
     mutableMapOf()
 
+  // Explicit descriptor overrides intentionally bypass generated-identifier validation because
+  // their TsElement ids are supplied directly by the caller.
   val descriptorOverrides: MutableMap<SerialDescriptor, TsElement> = mutableMapOf()
 
   private fun findOverride(descriptor: SerialDescriptor): TsElement? {

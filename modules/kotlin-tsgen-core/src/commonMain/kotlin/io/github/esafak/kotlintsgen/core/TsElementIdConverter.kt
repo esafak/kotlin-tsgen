@@ -19,6 +19,16 @@ fun interface TsElementIdConverter {
         .substringAfter("<")
         .substringBeforeLast(">")
 
+      TsIdentifierValidator.assertValidIdentifier(id, "type name from serial name '$serialName'")
+      if (namespace.isNotBlank()) {
+        namespace.split('.').forEach { segment ->
+          TsIdentifierValidator.assertValidIdentifier(
+            segment,
+            "namespace segment from serial name '$serialName'",
+          )
+        }
+      }
+
       return when {
         namespace.isBlank() -> TsElementId(id)
         else                -> TsElementId("$namespace.$id")

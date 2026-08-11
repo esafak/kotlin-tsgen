@@ -35,6 +35,36 @@ export enum SomeType {
 
 <!--- TEST -->
 
+### Enum with serial names
+
+`@SerialName` controls the serialized enum member value and the generated
+TypeScript member name. Names used as TypeScript identifiers must be valid;
+invalid names fail generation with a clear error.
+
+```kotlin
+@Serializable
+enum class WireType {
+  @SerialName("discussion")
+  DISCUSSION,
+  @SerialName("chat_room")
+  CHAT_ROOM,
+}
+
+fun main() {
+  val tsGenerator = KotlinTsGenerator()
+  println(tsGenerator.generate(WireType.serializer()))
+}
+```
+
+```typescript
+export enum WireType {
+  discussion = "discussion",
+  chat_room = "chat_room",
+}
+```
+
+<!--- TEST -->
+
 ### Enum with properties
 
 Because enums are static, fields aren't converted.

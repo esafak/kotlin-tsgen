@@ -130,11 +130,19 @@ fun interface TsElementConverter {
           val id = TsElementId(
             "${namespaceId.namespace}.${discriminatorName.replaceFirstChar { it.uppercaseChar() }}"
           )
+          TsIdentifierValidator.assertValidIdentifier(
+            id.name,
+            "discriminator enum for '${descriptor.serialName}'",
+          )
 
-          val members = subclassesDescriptorToInterface.entries.map { (descriptor, tsInterface) ->
+          val members = subclassesDescriptorToInterface.entries.map { (subclassDescriptor, tsInterface) ->
             val enumMemberName = tsInterface.id.name
+            TsIdentifierValidator.assertValidIdentifier(
+              enumMemberName,
+              "discriminator enum member of '${subclassDescriptor.serialName}'",
+            )
             val enumMemberValue = TsTypeRef.Literal(
-              TsLiteral.Custom(descriptor.serialName),
+              TsLiteral.Custom(subclassDescriptor.serialName),
               false
             )
             TsProperty(enumMemberName, enumMemberValue, false)
@@ -237,6 +245,12 @@ fun interface TsElementConverter {
     ): TsDeclaration.TsEnum {
       val resultId = elementIdConverter(enumDescriptor)
       val members = convertProperties(enumDescriptor)
+      members.forEach { member ->
+        TsIdentifierValidator.assertValidIdentifier(
+          member.name,
+          "enum member of '${enumDescriptor.serialName}'",
+        )
+      }
       return TsDeclaration.TsEnum(resultId, members)
     }
 
