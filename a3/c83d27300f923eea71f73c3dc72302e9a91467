@@ -1,0 +1,225 @@
+buildSrc/src/main/kotlin/buildsrc/config/distributions.kt
+  s_4758e6c1f8e887::t_3e24b74429b911 23
+docs/basic-classes.md
+  s_4758e6c1f8e887::t_fc046f6c3b62c5 6,16,44,76
+docs/code/example/example-abstract-class-abstract-field-01.kt
+  s_4758e6c1f8e887::t_ea7d0978e1c982 3,6,17
+docs/code/example/example-abstract-class-primitive-fields-01.kt
+  s_4758e6c1f8e887::t_e6a99fd0900a3e 3,6,18
+docs/code/example/example-abstract-class-single-field-01.kt
+  s_4758e6c1f8e887::t_1c3e40e41dc2de 3,6,12
+docs/code/example/example-customising-output-01.kt
+  s_4758e6c1f8e887::t_9f8c073d5f3c68 3,6,9,18
+docs/code/example/example-customising-output-02.kt
+  s_4758e6c1f8e887::t_44c19a0009cf0b 3,6,9,18
+docs/code/example/example-customising-output-03.kt
+  s_4758e6c1f8e887::t_5d4dd71a418f87 3,6,9,23
+docs/code/example/example-customising-output-04.kt
+  s_4758e6c1f8e887::t_59f988e2168cb0 3,6,9,34
+docs/code/example/example-default-values-primitive-fields-01.kt
+  s_4758e6c1f8e887::t_6f4a18060830ea 3,6,21
+docs/code/example/example-default-values-primitive-fields-02.kt
+  s_4758e6c1f8e887::t_0b9974ec318432 3,6,21
+docs/code/example/example-default-values-single-field-01.kt
+  s_4758e6c1f8e887::t_86b6f6bf61efb4 3,6,12
+docs/code/example/example-default-values-single-field-02.kt
+  s_4758e6c1f8e887::t_3ee4b6bf11d86b 3,6,12
+docs/code/example/example-edgecase-recursive-references-01.kt
+  s_4758e6c1f8e887::t_b3329d9e65dc16 3,6,15
+docs/code/example/example-edgecase-recursive-references-02.kt
+  s_4758e6c1f8e887::t_0a38a80b97f08a 3,6,19
+docs/code/example/example-edgecase-recursive-references-03.kt
+  s_4758e6c1f8e887::t_35a5d56f38a67e 3,6,19
+docs/code/example/example-enum-class-01.kt
+  s_4758e6c1f8e887::t_b047797540a4d6 3,6,16
+docs/code/example/example-enum-class-02.kt
+  s_4758e6c1f8e887::t_9a5e4e90393fe3 3,6,18
+docs/code/example/example-generics-01.kt
+  s_4758e6c1f8e887::t_5288e132229fd4 3,6,16
+docs/code/example/example-json-polymorphic-01.kt
+  s_4758e6c1f8e887::t_b5ce03b740b7e1 3,6,29
+docs/code/example/example-list-objects-01.kt
+  s_4758e6c1f8e887::t_9cd3decd482305 3,6,21
+docs/code/example/example-list-objects-02.kt
+  s_4758e6c1f8e887::t_f17f20d1128bc8 3,6,20
+docs/code/example/example-list-primitive-01.kt
+  s_4758e6c1f8e887::t_9270f0386b9dce 3,6,16
+docs/code/example/example-list-primitive-02.kt
+  s_4758e6c1f8e887::t_de25012106efb6 3,6,21
+docs/code/example/example-map-complex-01.kt
+  s_4758e6c1f8e887::t_f7637609b64d88 3,6,22
+docs/code/example/example-map-complex-02.kt
+  s_4758e6c1f8e887::t_08ba22451cb600 3,6,47
+docs/code/example/example-map-complex-03.kt
+  s_4758e6c1f8e887::t_df620a1401851a 3,6,54
+docs/code/example/example-map-primitive-01.kt
+  s_4758e6c1f8e887::t_6617d260beae96 3,6,14
+docs/code/example/example-map-primitive-02.kt
+  s_4758e6c1f8e887::t_d4c92443e489bc 3,6,20
+docs/code/example/example-map-primitive-03.kt
+  s_4758e6c1f8e887::t_9934cccf4eb156 3,6,14
+docs/code/example/example-map-primitive-04.kt
+  s_4758e6c1f8e887::t_e96799c68d4f0d 3,6,18
+docs/code/example/example-map-primitive-05.kt
+  s_4758e6c1f8e887::t_5e5cd519c86c5a 3,6,15
+docs/code/example/example-map-primitive-06.kt
+  s_4758e6c1f8e887::t_488a918ae82ecb 3,6,40
+docs/code/example/example-plain-class-ignored-property-01.kt
+  s_4758e6c1f8e887::t_61bf986acf6305 3,6,17
+docs/code/example/example-plain-class-primitive-fields-01.kt
+  s_4758e6c1f8e887::t_c19475baddaff7 3,6,18
+docs/code/example/example-plain-class-primitive-fields-02.kt
+  s_4758e6c1f8e887::t_641ff3d25a6a29 3,6,17
+docs/code/example/example-plain-class-single-field-01.kt
+  s_4758e6c1f8e887::t_b72c2687bd12f9 3,6,12
+docs/code/example/example-plain-data-class-01.kt
+  s_4758e6c1f8e887::t_071001ac2d1a0b 3,6,18
+docs/code/example/example-polymorphic-abstract-class-primitive-fields-01.kt
+  s_4758e6c1f8e887::t_18ef12a7043ae1 3,6,18
+docs/code/example/example-polymorphic-objects-01.kt
+  s_4758e6c1f8e887::t_ef7bb82da01b07 3,6,18
+docs/code/example/example-polymorphic-sealed-class-01.kt
+  s_4758e6c1f8e887::t_3b2eeaa74e4964 3,6,21
+docs/code/example/example-polymorphic-sealed-class-02.kt
+  s_4758e6c1f8e887::t_72f2c8e10afd1a 3,6,39
+docs/code/example/example-polymorphic-static-types-01.kt
+  s_4758e6c1f8e887::t_e7442acba77d7b 3,6,14
+docs/code/example/example-polymorphic-static-types-02.kt
+  s_4758e6c1f8e887::t_e660825f2e4d14 3,6,25,27
+docs/code/example/example-tuple-01.kt
+  s_4758e6c1f8e887::t_77dfcc7afdabdb 3,5-6,44
+docs/code/example/example-tuple-02.kt
+  s_4758e6c1f8e887::t_17ba00d0e6d77f 3,5-6,36
+docs/code/example/example-tuple-03.kt
+  s_4758e6c1f8e887::t_8a6c48f7fd2d84 3,5-6,38
+docs/code/example/example-tuple-04.kt
+  s_4758e6c1f8e887::t_29bfaefda991a3 3,5-6,34
+docs/code/example/example-tuple-05.kt
+  s_4758e6c1f8e887::t_f4a3a3b933f4a0 3,5-6,9,20
+docs/code/example/example-value-classes-01.kt
+  s_4758e6c1f8e887::t_67f55364f78ff1 3,6,13
+docs/code/example/example-value-classes-02.kt
+  s_4758e6c1f8e887::t_23b21a9b7c148b 3,6,11
+docs/code/example/example-value-classes-03.kt
+  s_4758e6c1f8e887::t_52342a9fe80620 3,6,8,13,15
+docs/code/example/example-value-classes-04.kt
+  s_4758e6c1f8e887::t_bb6cb6a0c53cd4 3,6,13
+docs/code/knit-test.ftl
+  s_4758e6c1f8e887::t_cb148836dcef77 8
+docs/code/test/AbstractClassesTest.kt
+  s_4758e6c1f8e887::t_fd23896404fa94 3,5,17,42,71
+docs/code/test/BasicClassesTest.kt
+  s_4758e6c1f8e887::t_c4ba613057ec96 3,5,17,41,69
+docs/code/test/CustomisingOutputTest.kt
+  s_4758e6c1f8e887::t_95fd3a27e2364f 3,5,17,44,69,100
+docs/code/test/DefaultValuesTest.kt
+  s_4758e6c1f8e887::t_663d8008a20ca0 3,5,17,41,65,92
+docs/code/test/EdgeCasesTest.kt
+  s_4758e6c1f8e887::t_c4fdd12be2417a 3,5,17,45,73
+docs/code/test/EnumClassTest.kt
+  s_4758e6c1f8e887::t_1a1eeceb661aa8 3,5,17,43
+docs/code/test/IgnoringPropertiesTest.kt
+  s_4758e6c1f8e887::t_432906c2f9b33d 3,5,17
+docs/code/test/ListsTests.kt
+  s_4758e6c1f8e887::t_c2e2bb7414389e 3,5,17,43,73
+docs/code/test/MapsTests.kt
+  s_4758e6c1f8e887::t_cb456c7d8a210c 3,5,17,41,70,94,120,146,192,225,251
+docs/code/test/PolymorphismOpenTest.kt
+  s_4758e6c1f8e887::t_1077563eec730f 3,5,17,42,71,96,120
+docs/code/test/PolymorphismSealedTest.kt
+  s_4758e6c1f8e887::t_a1fac65e435475 3,5,17,41,71,84,114,202,215-216
+docs/code/test/PolymorphismTest.kt
+  s_4758e6c1f8e887::t_efc30148e3bbd1 3,5,17,41,71,84,114,202,215-216,242,266
+docs/code/test/TuplesTest.kt
+  s_4758e6c1f8e887::t_3cf433956ea477 3,5,17,45,71,98,124
+docs/code/test/ValueClassesTest.kt
+  s_4758e6c1f8e887::t_eb0459dfda5ce7 3,5,17,39,67,89
+docs/code/util/io/github/esafak/kotlintsgen/util/kotestConfig.kt
+  s_4758e6c1f8e887::t_b1f7e28f30a8d8 1
+docs/code/util/io/github/esafak/kotlintsgen/util/strings.kt
+  s_4758e6c1f8e887::t_cf603dc444036c 1
+docs/code/util/io/github/esafak/kotlintsgen/util/typescriptCompile.kt
+  s_4758e6c1f8e887::t_a143853738dce6 1
+docs/customising-output.md
+  s_4758e6c1f8e887::t_808b8bb95aa43b 6,11,17,26,59,68,96,110,149,174
+docs/default-values.md
+  s_4758e6c1f8e887::t_bec8882b4fb2b3 8,22,47,80,120
+docs/edgecases.md
+  s_4758e6c1f8e887::t_5174dd816e19ed 8,25,58,91
+docs/enums.md
+  s_4758e6c1f8e887::t_63e82895cce265 7,21,53
+docs/ignoring-properties.md
+  s_4758e6c1f8e887::t_3fe7827250f107 6,30
+docs/knit.properties
+  s_4758e6c1f8e887::t_0113a538eb59f0 3-4
+docs/lists.md
+  s_4758e6c1f8e887::t_12ab4ccf4f51e8 6,23,56,92
+docs/maps.md
+  s_4758e6c1f8e887::t_f7cc50af467cea 6,21,51,80,108,139,193,245,247,264,296,338,364,414
+docs/polymorphism-open.md
+  s_4758e6c1f8e887::t_ff39286f0898a6 9,19,48,80,100,112,161
+docs/polymorphism-sealed.md
+  s_4758e6c1f8e887::t_a78b081a749139 6,20,55,57,104,118,177,269,285-286
+docs/value-classes.md
+  s_4758e6c1f8e887::t_253e5758a44e69 6,17,38,76,81,83,117
+modules/kotlin-tsgen-core/build.gradle.kts
+  s_4758e6c1f8e887::t_2343f4dfa8adc2 12
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsConfig.kt
+  s_4758e6c1f8e887::t_b8f390f0382ea4 1,3-5,25,28,61
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  s_4758e6c1f8e887::t_6b863c67c64067 1-13,28,31-32
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractor.kt
+  s_4758e6c1f8e887::t_14db6d19539f84 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementConverter.kt
+  s_4758e6c1f8e887::t_310f41c18d6a9d 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementIdConverter.kt
+  s_4758e6c1f8e887::t_94ffe5a2915ef8 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsMapTypeConverter.kt
+  s_4758e6c1f8e887::t_4ecca56428a444 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsSourceCodeGenerator.kt
+  s_4758e6c1f8e887::t_e2876250067649 1,3,37,43-45,127,131
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsTypeRefConverter.kt
+  s_4758e6c1f8e887::t_f111d9503a2d9d 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/annotations.kt
+  s_4758e6c1f8e887::t_ccef804089e9dc 1,12
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/serializerExtractors.kt
+  s_4758e6c1f8e887::t_e71455c45f2069 3,5,25
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/tuple.kt
+  s_4758e6c1f8e887::t_f77deb04297936 3
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/tsElements.kt
+  s_4758e6c1f8e887::t_db7ef52603c73b 1
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/util/mapWithDefaultDelegate.kt
+  s_4758e6c1f8e887::t_60fa22136e474f 1
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/KotlinTsGeneratorSerializersModuleTest.kt
+  s_4758e6c1f8e887::t_e22afe533c180d 1,3,13,19,28,51,68
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractorTest.kt
+  s_4758e6c1f8e887::t_9d58fc87d24591 1
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/experiments/TupleTest.kt
+  s_4758e6c1f8e887::t_441d5bfe7ce35f 1,3
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/test/kxsBinary.kt
+  s_4758e6c1f8e887::t_787dc00869d453 1
+modules/kotlin-tsgen-core/src/jvmMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/serializerExtractorsJvm.kt
+  s_4758e6c1f8e887::t_68d1cb2637e306 2
+modules/kotlin-tsgen-processor/src/main/kotlin/io/github/esafak/kotlintsgen/kotlinTsGenProcessor.kt
+  s_4758e6c1f8e887::t_afbcb4fdb15467 1,18,20,25
+site/package-lock.json
+  s_4758e6c1f8e887::t_74f8050160b33b 2,8
+site/package.json
+  s_4758e6c1f8e887::t_c7665b86dca466 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a3c83d27300f923eea71f73c3dc72302e9a91467",
+  "prompts": {},
+  "sessions": {
+    "s_4758e6c1f8e887": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_011f34704ffeb9UEGsvU7DadVE",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
