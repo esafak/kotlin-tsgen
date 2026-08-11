@@ -1,0 +1,26 @@
+README.md
+  h_ea91e2db23540f 61
+docs/enums.md
+  h_ea91e2db23540f 38-67
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 67-68
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementConverter.kt
+  h_ea91e2db23540f 133-136,138,140-143,145,248-253
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementIdConverter.kt
+  h_ea91e2db23540f 22-31
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsIdentifierValidator.kt
+  h_ea91e2db23540f 1-116
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/TsIdentifierValidationTest.kt
+  h_ea91e2db23540f 1-174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3519c9b5a4f3628717813461a02098cb5922ecf3",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
