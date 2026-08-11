@@ -31,13 +31,7 @@ signing {
   }
 
   setRequired({
-    signingCredentialsPresent || gradle.taskGraph.allTasks
-      .filterIsInstance<PublishToMavenRepository>()
-      .any { task ->
-        task.repository.name in setOf(
-          "SonatypeRelease",
-        )
-      }
+    signingCredentialsPresent
   })
 }
 
