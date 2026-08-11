@@ -1,8 +1,10 @@
 package io.github.esafak.kotlintsgen.core
 
-import io.github.esafak.kotlintsgen.core.util.MutableMapWithDefaultPut
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
 
 
 /**
@@ -14,8 +16,30 @@ fun interface SerializerDescriptorsExtractor {
     serializer: KSerializer<*>
   ): Set<SerialDescriptor>
 
+  companion object {
+    /** The default [SerializerDescriptorsExtractor], for easy use. */
+    fun default(
+      serializersModule: SerializersModule,
+    ): SerializerDescriptorsExtractor {
+      return WithSerializersModule(
+        elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(serializersModule)
+      )
+    }
+  }
 
   object Default : SerializerDescriptorsExtractor {
+    private val delegate: SerializerDescriptorsExtractor by lazy {
+      WithSerializersModule(
+        elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(EmptySerializersModule())
+      )
+    }
+
+    override fun invoke(serializer: KSerializer<*>): Set<SerialDescriptor> = delegate(serializer)
+  }
+
+  private class WithSerializersModule(
+    private val elementDescriptorsExtractor: TsElementDescriptorsExtractor,
+  ) : SerializerDescriptorsExtractor {
 
     override operator fun invoke(
       serializer: KSerializer<*>
@@ -25,7 +49,6 @@ fun interface SerializerDescriptorsExtractor {
         .toSet()
     }
 
-
     private tailrec fun extractDescriptors(
       current: SerialDescriptor? = null,
       queue: ArrayDeque<SerialDescriptor> = ArrayDeque(),
@@ -34,55 +57,74 @@ fun interface SerializerDescriptorsExtractor {
       return if (current == null) {
         extracted
       } else {
-        val currentDescriptors = elementDescriptors.getValue(current)
+        val currentDescriptors = elementDescriptorsExtractor.elementDescriptors(current)
         queue.addAll(currentDescriptors - extracted)
-        extractDescriptors(queue.removeFirstOrNull(), queue, extracted + current)
+
+        // A contextual descriptor is just a placeholder (e.g. `ContextualSerializer<Foo>`).
+        // When it resolves to a concrete descriptor via the SerializersModule, that concrete
+        // descriptor (e.g. `interface Foo`) is already queued above. The placeholder itself
+        // must NOT be emitted as a declaration, otherwise it renders as `type Foo = any` and
+        // collides with the resolved `interface Foo` (TS2300 duplicate identifier). When it
+        // cannot be resolved we keep it, so the referencing field still resolves to
+        // `type Foo = any` rather than an undefined type.
+        val nextExtracted =
+          if (current.kind == SerialKind.CONTEXTUAL && currentDescriptors.any()) extracted
+          else extracted + current
+
+        extractDescriptors(queue.removeFirstOrNull(), queue, nextExtracted)
       }
     }
+  }
+}
 
 
-    private val elementDescriptors by MutableMapWithDefaultPut<SerialDescriptor, Iterable<SerialDescriptor>> { descriptor ->
-      when (descriptor.kind) {
-        SerialKind.ENUM       -> emptyList()
+@OptIn(ExperimentalSerializationApi::class)
+fun interface TsElementDescriptorsExtractor {
+  fun elementDescriptors(descriptor: SerialDescriptor): Iterable<SerialDescriptor>
 
-        SerialKind.CONTEXTUAL -> emptyList()
+  companion object {
 
-        PrimitiveKind.BOOLEAN,
-        PrimitiveKind.BYTE,
-        PrimitiveKind.CHAR,
-        PrimitiveKind.SHORT,
-        PrimitiveKind.INT,
-        PrimitiveKind.LONG,
-        PrimitiveKind.FLOAT,
-        PrimitiveKind.DOUBLE,
-        PrimitiveKind.STRING  -> emptyList()
+    fun default(serializersModule: SerializersModule) =
+      TsElementDescriptorsExtractor { descriptor ->
+        when (descriptor.kind) {
+          SerialKind.ENUM       -> emptyList()
 
-        StructureKind.CLASS,
-        StructureKind.LIST,
-        StructureKind.MAP,
-        StructureKind.OBJECT  -> descriptor.elementDescriptors
+          SerialKind.CONTEXTUAL ->
+            runCatching { serializersModule.getContextualDescriptor(descriptor) }
+              .getOrNull()
+              ?.let(::listOf)
+              .orEmpty()
 
-        PolymorphicKind.SEALED,
-        PolymorphicKind.OPEN  ->
-          // Polymorphic descriptors have 2 elements, the 'type' and 'value' - we don't need either
-          // for generation, they're metadata that will be used later.
-          // The elements of 'value' are similarly unneeded, but their elements might contain new
-          // descriptors - so extract them
-          descriptor.elementDescriptors
-            .flatMap { it.elementDescriptors }
-            .flatMap { it.elementDescriptors }
+          PrimitiveKind.BOOLEAN,
+          PrimitiveKind.BYTE,
+          PrimitiveKind.CHAR,
+          PrimitiveKind.SHORT,
+          PrimitiveKind.INT,
+          PrimitiveKind.LONG,
+          PrimitiveKind.FLOAT,
+          PrimitiveKind.DOUBLE,
+          PrimitiveKind.STRING -> emptyList()
 
-        // Example:
-        // com.application.Polymorphic<MySealedClass>
-        //   ├── 'type' descriptor (ignore / it's a String, so check its elements, it doesn't hurt)
-        //   └── 'value' descriptor (check elements...)
-        //        ├── com.application.Polymorphic<Subclass1>  (ignore)
-        //        │   ├── Double                              (extract!)
-        //        │   └── com.application.SomeOtherClass      (extract!)
-        //        └── com.application.Polymorphic<Subclass2>  (ignore)
-        //            ├── UInt                                (extract!)
-        //            └── List<com.application.AnotherClass   (extract!
+          StructureKind.CLASS,
+          StructureKind.LIST,
+          StructureKind.MAP,
+          StructureKind.OBJECT -> descriptor.elementDescriptors
+
+          PolymorphicKind.SEALED ->
+            // Sealed subclasses are already part of the descriptor (sealed classes are closed)
+            // and are rendered as a discriminated namespace by TsElementConverter. We only
+            // traverse INTO the subclasses to pick up their property types - the subclass
+            // declarations themselves must not be extracted, or they'd be emitted again as
+            // top-level interfaces, duplicating the namespaced ones.
+            descriptor.elementDescriptors
+              .flatMap { it.elementDescriptors }
+              .flatMap { it.elementDescriptors }
+
+          PolymorphicKind.OPEN -> {
+            val subclasses = serializersModule.getPolymorphicDescriptors(descriptor)
+            subclasses + subclasses.flatMap { it.elementDescriptors }
+          }
+        }
       }
-    }
   }
 }

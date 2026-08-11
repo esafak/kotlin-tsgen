@@ -11,9 +11,13 @@ import io.github.esafak.kotlintsgen.core.TsMapTypeConverter
 import io.github.esafak.kotlintsgen.core.TsSourceCodeGenerator
 import io.github.esafak.kotlintsgen.core.TsTypeRef
 import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.nullable
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.overwriteWith
 
 
 /**
@@ -26,10 +30,19 @@ import kotlinx.serialization.descriptors.nullable
  * @param[config] General settings that affect how KotlinTsGen works
  * @param[sourceCodeGenerator] Convert [TsElement]s to TypeScript source code
  */
+@OptIn(ExperimentalSerializationApi::class)
 open class KotlinTsGenerator(
   open val config: KotlinTsConfig = KotlinTsConfig(),
   open val sourceCodeGenerator: TsSourceCodeGenerator = TsSourceCodeGenerator.Default(config),
+  open val serializersModule: SerializersModule = EmptySerializersModule(),
 ) {
+
+  constructor(
+    config: KotlinTsConfig,
+    sourceCodeGenerator: TsSourceCodeGenerator,
+  ) : this(config, sourceCodeGenerator, EmptySerializersModule())
+
+  private val effectiveSerializersModule = config.serializersModule overwriteWith serializersModule
 
 
   val serializerDescriptorOverrides: MutableMap<KSerializer<*>, Set<SerialDescriptor>> =
@@ -59,7 +72,8 @@ open class KotlinTsGenerator(
 
 
   open val descriptorsExtractor = object : SerializerDescriptorsExtractor {
-    val extractor: SerializerDescriptorsExtractor = SerializerDescriptorsExtractor.Default
+    val extractor: SerializerDescriptorsExtractor =
+      SerializerDescriptorsExtractor.default(effectiveSerializersModule)
     val cache: MutableMap<KSerializer<*>, Set<SerialDescriptor>> = mutableMapOf()
 
     override fun invoke(serializer: KSerializer<*>): Set<SerialDescriptor> =
@@ -99,7 +113,11 @@ open class KotlinTsGenerator(
 
 
   val typeRefConverter: TsTypeRefConverter = object : TsTypeRefConverter {
-    private val converter = TsTypeRefConverter.Default(elementIdConverter, mapTypeConverter)
+    private val converter = TsTypeRefConverter.Default(
+      elementIdConverter,
+      mapTypeConverter,
+      effectiveSerializersModule,
+    )
     val cache: MutableMap<SerialDescriptor, TsTypeRef> = mutableMapOf()
 
     override fun invoke(descriptor: SerialDescriptor): TsTypeRef =
@@ -118,6 +136,7 @@ open class KotlinTsGenerator(
       elementIdConverter,
       mapTypeConverter,
       typeRefConverter,
+      effectiveSerializersModule,
     )
     val cache: MutableMap<SerialDescriptor, Set<TsElement>> = mutableMapOf()
 

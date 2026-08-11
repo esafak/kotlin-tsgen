@@ -22,3 +22,4 @@
 * Do not create a new PR to fix a broken one — fix the existing branch and PR instead.
 * Do not use --no-verify to bypass hooks; correct the issues.
 * Do not download tools; ask the user to install them.
+* Keep multiplatform Kotest `FunSpec` tests flat; Kotlin/JS does not support nested `context` blocks.

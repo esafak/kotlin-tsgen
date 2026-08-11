@@ -1,0 +1,235 @@
+package io.github.esafak.kotlintsgen.core
+
+import io.github.esafak.kotlintsgen.KotlinTsConfig
+import io.github.esafak.kotlintsgen.KotlinTsGenerator
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.SerializersModule
+
+/**
+ * End-to-end tests for [KotlinTsGenerator] driven by a [SerializersModule].
+ *
+ * These assert on the *generated TypeScript* (not just the extracted descriptor set) so that
+ * regressions like a `type Foo = any` placeholder colliding with a resolved `interface Foo`
+ * (TS2300 duplicate identifier) are caught.
+ */
+class KotlinTsGeneratorSerializersModuleTest : FunSpec({
+
+  test("contextual - a registered type is emitted as an interface, with no duplicate type-alias") {
+      val module = SerializersModule {
+        contextual(ContextualExample.SomeType::class, ContextualExample.SomeType.serializer())
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(ContextualExample.TypeHolder.serializer())
+
+      // the resolved type is generated as an interface...
+      ts shouldContain "export interface SomeType {"
+      // ...and the contextual placeholder must NOT also be rendered as `type SomeType = any`
+      // (that would collide with the interface and produce a TS2300 duplicate identifier).
+      ts shouldNotContain "type SomeType = any"
+      // the referencing field must point at the resolved type
+      ts shouldContain "required: SomeType;"
+
+      ts shouldBe """
+        |export interface TypeHolder {
+        |  required: SomeType;
+        |}
+        |
+        |export interface SomeType {
+        |  a: string;
+        |}
+      """.trimMargin()
+  }
+
+  test("contextual - an unregistered type falls back to `type Foo = any`") {
+      val ts = KotlinTsGenerator()
+        .generate(ContextualExample.TypeHolder.serializer())
+
+      // no dangling reference: the placeholder becomes a type-alias to `any`...
+      ts shouldContain "type SomeType = any"
+      // ...and no interface is invented
+      ts shouldNotContain "export interface SomeType {"
+  }
+
+  test("contextual - a generic provider that needs type arguments falls back without throwing") {
+      val module = SerializersModule {
+        contextual(GenericContextualExample.Box::class) { typeArguments ->
+          GenericContextualExample.Box.serializer(typeArguments.single())
+        }
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(GenericContextualExample.Holder.serializer())
+
+      ts shouldContain "type Box = any"
+  }
+
+  test("contextual - a primitive serializer is rendered using its primitive type") {
+      val module = SerializersModule {
+        contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(PrimitiveContextualExample.Holder.serializer())
+
+      ts shouldContain "required: string;"
+      ts shouldContain "optional: string | null;"
+      ts shouldNotContain "EntityType"
+  }
+
+  test("open polymorphic - registered subclasses are emitted as a union") {
+      val module = SerializersModule {
+        polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
+        polymorphic(OpenExample.OtherParent::class, OpenExample.OtherSubClass::class, OpenExample.OtherSubClass.serializer())
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(OpenExample.TypeHolder.serializer())
+
+      ts shouldContain "export type Parent ="
+      ts shouldContain "| SubClass;"
+      ts shouldContain "export interface SubClass {"
+      ts shouldNotContain "OtherSubClass"
+      ts shouldNotContain "type Parent = any"
+  }
+
+  test("open polymorphic - the config module is also used for resolution") {
+      val module = SerializersModule {
+        polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
+      }
+
+      val ts = KotlinTsGenerator(KotlinTsConfig(serializersModule = module))
+        .generate(OpenExample.TypeHolder.serializer())
+
+      ts shouldContain "| SubClass;"
+      ts shouldContain "export interface SubClass {"
+      ts shouldNotContain "type Parent = any"
+  }
+
+  test("open polymorphic - without registrations falls back to any") {
+      val ts = KotlinTsGenerator()
+        .generate(OpenExample.TypeHolder.serializer())
+
+      ts shouldContain "type Parent = any"
+      ts shouldNotContain "export interface SubClass {"
+  }
+
+  test("sealed polymorphic - module registrations do not duplicate subclasses") {
+      val module = SerializersModule {
+        polymorphic(SealedExample.Parent::class, SealedExample.SubClass::class, SealedExample.SubClass.serializer())
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(SealedExample.Parent.serializer())
+      val tsWithoutModule = KotlinTsGenerator()
+        .generate(SealedExample.Parent.serializer())
+
+      ts shouldBe tsWithoutModule
+
+      // the discriminated namespace, discriminator enum and union are all present...
+      ts shouldContain "export namespace Parent {"
+      ts shouldContain "export enum Type {"
+      ts shouldContain "| Parent.SubClass"
+      // ...the subclass lives (correctly) inside the namespace...
+      ts shouldContain "  export interface SubClass {"
+
+      // ...and there must be NO flat top-level duplicate of the subclass interface.
+      // (A line starting with `export interface SubClass` at column 0 would be such a duplicate.)
+      ts.lineSequence()
+        .filter { it.startsWith("export interface SubClass") }
+        .toList()
+        .shouldBeEmpty()
+  }
+}) {
+  @Suppress("unused")
+  private object ContextualExample {
+    @Serializable
+    class SomeType(val a: String)
+
+    @Serializable
+    class TypeHolder(
+      @kotlinx.serialization.Contextual
+      val required: SomeType,
+    )
+  }
+
+  @Suppress("unused")
+  private object SealedExample {
+    @Serializable
+    sealed class Parent
+
+    @Serializable
+    class SubClass(val x: String) : Parent()
+  }
+
+  @Suppress("unused")
+  private object OpenExample {
+    @Serializable
+    abstract class Parent
+
+    @Serializable
+    class SubClass(val x: String) : Parent()
+
+    @Serializable
+    abstract class OtherParent
+
+    @Serializable
+    class OtherSubClass(val y: String) : OtherParent()
+
+    @Serializable
+    class TypeHolder(
+      @kotlinx.serialization.Polymorphic
+      val value: Parent,
+    )
+  }
+
+  @Suppress("unused")
+  private object GenericContextualExample {
+    @Serializable
+    class Box<T>(val value: T)
+
+    @Serializable
+    class Holder(
+      @kotlinx.serialization.Contextual
+      val value: Box<String>,
+    )
+  }
+
+  @Suppress("unused")
+  private object PrimitiveContextualExample {
+    @Serializable(with = EntityTypeSerializer::class)
+    enum class EntityType {
+      DISCUSSION,
+      CHAT_ROOM,
+    }
+
+    object EntityTypeSerializer : KSerializer<EntityType> {
+      override val descriptor = PrimitiveSerialDescriptor("EntityType", PrimitiveKind.STRING)
+
+      override fun serialize(encoder: Encoder, value: EntityType) {
+        encoder.encodeString(value.name)
+      }
+
+      override fun deserialize(decoder: Decoder): EntityType =
+        EntityType.valueOf(decoder.decodeString())
+    }
+
+    @Serializable
+    class Holder(
+      @kotlinx.serialization.Contextual
+      val required: EntityType,
+      @kotlinx.serialization.Contextual
+      val optional: EntityType?,
+    )
+  }
+}
