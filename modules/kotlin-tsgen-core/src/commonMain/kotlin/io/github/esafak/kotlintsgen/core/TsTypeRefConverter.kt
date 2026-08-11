@@ -1,11 +1,15 @@
 package io.github.esafak.kotlintsgen.core
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementDescriptors
+import kotlinx.serialization.descriptors.getContextualDescriptor
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
 
 
 fun interface TsTypeRefConverter {
@@ -13,9 +17,11 @@ fun interface TsTypeRefConverter {
   operator fun invoke(descriptor: SerialDescriptor): TsTypeRef
 
 
+  @OptIn(ExperimentalSerializationApi::class)
   open class Default(
     val elementIdConverter: TsElementIdConverter = TsElementIdConverter.Default,
     val mapTypeConverter: TsMapTypeConverter = TsMapTypeConverter.Default,
+    val serializersModule: SerializersModule = EmptySerializersModule(),
   ) : TsTypeRefConverter {
 
     override operator fun invoke(
@@ -30,13 +36,30 @@ fun interface TsTypeRefConverter {
         }
         StructureKind.MAP    -> mapTypeRef(descriptor)
 
-        SerialKind.CONTEXTUAL,
+        SerialKind.CONTEXTUAL    -> resolveContextual(descriptor)
+
         PolymorphicKind.SEALED,
         PolymorphicKind.OPEN,
         SerialKind.ENUM,
         StructureKind.CLASS,
         StructureKind.OBJECT -> declarationTypeRef(descriptor)
       }
+    }
+
+    private fun resolveContextual(descriptor: SerialDescriptor): TsTypeRef {
+      val resolved = runCatching {
+        serializersModule.getContextualDescriptor(descriptor)
+      }.getOrNull() ?: return declarationTypeRef(descriptor)
+
+      return withNullable(this(resolved), descriptor.isNullable)
+    }
+
+    private fun withNullable(
+      typeRef: TsTypeRef,
+      nullable: Boolean,
+    ): TsTypeRef = when (typeRef) {
+      is TsTypeRef.Literal     -> typeRef.copy(nullable = nullable)
+      is TsTypeRef.Declaration -> typeRef.copy(nullable = nullable)
     }
 
     fun primitiveTypeRef(

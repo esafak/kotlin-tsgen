@@ -45,15 +45,13 @@ class PolymorphismTest : FunSpec({
       actual.shouldBe(
         // language=TypeScript
         """
-          |export type Project = any;
-          |// export interface Project {
-          |//   name: string;
-          |// }
-          |//
-          |// export interface OwnedProject extends Project {
-          |//   name: string;
-          |//   owner: string;
-          |// }
+          |export type Project =
+          |  | OwnedProject;
+          |
+          |export interface OwnedProject {
+          |  name: string;
+          |  owner: string;
+          |}
         """.trimMargin()
         .normalize()
       )

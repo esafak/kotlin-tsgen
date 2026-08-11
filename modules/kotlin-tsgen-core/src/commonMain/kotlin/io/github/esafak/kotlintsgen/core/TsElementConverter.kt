@@ -1,5 +1,6 @@
 package io.github.esafak.kotlintsgen.core
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -7,6 +8,9 @@ import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementDescriptors
 import kotlinx.serialization.descriptors.elementNames
+import kotlinx.serialization.descriptors.getPolymorphicDescriptors
+import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.modules.SerializersModule
 
 
 fun interface TsElementConverter {
@@ -16,10 +20,12 @@ fun interface TsElementConverter {
   ): Set<TsElement>
 
 
+  @OptIn(ExperimentalSerializationApi::class)
   open class Default(
     val elementIdConverter: TsElementIdConverter,
     val mapTypeConverter: TsMapTypeConverter,
     val typeRefConverter: TsTypeRefConverter,
+    val serializersModule: SerializersModule = EmptySerializersModule(),
   ) : TsElementConverter {
 
     override operator fun invoke(
@@ -59,11 +65,24 @@ fun interface TsElementConverter {
 
         PolymorphicKind.SEALED -> convertDiscriminatedInterface(descriptor)
 
-        // TODO handle contextual
-        // TODO handle polymorphic open
-        SerialKind.CONTEXTUAL,
-        PolymorphicKind.OPEN   -> setOf(createTypeAliasAny(descriptor))
+        SerialKind.CONTEXTUAL -> setOf(createTypeAliasAny(descriptor))
+
+        PolymorphicKind.OPEN   -> convertOpenPolymorphic(descriptor)
       }
+    }
+
+
+    open fun convertOpenPolymorphic(
+      descriptor: SerialDescriptor,
+    ): Set<TsDeclaration> {
+      val subclasses = serializersModule.getPolymorphicDescriptors(descriptor)
+      if (subclasses.isEmpty()) return setOf(createTypeAliasAny(descriptor))
+
+      val typeRefs = subclasses
+        .map { TsTypeRef.Declaration(elementIdConverter(it), null, false) }
+        .toSet()
+
+      return setOf(TsDeclaration.TsTypeUnion(elementIdConverter(descriptor), typeRefs))
     }
 
 
