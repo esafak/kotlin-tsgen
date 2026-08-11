@@ -37,6 +37,11 @@ open class KotlinTsGenerator(
   open val serializersModule: SerializersModule = EmptySerializersModule(),
 ) {
 
+  constructor(
+    config: KotlinTsConfig,
+    sourceCodeGenerator: TsSourceCodeGenerator,
+  ) : this(config, sourceCodeGenerator, EmptySerializersModule())
+
   private val effectiveSerializersModule = config.serializersModule overwriteWith serializersModule
 
 

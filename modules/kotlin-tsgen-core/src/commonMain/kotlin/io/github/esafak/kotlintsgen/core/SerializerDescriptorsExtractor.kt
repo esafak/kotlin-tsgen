@@ -3,6 +3,7 @@ package io.github.esafak.kotlintsgen.core
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 
 
@@ -20,13 +21,23 @@ fun interface SerializerDescriptorsExtractor {
     fun default(
       serializersModule: SerializersModule,
     ): SerializerDescriptorsExtractor {
-      return Default(
+      return WithSerializersModule(
         elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(serializersModule)
       )
     }
   }
 
-  class Default(
+  object Default : SerializerDescriptorsExtractor {
+    private val delegate: SerializerDescriptorsExtractor by lazy {
+      WithSerializersModule(
+        elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(EmptySerializersModule())
+      )
+    }
+
+    override fun invoke(serializer: KSerializer<*>): Set<SerialDescriptor> = delegate(serializer)
+  }
+
+  private class WithSerializersModule(
     private val elementDescriptorsExtractor: TsElementDescriptorsExtractor,
   ) : SerializerDescriptorsExtractor {
 

@@ -24,9 +24,7 @@ import kotlinx.serialization.modules.SerializersModule
  */
 class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
-  context("contextual serializers") {
-
-    test("a contextual type registered in the module is emitted as an interface, with no duplicate type-alias") {
+  test("contextual - a registered type is emitted as an interface, with no duplicate type-alias") {
       val module = SerializersModule {
         contextual(ContextualExample.SomeType::class, ContextualExample.SomeType.serializer())
       }
@@ -51,9 +49,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         |  a: string;
         |}
       """.trimMargin()
-    }
+  }
 
-    test("a contextual type NOT registered in the module falls back to `type Foo = any`") {
+  test("contextual - an unregistered type falls back to `type Foo = any`") {
       val ts = KotlinTsGenerator()
         .generate(ContextualExample.TypeHolder.serializer())
 
@@ -61,9 +59,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "type SomeType = any"
       // ...and no interface is invented
       ts shouldNotContain "export interface SomeType {"
-    }
+  }
 
-    test("a generic contextual provider that needs type arguments falls back without throwing") {
+  test("contextual - a generic provider that needs type arguments falls back without throwing") {
       val module = SerializersModule {
         contextual(GenericContextualExample.Box::class) { typeArguments ->
           GenericContextualExample.Box.serializer(typeArguments.single())
@@ -74,9 +72,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         .generate(GenericContextualExample.Holder.serializer())
 
       ts shouldContain "type Box = any"
-    }
+  }
 
-    test("a contextual primitive serializer is rendered using its primitive type") {
+  test("contextual - a primitive serializer is rendered using its primitive type") {
       val module = SerializersModule {
         contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
       }
@@ -87,12 +85,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "required: string;"
       ts shouldContain "optional: string | null;"
       ts shouldNotContain "EntityType"
-    }
   }
 
-  context("open polymorphic serializers") {
-
-    test("registered subclasses are emitted as a union of the open base type") {
+  test("open polymorphic - registered subclasses are emitted as a union") {
       val module = SerializersModule {
         polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
         polymorphic(OpenExample.OtherParent::class, OpenExample.OtherSubClass::class, OpenExample.OtherSubClass.serializer())
@@ -106,9 +101,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "export interface SubClass {"
       ts shouldNotContain "OtherSubClass"
       ts shouldNotContain "type Parent = any"
-    }
+  }
 
-    test("the config module is also used for resolution") {
+  test("open polymorphic - the config module is also used for resolution") {
       val module = SerializersModule {
         polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
       }
@@ -119,20 +114,17 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "| SubClass;"
       ts shouldContain "export interface SubClass {"
       ts shouldNotContain "type Parent = any"
-    }
+  }
 
-    test("an open polymorphic type without registrations falls back to any") {
+  test("open polymorphic - without registrations falls back to any") {
       val ts = KotlinTsGenerator()
         .generate(OpenExample.TypeHolder.serializer())
 
       ts shouldContain "type Parent = any"
       ts shouldNotContain "export interface SubClass {"
-    }
   }
 
-  context("sealed polymorphic serializers") {
-
-    test("module registrations do not duplicate sealed subclasses") {
+  test("sealed polymorphic - module registrations do not duplicate subclasses") {
       val module = SerializersModule {
         polymorphic(SealedExample.Parent::class, SealedExample.SubClass::class, SealedExample.SubClass.serializer())
       }
@@ -157,7 +149,6 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         .filter { it.startsWith("export interface SubClass") }
         .toList()
         .shouldBeEmpty()
-    }
   }
 }) {
   @Suppress("unused")
