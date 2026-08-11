@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-sealed.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.examplePolymorphicSealedClass01
+package io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 sealed class Project {
@@ -18,6 +18,6 @@ class OwnedProject(override val name: String, val owner: String) : Project()
 class DeprecatedProject(override val name: String, val reason: String) : Project()
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Project.serializer()))
 }

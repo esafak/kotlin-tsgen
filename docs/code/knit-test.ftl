@@ -5,7 +5,7 @@
 @file:Suppress("JSUnusedLocalSymbols")
 package ${test.package}
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 <#--import io.kotest.assertions.*-->
 <#--import io.kotest.core.*-->
 import io.kotest.core.spec.style.*

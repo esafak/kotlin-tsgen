@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-open.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleGenerics01
+package io.github.esafak.kotlintsgen.example.exampleGenerics01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.builtins.serializer
 
@@ -13,7 +13,7 @@ class Box<T : Number>(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   println(
     tsGenerator.generate(

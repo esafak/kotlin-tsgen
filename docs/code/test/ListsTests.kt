@@ -1,8 +1,8 @@
 // This file was automatically generated from lists.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class ListsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleListPrimitive01.main()
+      io.github.esafak.kotlintsgen.example.exampleListPrimitive01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -40,7 +40,7 @@ class ListsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleListObjects01.main()
+      io.github.esafak.kotlintsgen.example.exampleListObjects01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -70,7 +70,7 @@ class ListsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleListObjects02.main()
+      io.github.esafak.kotlintsgen.example.exampleListObjects02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

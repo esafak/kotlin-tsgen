@@ -1,8 +1,8 @@
 // This file was automatically generated from tuples.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class TuplesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleTuple01.main()
+      io.github.esafak.kotlintsgen.example.exampleTuple01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -42,7 +42,7 @@ class TuplesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleTuple02.main()
+      io.github.esafak.kotlintsgen.example.exampleTuple02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -68,7 +68,7 @@ class TuplesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleTuple03.main()
+      io.github.esafak.kotlintsgen.example.exampleTuple03.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -95,7 +95,7 @@ class TuplesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleTuple04.main()
+      io.github.esafak.kotlintsgen.example.exampleTuple04.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -121,7 +121,7 @@ class TuplesTest : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleTuple05.main()
+      io.github.esafak.kotlintsgen.example.exampleTuple05.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

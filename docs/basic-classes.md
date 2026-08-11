@@ -3,7 +3,7 @@
 <!--- TEST_NAME BasicClassesTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Plain class with a single field
@@ -13,7 +13,7 @@ import dev.adamko.kxstsgen.*
 class Color(val rgb: Int)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Color.serializer()))
 }
 ```
@@ -41,7 +41,7 @@ class SimpleTypes(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }
 ```
@@ -73,7 +73,7 @@ data class SomeDataClass(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SomeDataClass.serializer()))
 }
 ```

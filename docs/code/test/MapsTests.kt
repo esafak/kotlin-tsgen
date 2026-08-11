@@ -1,8 +1,8 @@
 // This file was automatically generated from maps.md by Knit tool. Do not edit.
 @file:Suppress("JSUnusedLocalSymbols")
-package dev.adamko.kxstsgen.example.test
+package io.github.esafak.kotlintsgen.example.test
 
-import dev.adamko.kxstsgen.util.*
+import io.github.esafak.kotlintsgen.util.*
 import io.kotest.core.spec.style.*
 import io.kotest.matchers.*
 import kotlinx.knit.test.*
@@ -14,7 +14,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive01.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -38,7 +38,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive02.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -67,7 +67,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive03.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive03.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -91,7 +91,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive04.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive04.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -117,7 +117,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive05.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive05.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -143,7 +143,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapPrimitive06.main()
+      io.github.esafak.kotlintsgen.example.exampleMapPrimitive06.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -189,7 +189,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapComplex01.main()
+      io.github.esafak.kotlintsgen.example.exampleMapComplex01.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -222,7 +222,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapComplex02.main()
+      io.github.esafak.kotlintsgen.example.exampleMapComplex02.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -248,7 +248,7 @@ class MapsTests : FunSpec({
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      dev.adamko.kxstsgen.example.exampleMapComplex03.main()
+      io.github.esafak.kotlintsgen.example.exampleMapComplex03.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

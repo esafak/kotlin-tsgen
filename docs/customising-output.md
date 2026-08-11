@@ -3,18 +3,18 @@
 <!--- TEST_NAME CustomisingOutputTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Overriding output
 
-If you want to override what KxsTsGen produces, then you can provide overrides.
+If you want to override what KotlinTsGen produces, then you can provide overrides.
 
 By default, `Double` is transformed to `number`, but now we want to alias `Double` to `double`.
 
 ```kotlin
 import kotlinx.serialization.builtins.serializer
-import dev.adamko.kxstsgen.core.*
+import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
 data class Item(
@@ -23,7 +23,7 @@ data class Item(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
     Double.serializer().descriptor to TsDeclaration.TsTypeAlias(
@@ -56,7 +56,7 @@ Instead of changing the output to be a type alias, a custom 'literal' type can b
 
 ```kotlin
 import kotlinx.serialization.builtins.serializer
-import dev.adamko.kxstsgen.core.*
+import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
 data class Item(
@@ -65,7 +65,7 @@ data class Item(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
     Double.serializer().descriptor to TsLiteral.Custom("customDouble")
@@ -93,7 +93,7 @@ Even though UInt is nullable, it should be overridden by the UInt defined in `de
 
 ```kotlin
 import kotlinx.serialization.builtins.serializer
-import dev.adamko.kxstsgen.core.*
+import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
 data class ItemHolder(
@@ -107,7 +107,7 @@ data class Item(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
     UInt.serializer().descriptor to TsDeclaration.TsTypeAlias(
@@ -146,7 +146,7 @@ conflicting overrides.
 
 ```kotlin
 import kotlinx.serialization.builtins.serializer
-import dev.adamko.kxstsgen.core.*
+import io.github.esafak.kotlintsgen.core.*
 
 
 @Serializable
@@ -171,7 +171,7 @@ data class Item(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
     UInt.serializer().descriptor to TsDeclaration.TsTypeAlias(

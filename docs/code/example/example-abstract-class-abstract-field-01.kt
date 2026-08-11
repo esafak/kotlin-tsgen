@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-open.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleAbstractClassAbstractField01
+package io.github.esafak.kotlintsgen.example.exampleAbstractClassAbstractField01
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 abstract class AbstractSimpleTypes {
@@ -14,6 +14,6 @@ abstract class AbstractSimpleTypes {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(AbstractSimpleTypes.serializer()))
 }

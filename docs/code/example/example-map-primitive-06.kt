@@ -1,9 +1,9 @@
 // This file was automatically generated from maps.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleMapPrimitive06
+package io.github.esafak.kotlintsgen.example.exampleMapPrimitive06
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 data class Example(
@@ -37,6 +37,6 @@ value class EnumKey(val e: ExampleEnum)
 value class DoubleEnumKey(val e: ExampleEnum)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Example.serializer()))
 }

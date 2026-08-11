@@ -1,9 +1,9 @@
 // This file was automatically generated from enums.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleEnumClass02
+package io.github.esafak.kotlintsgen.example.exampleEnumClass02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 enum class SomeType2(val coolName: String) {
@@ -15,6 +15,6 @@ enum class SomeType2(val coolName: String) {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SomeType2.serializer()))
 }

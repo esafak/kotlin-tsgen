@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-sealed.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.examplePolymorphicStaticTypes02
+package io.github.esafak.kotlintsgen.example.examplePolymorphicStaticTypes02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.modules.*
 
@@ -22,9 +22,9 @@ val module = SerializersModule {
 }
 
 fun main() {
-  val config = KxsTsConfig(serializersModule = module)
+  val config = KotlinTsConfig(serializersModule = module)
 
-  val tsGenerator = KxsTsGenerator(config)
+  val tsGenerator = KotlinTsGenerator(config)
 
   println(tsGenerator.generate(Project.serializer()))
 }

@@ -5,7 +5,7 @@ Demonstrations of how edge cases are handled.
 <!--- TEST_NAME EdgeCasesTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Recursive references
@@ -22,7 +22,7 @@ class A(val b: B)
 class B(val a: A)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(A.serializer(), B.serializer()))
 }
 ```
@@ -55,7 +55,7 @@ class B(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(A.serializer(), B.serializer()))
 }
 ```
@@ -88,7 +88,7 @@ class B(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(A.serializer(), B.serializer()))
 }
 ```

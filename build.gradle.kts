@@ -8,7 +8,7 @@ plugins {
 }
 
 
-project.group = "dev.adamko.kxstsgen"
+project.group = "io.github.esafak.kotlintsgen"
 project.version = object {
   private val gitVersion = project.gitVersion
   override fun toString(): String = gitVersion.get()
@@ -41,18 +41,18 @@ val projectVersion by tasks.registering {
 
 nmcpAggregation {
   centralPortal {
-    username = providers.gradleProperty("dev.adamko.kxstsgen.mavenCentralUsername")
+    username = providers.gradleProperty("io.github.esafak.kotlintsgen.mavenCentralUsername")
       .orElse(providers.environmentVariable("MAVEN_SONATYPE_USERNAME"))
-    password = providers.gradleProperty("dev.adamko.kxstsgen.mavenCentralPassword")
+    password = providers.gradleProperty("io.github.esafak.kotlintsgen.mavenCentralPassword")
       .orElse(providers.environmentVariable("MAVEN_SONATYPE_PASSWORD"))
 
-    // publish manually from the portal
-    publishingType = "USER_MANAGED"
+    // release immediately after Central Portal validation
+    publishingType = "AUTOMATIC"
   }
 }
 
 dependencies {
-  nmcpAggregation(projects.modules.kxsTsGenCore)
+  nmcpAggregation(projects.modules.kotlinTsgenCore)
   nmcpAggregation(projects.modules.versionsPlatform)
 }
 
@@ -64,13 +64,7 @@ tasks.nmcpPublishAggregationToCentralPortal {
   onlyIf("is release version") { _ -> isReleaseVersion.get() }
 }
 
-tasks.nmcpPublishAggregationToCentralPortalSnapshots {
-  val isReleaseVersion = isReleaseVersion
-  onlyIf("is snapshot version") { _ -> !isReleaseVersion.get() }
-}
-
 tasks.register("nmcpPublish") {
   group = PublishingPlugin.PUBLISH_TASK_GROUP
   dependsOn(tasks.nmcpPublishAggregationToCentralPortal)
-  dependsOn(tasks.nmcpPublishAggregationToCentralPortalSnapshots)
 }

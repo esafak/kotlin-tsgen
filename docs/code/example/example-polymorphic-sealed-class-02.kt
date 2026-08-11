@@ -1,9 +1,9 @@
 // This file was automatically generated from polymorphism-sealed.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.examplePolymorphicSealedClass02
+package io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 sealed class Dog {
@@ -36,6 +36,6 @@ sealed class Dog {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Dog.serializer()))
 }

@@ -1,9 +1,9 @@
 // This file was automatically generated from lists.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleListObjects02
+package io.github.esafak.kotlintsgen.example.exampleListObjects02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 data class Colour(
@@ -17,6 +17,6 @@ data class MyLists(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyLists.serializer()))
 }

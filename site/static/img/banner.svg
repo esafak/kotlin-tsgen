@@ -285,7 +285,7 @@
          y="450.65368"
          id="tspan2948"><tspan
            style="font-family:Futura;-inkscape-font-specification:Futura"
-           id="tspan2946">kxs-ts-gen</tspan></tspan></text>
+           id="tspan2946">kotlin-tsgen</tspan></tspan></text>
     <text
        xml:space="preserve"
        transform="matrix(0,0.31288665,-0.31288665,0,272.59501,22.454195)"
@@ -295,6 +295,6 @@
          y="-71.299614"
          id="tspan2952"><tspan
            style="fill:#f2f2f2"
-           id="tspan2950">https://github.com/adamko-dev/kotlinx-serialization-typescript-generator</tspan></tspan></text>
+           id="tspan2950">https://github.com/esafak/kotlin-tsgen</tspan></tspan></text>
   </g>
 </svg>

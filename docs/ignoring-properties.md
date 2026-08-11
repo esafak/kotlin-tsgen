@@ -3,7 +3,7 @@
 <!--- TEST_NAME IgnoringPropertiesTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 
@@ -27,7 +27,7 @@ class SimpleTypes(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }
 ```

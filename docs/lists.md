@@ -3,7 +3,7 @@
 <!--- TEST_NAME ListsTests -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 
@@ -20,7 +20,7 @@ data class MyLists(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyLists.serializer()))
 }
 ```
@@ -53,7 +53,7 @@ data class MyLists(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyLists.serializer()))
 }
 ```
@@ -89,7 +89,7 @@ data class MyLists(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyLists.serializer()))
 }
 ```

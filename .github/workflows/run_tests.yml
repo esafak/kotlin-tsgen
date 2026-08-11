@@ -37,7 +37,7 @@ jobs:
     with:
       runs-on: ${{ matrix.os }}
       gradle-task: >-
-        check -Pkxstsgen_enableTsCompileTests=true --stacktrace
+        check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
       checkout-ref: ${{ inputs.checkout-ref }}
 
   build-site:

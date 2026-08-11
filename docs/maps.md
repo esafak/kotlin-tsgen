@@ -3,7 +3,7 @@
 <!--- TEST_NAME MapsTests -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 ### Primitive maps
@@ -18,7 +18,7 @@ data class Config(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Config.serializer()))
 }
 ```
@@ -48,7 +48,7 @@ enum class SettingKeys {
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Application.serializer()))
 }
 ```
@@ -77,7 +77,7 @@ class MapsWithLists(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MapsWithLists.serializer()))
 }
 ```
@@ -105,7 +105,7 @@ class MyDataClass(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(MyDataClass.serializer()))
 }
 ```
@@ -136,7 +136,7 @@ data class Config(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Config.serializer()))
 }
 ```
@@ -190,7 +190,7 @@ value class EnumKey(val e: ExampleEnum)
 value class DoubleEnumKey(val e: ExampleEnum)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Example.serializer()))
 }
 ```
@@ -242,9 +242,9 @@ or [use an explicit map-key class](#maps-with-complex-keys---map-key-class).
 
 #### ES6 Map
 
-This is the default behaviour of KxsTsGen when it encounters complex map keys.
+This is the default behaviour of KotlinTsGen when it encounters complex map keys.
 
-KxsTsGen produces valid TypeScript, but the TypeScript might not produce correct JSON.
+KotlinTsGen produces valid TypeScript, but the TypeScript might not produce correct JSON.
 
 ```kotlin
 @Serializable
@@ -261,7 +261,7 @@ data class CanvasProperties(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(CanvasProperties.serializer()))
 }
 ```
@@ -293,7 +293,7 @@ serializers.
 Because the value class `ColourMapKey` has a single string value, the descriptor is a
 `PrimitiveKind.STRING`.
 
-KxsTsGen will generate a JSON-safe mapped-type property.
+KotlinTsGen will generate a JSON-safe mapped-type property.
 
 ```kotlin
 @Serializable
@@ -335,7 +335,7 @@ data class CanvasProperties(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(CanvasProperties.serializer()))
 }
 ```
@@ -361,7 +361,7 @@ Define a custom serializer for `Colour` that will encode and decode to/from a st
 When encoding or decoding values with Kotlinx Serialization, under the hood it will create suitable
 map keys.
 
-Because the custom serializer is a `PrimitiveKind.STRING`, KxsTsGen will generate a JSON-safe
+Because the custom serializer is a `PrimitiveKind.STRING`, KotlinTsGen will generate a JSON-safe
 mapped-type property.
 
 ```kotlin
@@ -411,7 +411,7 @@ data class CanvasProperties(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(CanvasProperties.serializer()))
 }
 ```

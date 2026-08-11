@@ -1,9 +1,9 @@
 // This file was automatically generated from maps.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleMapComplex02
+package io.github.esafak.kotlintsgen.example.exampleMapComplex02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 @Serializable
 data class Colour(
@@ -44,6 +44,6 @@ data class CanvasProperties(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(CanvasProperties.serializer()))
 }

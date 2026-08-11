@@ -3,7 +3,7 @@
 <!--- TEST_NAME ValueClassesTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 -->
 
 Value classes are transformed to type aliases. The type of the value class is used.
@@ -14,7 +14,7 @@ Value classes are transformed to type aliases. The type of the value class is us
 value class AuthToken(private val token: String)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(AuthToken.serializer()))
 }
 ```
@@ -35,7 +35,7 @@ unsigned numbers.
 import kotlinx.serialization.builtins.serializer
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(
     tsGenerator.generate(
       UByte.serializer(),
@@ -73,14 +73,14 @@ To make value classes a little more strict, we can use brand typing
 <!-- IMPORT -->
 
 ```kotlin
-import dev.adamko.kxstsgen.KxsTsConfig.TypeAliasTypingConfig.BrandTyping
+import io.github.esafak.kotlintsgen.KotlinTsConfig.TypeAliasTypingConfig.BrandTyping
 import kotlinx.serialization.builtins.serializer
 
 fun main() {
 
-  val tsConfig = KxsTsConfig(typeAliasTyping = BrandTyping)
+  val tsConfig = KotlinTsConfig(typeAliasTyping = BrandTyping)
 
-  val tsGenerator = KxsTsGenerator(config = tsConfig)
+  val tsGenerator = KotlinTsGenerator(config = tsConfig)
   println(
     tsGenerator.generate(
       ULong.serializer(),
@@ -114,7 +114,7 @@ class
 value class UserCount(private val count: UInt)
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(UserCount.serializer()))
 }
 ```

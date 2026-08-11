@@ -32,17 +32,17 @@ which is more compact than an equivalent JSON object, which requires property na
 ```
 <!--- @formatter:on -->
 
-## Tuples in KxsTsGen
+## Tuples in KotlinTsGen
 
-Tuples are a bit difficult to create in Kotlinx Serialization, but KxsTsGen includes
-[TupleSerializer](../modules/kxs-ts-gen-core/src/commonMain/kotlin/dev/adamko/kxstsgen/core/experiments/tuple.kt)
+Tuples are a bit difficult to create in Kotlinx Serialization, but KotlinTsGen includes
+[TupleSerializer](../modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/tuple.kt)
 which can help. It requires a name, an ordered list of elements, and a constructor for
 deserializing.
 
 <!--- TEST_NAME TuplesTest -->
 <!--- INCLUDE .*\.kt
-import dev.adamko.kxstsgen.*
-import dev.adamko.kxstsgen.core.experiments.TupleSerializer
+import io.github.esafak.kotlintsgen.*
+import io.github.esafak.kotlintsgen.core.experiments.TupleSerializer
 import kotlinx.serialization.*
 -->
 
@@ -87,7 +87,7 @@ data class SimpleTypes(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }
 ```
@@ -142,7 +142,7 @@ data class PostalAddressUSA(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(PostalAddressUSA.serializer()))
 }
 ```
@@ -198,7 +198,7 @@ data class OptionalFields(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(OptionalFields.serializer()))
 }
 ```
@@ -244,7 +244,7 @@ data class Coordinates(
 }
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(Coordinates.serializer()))
 }
 ```
@@ -264,7 +264,7 @@ export type Coordinates = [
 ### Tuples as interface properties
 
 ```kotlin
-import dev.adamko.kxstsgen.example.exampleTuple04.Coordinates
+import io.github.esafak.kotlintsgen.example.exampleTuple04.Coordinates
 
 @Serializable
 class GameLocations(
@@ -275,7 +275,7 @@ class GameLocations(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(GameLocations.serializer()))
 }
 ```

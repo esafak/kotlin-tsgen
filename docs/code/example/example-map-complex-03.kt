@@ -1,9 +1,9 @@
 // This file was automatically generated from maps.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.exampleMapComplex03
+package io.github.esafak.kotlintsgen.example.exampleMapComplex03
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
@@ -51,6 +51,6 @@ data class CanvasProperties(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(CanvasProperties.serializer()))
 }

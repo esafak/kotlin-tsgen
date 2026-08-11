@@ -1,8 +1,5 @@
 [versions]
 
-jvmTarget = "11"
-kotlinTarget = "1.8"
-
 kotlin = "2.3.0"                        # https://github.com/JetBrains/kotlin/releases
 
 kotlinSymbolProcessing = "2.3.4" # https://github.com/google/ksp/releases
@@ -23,7 +20,7 @@ kotlinProcess = "1.5.1"                  # https://github.com/pgreze/kotlin-proc
 
 gradleNodePlugin = "7.1.0"               # https://github.com/node-gradle/gradle-node-plugin/releases
 
-gradlePlugin-nmcp = "1.4.3"
+gradlePlugin-nmcp = "1.6.1"
 
 [libraries]
 

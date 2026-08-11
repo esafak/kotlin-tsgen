@@ -2,17 +2,17 @@
 // Note: type annotations allow type checking and IDEs autocompletion
 
 const config = /** @type {import("@docusaurus/types").Config} */ {
-  title: "kxs-ts-gen",
+  title: "kotlin-tsgen",
   tagline: "Generate TypeScript interfaces from Kotlin classes",
-  url: "https://adamko-dev.github.io",
-  baseUrl: "/kotlinx-serialization-typescript-generator",
+  url: "https://esafak.github.io",
+  baseUrl: "/kotlin-tsgen",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/icon.svg",
 
   // GitHub pages deployment config
-  organizationName: "adamko-dev",
-  projectName: "kotlinx-serialization-typescript-generator",
+  organizationName: "esafak",
+  projectName: "kotlin-tsgen",
 
   i18n: {defaultLocale: "en", locales: ["en"]},
 
@@ -22,7 +22,7 @@ const config = /** @type {import("@docusaurus/types").Config} */ {
       docs: {
         sidebarPath: require.resolve("./sidebars.js"),
         sidebarCollapsible: false,
-        editUrl: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/blob/main/",
+        editUrl: "https://github.com/esafak/kotlin-tsgen/blob/main/",
       },
       theme: {
         customCss: [
@@ -50,13 +50,13 @@ const config = /** @type {import("@docusaurus/types").Config} */ {
       content: "kotlin, typescript, json, transform, convert, generate"
     }],
     navbar: {
-      title: "kxs-ts-gen",
-      logo: {alt: "kxs-ts-gen logo", src: "img/icon.svg"},
+      title: "kotlin-tsgen",
+      logo: {alt: "kotlin-tsgen logo", src: "img/icon.svg"},
       items: [
         // {to: "/getting-started", label: "Getting started", position: "left"},
         {type: "doc", docId: "getting-started", label: "Docs", position: "left"},
         {
-          href: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator",
+          href: "https://github.com/esafak/kotlin-tsgen",
           label: "GitHub",
           position: "right",
         },
@@ -78,24 +78,24 @@ const config = /** @type {import("@docusaurus/types").Config} */ {
           items: [
             {
               label: "GitHub",
-              href: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/",
+              href: "https://github.com/esafak/kotlin-tsgen/",
             },
             {
               label: "Releases",
-              href: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/releases",
+              href: "https://github.com/esafak/kotlin-tsgen/releases",
             },
             {
               label: "Help and Discussions",
-              href: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/discussions",
+              href: "https://github.com/esafak/kotlin-tsgen/discussions",
             },
             {
               label: "Issues and requests",
-              href: "https://github.com/adamko-dev/kotlinx-serialization-typescript-generator/issues",
+              href: "https://github.com/esafak/kotlin-tsgen/issues",
             },
           ]
         }
       ],
-      copyright: `Copyright © 2021`,
+      copyright: `Copyright © 2026`,
     },
     prism: {
       // themes are managed by global.scss

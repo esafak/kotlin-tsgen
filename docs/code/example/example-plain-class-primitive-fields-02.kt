@@ -1,9 +1,9 @@
 // This file was automatically generated from basic-classes.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package dev.adamko.kxstsgen.example.examplePlainClassPrimitiveFields02
+package io.github.esafak.kotlintsgen.example.examplePlainClassPrimitiveFields02
 
 import kotlinx.serialization.*
-import dev.adamko.kxstsgen.*
+import io.github.esafak.kotlintsgen.*
 
 import kotlinx.serialization.Transient
 
@@ -14,6 +14,6 @@ class SimpleTypes(
 )
 
 fun main() {
-  val tsGenerator = KxsTsGenerator()
+  val tsGenerator = KotlinTsGenerator()
   println(tsGenerator.generate(SimpleTypes.serializer()))
 }
