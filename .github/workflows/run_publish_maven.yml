@@ -31,14 +31,64 @@ jobs:
 
   publish-maven:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: macos-latest # only macOS supports building all Kotlin targets
+    environment: maven
     permissions:
       contents: read
       packages: write
       checks: write
-    uses: ./.github/workflows/run_gradle_task.yml
-    with:
-      environment: maven
-      runs-on: macos-latest # only macOS supports building all Kotlin targets
-      gradle-task: >-
-        nmcpPublish --stacktrace --no-configuration-cache --no-parallel
-      checkout-ref: ${{ inputs.checkout-ref }}
+    name: "./gradlew nmcpPublish @ macos-latest"
+    timeout-minutes: 60
+    steps:
+
+      - name: Checkout the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache NPM
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          cache-name: cache-npm
+        with:
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            ./site/node_modules
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-cleanup: on-success
+
+      - name: Run the publish task
+        run: ./gradlew nmcpPublish --stacktrace --no-configuration-cache --no-parallel
+        env:
+          MAVEN_SONATYPE_USERNAME: ${{ secrets.MAVEN_SONATYPE_USERNAME }}
+          MAVEN_SONATYPE_PASSWORD: ${{ secrets.MAVEN_SONATYPE_PASSWORD }}
+          MAVEN_SONATYPE_SIGNING_KEY_ID: ${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}
+          MAVEN_SONATYPE_SIGNING_KEY: ${{ secrets.MAVEN_SONATYPE_SIGNING_KEY }}
+          MAVEN_SONATYPE_SIGNING_PASSWORD: ${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}
+
+      - name: Upload build reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: build-report-${{ runner.os }}${{ github.action }}
+          path: |
+            **/build/reports/
+            **/*.hprof
+            **/*.log
+          if-no-files-found: ignore
