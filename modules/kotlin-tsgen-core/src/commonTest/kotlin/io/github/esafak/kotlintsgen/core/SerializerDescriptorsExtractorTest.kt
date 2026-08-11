@@ -4,12 +4,15 @@ import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import kotlinx.serialization.ContextualSerializer
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.modules.SerializersModule
 
+@OptIn(ExperimentalSerializationApi::class)
 class SerializerDescriptorsExtractorTest : FunSpec({
 
   val module = SerializersModule { }
@@ -123,6 +126,17 @@ class SerializerDescriptorsExtractorTest : FunSpec({
     }
   }
 
+  test("Example7: contextual lookup returning a contextual serializer terminates") {
+    val module = SerializersModule {
+      contextual(Example7.Value::class, ContextualSerializer(Example7.Value::class))
+    }
+    val extractor = SerializerDescriptorsExtractor.default(module)
+
+    val actual = extractor(Example7.Holder.serializer())
+
+    actual shouldContainDescriptors listOf(Example7.Holder.serializer().descriptor)
+  }
+
   }) {
   companion object {
     private infix fun Collection<SerialDescriptor>.shouldContainDescriptors(expected: Collection<SerialDescriptor>) {
@@ -210,5 +224,17 @@ private object Example4c {
   class Holder(
     @kotlinx.serialization.Contextual
     val x: Foo,
+  )
+}
+
+
+@Suppress("unused")
+private object Example7 {
+  class Value
+
+  @Serializable
+  class Holder(
+    @kotlinx.serialization.Contextual
+    val value: Value,
   )
 }
