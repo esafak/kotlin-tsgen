@@ -15,7 +15,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.nullable
+import kotlinx.serialization.descriptors.getContextualDescriptor
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.overwriteWith
@@ -178,12 +180,22 @@ open class KotlinTsGenerator(
   }
 
 
+  private fun rootDescriptors(serializer: KSerializer<*>): Set<SerialDescriptor> {
+    serializerDescriptorOverrides[serializer]?.let { return it }
+
+    val descriptor = serializer.descriptor
+    if (descriptor.kind != SerialKind.CONTEXTUAL) return setOf(descriptor)
+
+    return runCatching {
+      effectiveSerializersModule.getContextualDescriptor(descriptor)
+    }.getOrNull()?.let(::setOf) ?: setOf(descriptor)
+  }
+
+
   open fun generate(vararg serializers: KSerializer<*>): String {
     val rootSerializers = serializers.toSet()
     val rootPrimitiveAliases = rootSerializers
-      .flatMap { serializer ->
-        serializerDescriptorOverrides[serializer] ?: setOf(serializer.descriptor)
-      }
+      .flatMap(::rootDescriptors)
       .mapNotNull(::rootPrimitiveAlias)
       .distinctBy { it.id }
 

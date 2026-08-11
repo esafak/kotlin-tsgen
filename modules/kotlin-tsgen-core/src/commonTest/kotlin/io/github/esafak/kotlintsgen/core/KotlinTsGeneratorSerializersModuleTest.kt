@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import kotlin.jvm.JvmInline
+import kotlinx.serialization.ContextualSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -100,6 +101,17 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         .generate(CustomPrimitiveExample.StringId.serializer())
 
       ts shouldBe "export type StringId = string;"
+  }
+
+  test("contextual primitive serializer - a resolved root type is emitted as a named type alias") {
+      val module = SerializersModule {
+        contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
+      }
+
+      val ts = KotlinTsGenerator(serializersModule = module)
+        .generate(ContextualSerializer(PrimitiveContextualExample.EntityType::class))
+
+      ts shouldBe "export type EntityType = string;"
   }
 
   test("open polymorphic - registered subclasses are emitted as a union") {
