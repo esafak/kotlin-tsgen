@@ -1,0 +1,14 @@
+.github/workflows/workflow_release.yml
+  h_ea91e2db23540f 27-28,30-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1c18e8926560d3f712e182b124bcb9d62955edda",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
