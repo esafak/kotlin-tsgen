@@ -1,0 +1,16 @@
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 16,24-36,167-180,182-190,199
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/KotlinTsGeneratorSerializersModuleTest.kt
+  h_ea91e2db23540f 10,91-104,250-267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4492319cd3e829daa57ee281b57cd2e3f9cd8bf7",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
