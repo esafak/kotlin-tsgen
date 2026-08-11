@@ -1,0 +1,19 @@
+docs/code/test/PolymorphismSealedTest.kt
+  s_d02efab7ea1289::t_6016cce1d388c3 48-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6042c77b81b84eaa32f8f1e0e3cfa959fbc16bcb",
+  "prompts": {},
+  "sessions": {
+    "s_d02efab7ea1289": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00f02e0cbffe7psBPG4Ijq9H3x",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
