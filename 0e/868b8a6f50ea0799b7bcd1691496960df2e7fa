@@ -1,0 +1,18 @@
+.github/actions/publish-maven/action.yml
+  h_ea91e2db23540f 1-46
+.github/workflows/run_publish_maven.yml
+  h_ea91e2db23540f 38
+.github/workflows/workflow_release.yml
+  h_ea91e2db23540f 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0e868b8a6f50ea0799b7bcd1691496960df2e7fa",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
