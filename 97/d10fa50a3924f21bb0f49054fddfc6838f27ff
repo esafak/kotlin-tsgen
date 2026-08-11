@@ -1,0 +1,21 @@
+docs/enums.md
+  s_cd68d379c139ad::t_9e19a06d0ba1f6 38,40,44-49,54,58-59,61-64,70,72-74,78-82,87,91,94-96
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementIdConverter.kt
+  s_cd68d379c139ad::t_763907f0b4abe6 15-16,19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "97d10fa50a3924f21bb0f49054fddfc6838f27ff",
+  "prompts": {},
+  "sessions": {
+    "s_cd68d379c139ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00d033c09ffeuZOfuDhkzRs7Rh",
+        "model": "glm-5.2"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
