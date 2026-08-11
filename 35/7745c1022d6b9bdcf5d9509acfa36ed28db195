@@ -1,0 +1,24 @@
+README.md
+  h_ea91e2db23540f 71
+docs/code/example/example-polymorphic-sealed-class-01.kt
+  h_ea91e2db23540f 6,10
+docs/code/test/PolymorphismSealedTest.kt
+  h_ea91e2db23540f 81,87,93
+docs/polymorphism-sealed.md
+  h_ea91e2db23540f 6,91,117,123,129
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementConverter.kt
+  h_ea91e2db23540f 13,106-124,139,145,147,150
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/KotlinTsGeneratorSerializersModuleTest.kt
+  h_ea91e2db23540f 5,13,16,30,184-206,229-249
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "357745c1022d6b9bdcf5d9509acfa36ed28db195",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
