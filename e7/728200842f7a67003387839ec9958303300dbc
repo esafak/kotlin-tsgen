@@ -1,0 +1,16 @@
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractor.kt
+  h_ea91e2db23540f 56,60-61,63,65,78
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/SerializerDescriptorsExtractorTest.kt
+  h_ea91e2db23540f 7-8,15,129-139,229-240
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e7728200842f7a67003387839ec9958303300dbc",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
