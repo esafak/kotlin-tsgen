@@ -1,0 +1,20 @@
+.github/workflows/run_publish_maven.yml
+  h_ea91e2db23540f 5-16,32-33,44
+.github/workflows/workflow_release.yml
+  h_ea91e2db23540f 6,25-26
+build.gradle.kts
+  h_ea91e2db23540f 67-71,75
+buildSrc/src/main/kotlin/buildsrc/convention/maven-publish.gradle.kts
+  h_ea91e2db23540f 34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "898e3e84b5e9f152dd56b3acf4d8fa94dd2c7da4",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
