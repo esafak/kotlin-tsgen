@@ -1,0 +1,16 @@
+docs/code/example/example-enum-class-03.kt
+  h_ea91e2db23540f 1-19
+docs/code/test/EnumClassTest.kt
+  h_ea91e2db23540f 64-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3886777bdf93a8befc263c2550d2b6d77cc51018",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
