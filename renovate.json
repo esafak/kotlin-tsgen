@@ -18,8 +18,8 @@
       "matchUpdateTypes": [
         "minor",
         "patch",
-        "pin",
-        "digest"
+        "digest",
+        "pinDigest"
       ],
       "automerge": true
     }
@@ -35,6 +35,6 @@
     "after 10am and before 6pm"
   ],
   "minimumReleaseAge": "14 days",
-  "prCreation": "status-success",
+  "prCreation": "not-pending",
   "semanticCommits": "enabled"
 }
