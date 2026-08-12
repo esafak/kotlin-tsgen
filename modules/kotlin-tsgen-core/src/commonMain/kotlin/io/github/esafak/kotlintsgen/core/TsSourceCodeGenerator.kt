@@ -265,7 +265,8 @@ interface TsSourceCodeGenerator {
 
           is TsLiteral.TsMap     -> generateMapTypeReference(typeRef.element)
 
-          is TsLiteral.Custom    -> typeRef.element.value
+          is TsLiteral.Custom       -> typeRef.element.value
+          is TsLiteral.ExternalType -> typeRef.element.id.toString()
         }
 
         is TsTypeRef.Declaration -> {
@@ -274,17 +275,7 @@ interface TsSourceCodeGenerator {
             val parentRef = generateTypeReference(typeRef.parent)
             "${parentRef}.${typeRef.id.name}"
           } else {
-            val declarationNamespace = typeRef.id.namespace
-            if (
-              config.namespaceConfig == KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix &&
-              renderingNamespace != null &&
-              typeRef.id.toString().contains('.') &&
-              declarationNamespace != renderingNamespace
-            ) {
-              "$declarationNamespace.${typeRef.id.name}"
-            } else {
-              typeRef.id.name
-            }
+            generateDeclarationReference(typeRef.id)
           }
         }
       }
@@ -295,6 +286,21 @@ interface TsSourceCodeGenerator {
           append(" | ")
           append(generatePrimitive(TsLiteral.Primitive.TsNull))
         }
+      }
+    }
+
+
+    private fun generateDeclarationReference(id: TsElementId): String {
+      val declarationNamespace = id.namespace
+      return if (
+        config.namespaceConfig == KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix &&
+        renderingNamespace != null &&
+        id.toString().contains('.') &&
+        declarationNamespace != renderingNamespace
+      ) {
+        "$declarationNamespace.${id.name}"
+      } else {
+        id.name
       }
     }
 

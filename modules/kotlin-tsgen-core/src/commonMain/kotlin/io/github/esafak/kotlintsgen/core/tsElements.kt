@@ -79,7 +79,7 @@ sealed interface TsDeclaration : TsElement {
 }
 
 
-/** Literal built-in TypeScript elements. */
+/** TypeScript elements that are referenced inline or provided externally. */
 sealed interface TsLiteral : TsElement {
 
   sealed interface Primitive : TsLiteral {
@@ -123,6 +123,11 @@ sealed interface TsLiteral : TsElement {
   /** https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types */
   @JvmInline
   value class Custom(val value: String) : TsLiteral
+
+
+  /** A named TypeScript type provided outside of the generated source. */
+  @JvmInline
+  value class ExternalType(val id: TsElementId) : TsLiteral
 }
 
 

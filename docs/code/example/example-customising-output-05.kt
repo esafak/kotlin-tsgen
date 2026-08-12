@@ -1,6 +1,6 @@
 // This file was automatically generated from customising-output.md by Knit tool. Do not edit.
 @file:Suppress("PackageDirectoryMismatch", "unused")
-package io.github.esafak.kotlintsgen.example.exampleCustomisingOutput04
+package io.github.esafak.kotlintsgen.example.exampleCustomisingOutput05
 
 import kotlinx.serialization.*
 import io.github.esafak.kotlintsgen.*
@@ -8,9 +8,20 @@ import io.github.esafak.kotlintsgen.*
 import kotlinx.serialization.builtins.serializer
 import io.github.esafak.kotlintsgen.core.*
 
+
+@Serializable
+@JvmInline
+value class Tick(val value: UInt)
+
+@Serializable
+@JvmInline
+value class Phase(val value: Int)
+
 @Serializable
 data class ItemHolder(
   val item: Item,
+  val tick: Tick?,
+  val phase: Phase?,
 )
 
 @Serializable

@@ -70,6 +70,11 @@ open class KotlinTsGenerator(
   // their TsElement ids are supplied directly by the caller.
   val descriptorOverrides: MutableMap<SerialDescriptor, TsElement> = mutableMapOf()
 
+  /** Configure descriptor-to-TypeScript type mappings using a Kotlin DSL. */
+  fun mapTypes(block: TsOverrideScope.() -> Unit) {
+    TsOverrideScope(this).block()
+  }
+
   private fun findOverride(descriptor: SerialDescriptor): TsElement? {
     return descriptorOverrides.entries.run {
       firstOrNull { it.key == descriptor } ?: firstOrNull { it.key.nullable == descriptor.nullable }
@@ -133,7 +138,7 @@ open class KotlinTsGenerator(
 
 
   val typeRefConverter: TsTypeRefConverter = object : TsTypeRefConverter {
-    private val converter = TsTypeRefConverter.Default(
+    private val converter = object : TsTypeRefConverter.Default(
       elementIdConverter,
       mapTypeConverter,
       effectiveSerializersModule,
@@ -144,7 +149,13 @@ open class KotlinTsGenerator(
       indexSignatureKeyTypeRefOverride = { descriptor ->
         (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
       },
-    )
+    ) {
+      override fun mapKeyTypeRefOverride(descriptor: SerialDescriptor): TsTypeRef? {
+        return (findOverride(descriptor) as? TsLiteral)?.let {
+          TsTypeRef.Literal(it, descriptor.isNullable)
+        }
+      }
+    }
     val cache: MutableMap<SerialDescriptor, TsTypeRef> = mutableMapOf()
 
     override fun invoke(descriptor: SerialDescriptor): TsTypeRef =
@@ -340,4 +351,27 @@ open class KotlinTsGenerator(
       .joinToString(config.declarationSeparator)
   }
 
+}
+
+
+/** Marks the type-mapping configuration DSL. */
+@DslMarker
+annotation class TsOverrideDsl
+
+
+/** Receiver scope for [KotlinTsGenerator.mapTypes]. */
+@TsOverrideDsl
+class TsOverrideScope internal constructor(
+  private val generator: KotlinTsGenerator,
+) {
+
+  /** Map a serializer's descriptor to a TypeScript element. */
+  infix fun KSerializer<*>.mapsTo(element: TsElement) {
+    generator.descriptorOverrides[descriptor] = element
+  }
+
+  /** Map a serial descriptor to a TypeScript element. */
+  infix fun SerialDescriptor.mapsTo(element: TsElement) {
+    generator.descriptorOverrides[this] = element
+  }
 }

@@ -10,7 +10,8 @@ import io.github.esafak.kotlintsgen.*
 
 If you want to override what KotlinTsGen produces, then you can provide overrides.
 
-By default, `Double` is transformed to `number`, but now we want to alias `Double` to `double`.
+By default, `Double` is transformed to a generated `Double` alias. We can customise that alias with
+the `mapTypes` DSL.
 
 ```kotlin
 import kotlinx.serialization.builtins.serializer
@@ -25,21 +26,15 @@ data class Item(
 fun main() {
   val tsGenerator = KotlinTsGenerator()
 
-  tsGenerator.descriptorOverrides +=
-    Double.serializer().descriptor to TsDeclaration.TsTypeAlias(
-      id = TsElementId("Double"),
-      typeRef = TsTypeRef.Declaration(
-        id = TsElementId("double"),
-        parent = null,
-        nullable = false,
-      )
-    )
+  tsGenerator.mapTypes {
+    Double.serializer() mapsTo typeAlias("Double", ref("double"))
+  }
 
   println(tsGenerator.generate(Item.serializer()))
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-01.kt).
+> See the [type-alias example](./code/example/example-customising-output-01.kt).
 
 ```typescript
 export interface Item {
@@ -50,6 +45,43 @@ export interface Item {
 export type Double = double; // assume that 'double' will be provided by another library
 
 export type Int = number;
+```
+
+<!--- TEST TS_COMPILE_OFF -->
+
+### Referencing external types
+
+If a type is already provided by another TypeScript library, use `external` to reference it without
+emitting a declaration. Nullable Kotlin properties retain their nullability.
+
+```kotlin
+import kotlinx.serialization.builtins.serializer
+import io.github.esafak.kotlintsgen.core.*
+
+@Serializable
+data class Position(
+  val x: Double,
+  val y: Double?,
+)
+
+fun main() {
+  val tsGenerator = KotlinTsGenerator()
+
+  tsGenerator.mapTypes {
+    Double.serializer() mapsTo external("double")
+  }
+
+  println(tsGenerator.generate(Position.serializer()))
+}
+```
+
+> See the [external-type example](./code/example/example-customising-output-02.kt).
+
+```typescript
+export interface Position {
+  x: double;
+  y: double | null;
+}
 ```
 
 <!--- TEST TS_COMPILE_OFF -->
@@ -76,7 +108,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-02.kt).
+> See the [custom-literal example](./code/example/example-customising-output-03.kt).
 
 This produces no type alias, and `Double` is overridden to be `customDouble`.
 
@@ -125,7 +157,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-03.kt).
+> See the [nullable-property override example](./code/example/example-customising-output-04.kt).
 
 ```typescript
 export interface ItemHolder {
@@ -189,7 +221,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-04.kt).
+> See the [nullable and non-nullable override example](./code/example/example-customising-output-05.kt).
 
 ```typescript
 export interface ItemHolder {
