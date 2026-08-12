@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       gradle-task:
-        description: "The Gradle task to run, including any flags"
+        description: "The approved Gradle task to run: check or docusaurusBuild"
         required: true
         type: string
       runs-on:
@@ -25,7 +25,7 @@ on:
   workflow_call:
     inputs:
       gradle-task:
-        description: "The Gradle task to run, including any flags"
+        description: "The approved Gradle task to run: check or docusaurusBuild"
         required: true
         type: string
       runs-on:
@@ -59,6 +59,8 @@ jobs:
     environment: ${{ inputs.environment || null }}
     name: "./gradlew ${{ inputs.gradle-task}} @ ${{ inputs.runs-on }}"
     timeout-minutes: 60
+    env:
+      MISE_LOCKED: "1"
     steps:
 
       ### Gradle task ###
@@ -72,11 +74,10 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
-      - name: Setup JDK
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+      - name: Setup mise tools
+        uses: jdx/mise-action@7e36c90d9ab29c415a2384db3006f3ec8a8cc654 # v4.2.4
         with:
-          distribution: temurin
-          java-version: 17
+          cache: false
 
       - name: Cache NPM
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -94,14 +95,27 @@ jobs:
       - uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
           cache-cleanup: on-success
-      - name: Run the tests
-        run: ./gradlew ${{ inputs.gradle-task }}
-        env:
-          MAVEN_SONATYPE_USERNAME: ${{ secrets.MAVEN_SONATYPE_USERNAME }}
-          MAVEN_SONATYPE_PASSWORD: ${{ secrets.MAVEN_SONATYPE_PASSWORD }}
-          MAVEN_SONATYPE_SIGNING_KEY_ID: ${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}
-          MAVEN_SONATYPE_SIGNING_KEY: ${{ secrets.MAVEN_SONATYPE_SIGNING_KEY }}
-          MAVEN_SONATYPE_SIGNING_PASSWORD: ${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}
+      - name: Run check on Unix
+        if: inputs.gradle-task == 'check' && runner.os != 'Windows'
+        run: mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+
+      - name: Run check on Windows
+        if: inputs.gradle-task == 'check' && runner.os == 'Windows'
+        run: mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+
+      - name: Run site build
+        if: inputs.gradle-task == 'docusaurusBuild' && runner.os != 'Windows'
+        run: mise x -- ./gradlew docusaurusBuild
+
+      - name: Run site build on Windows
+        if: inputs.gradle-task == 'docusaurusBuild' && runner.os == 'Windows'
+        run: mise x -- .\\gradlew.bat docusaurusBuild
+
+      - name: Reject unsupported Gradle task
+        if: inputs.gradle-task != 'check' && inputs.gradle-task != 'docusaurusBuild'
+        run: |
+          echo "Unsupported Gradle task input"
+          exit 1
 
       - name: Upload build reports
         if: failure()

@@ -10,9 +10,19 @@
     "npm",
     "gradle",
     "gradle-wrapper",
-    "github-actions"
+    "github-actions",
+    "mise"
   ],
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "packageRules": [
+    {
+      "description": "disable npm lock-file maintenance",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "enabled": false
+    },
     {
       "description": "auto-merge all but major releases",
       "matchUpdateTypes": [
