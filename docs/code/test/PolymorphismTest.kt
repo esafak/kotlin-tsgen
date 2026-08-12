@@ -148,41 +148,6 @@ class PolymorphismTest : FunSpec({
           |    adorable?: boolean;
           |  }
           |}
-          |// Nested sealed classes don't work at the moment :(
-          |// export type Dog = Dog.Mutt | Dog.Retriever
-          |//
-          |// export namespace Dog {
-          |//   export enum Type {
-          |//     Mutt = "Mutt",
-          |//   }
-          |//
-          |//   export interface Mutt {
-          |//     type: Type.Mutt;
-          |//     name: string;
-          |//     loveable?: boolean;
-          |//   }
-          |//
-          |//   export type Retriever = Retriever.Golden | Retriever.NovaScotia
-          |//
-          |//   export namespace Retriever {
-          |//     export enum Type {
-          |//       Golden = "Golden",
-          |//       NovaScotia = "NovaScotia",
-          |//     }
-          |//
-          |//     export interface Golden {
-          |//       type: Type.Golden;
-          |//       name: string;
-          |//       cute?: boolean;
-          |//     }
-          |//
-          |//     export interface NovaScotia {
-          |//       type: Type.NovaScotia;
-          |//       name: string;
-          |//       adorable?: boolean;
-          |//     }
-          |//   }
-          |// }
         """.trimMargin()
         .normalize()
       )
