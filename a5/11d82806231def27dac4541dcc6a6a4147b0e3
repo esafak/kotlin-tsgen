@@ -1,0 +1,18 @@
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 141,152-158
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsTypeRefConverter.kt
+  h_ea91e2db23540f 29-31,98
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/ExternalTypeOverrideTest.kt
+  h_ea91e2db23540f 50-57,72-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a511d82806231def27dac4541dcc6a6a4147b0e3",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
