@@ -278,14 +278,29 @@ open class KotlinTsGenerator(
       throw InvalidTsIdentifierException(name, "generated numeric type aliases", "multiple reachable primitive aliases render with the same name")
     }
     val declarations = elements.filterIsInstance<TsDeclaration>()
-    val declarationKeys = declarations.associateBy { declaration ->
+    val declarationGroups = declarations.groupBy { declaration ->
       sourceCodeGenerator.groupElementsBy(declaration) to declaration.id.name
     }
+    declarationGroups
+      .filterValues { declarations ->
+        declarations.size > 1 && !canMergeDeclarations(declarations)
+      }
+      .values
+      .firstOrNull()
+      ?.let { conflicts ->
+        val renderedName = conflicts.first().id.name
+        val ids = conflicts.map { it.id.toString() }.distinct().sorted().joinToString(", ")
+        throw InvalidTsIdentifierException(
+          renderedName,
+          "generated declarations",
+          "declarations $ids render with the same name; use NamespaceConfig.DescriptorNamePrefix",
+        )
+      }
     aliases
-      .filter { alias -> (sourceCodeGenerator.groupElementsBy(alias) to alias.id.name) in declarationKeys }
+      .filter { alias -> (sourceCodeGenerator.groupElementsBy(alias) to alias.id.name) in declarationGroups }
       .firstOrNull()
       ?.let { alias ->
-        val conflict = declarationKeys[sourceCodeGenerator.groupElementsBy(alias) to alias.id.name]!!
+        val conflict = declarationGroups[sourceCodeGenerator.groupElementsBy(alias) to alias.id.name]!!.first()
         throw InvalidTsIdentifierException(
           conflict.id.name,
           "generated numeric type alias",
@@ -301,6 +316,23 @@ open class KotlinTsGenerator(
 
       // 4. convert to source code and render configured namespace groups
       .let(::renderGroups)
+  }
+
+
+  private fun canMergeDeclarations(declarations: List<TsDeclaration>): Boolean {
+    return declarations.all { it is TsDeclaration.TsInterface } &&
+      declarations
+        .flatMap { (it as TsDeclaration.TsInterface).properties }
+        .groupBy { it.name }
+        .values
+        .all { properties ->
+          properties.map { property ->
+            property.optional to sourceCodeGenerator.generateTypeReference(property.typeRef)
+          }.distinct().size == 1
+        } ||
+      declarations.count { it is TsDeclaration.TsNamespace } == 1 &&
+      declarations.count { it is TsDeclaration.TsTypeUnion } == 1 &&
+      declarations.size == 2
   }
 
 

@@ -95,6 +95,49 @@ class NamespaceRenderingTest : FunSpec({
     }
   }
 
+  test("flat namespaces reject colliding declarations") {
+    val exception = shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(CollidingHolder.serializer())
+    }
+
+    exception.identifier shouldBe "Kind"
+    exception.message shouldContain "A.Kind"
+    exception.message shouldContain "B.Kind"
+    exception.message shouldContain "DescriptorNamePrefix"
+  }
+
+  test("descriptor namespaces resolve colliding declarations") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+    )
+
+    val ts = KotlinTsGenerator(config).generate(CollidingHolder.serializer())
+
+    ts shouldContain "export namespace A"
+    ts shouldContain "export namespace B"
+    ts shouldContain "export enum Kind"
+  }
+
+  test("static namespaces reject colliding declarations") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.Static("models"),
+    )
+
+    shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator(config).generate(CollidingHolder.serializer())
+    }
+  }
+
+  test("flat namespaces reject incompatible interface merges") {
+    val exception = shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(IncompatibleInterfaceHolder.serializer())
+    }
+
+    exception.identifier shouldBe "Shared"
+    exception.message shouldContain "A.Shared"
+    exception.message shouldContain "B.Shared"
+  }
+
   test("dotless descriptor names remain flat") {
     val config = KotlinTsConfig(
       namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
@@ -163,6 +206,42 @@ class NamespaceRenderingTest : FunSpec({
   @Serializable
   @SerialName("org.example.Int")
   private class NamespacedInt(val value: Int)
+
+  @Serializable
+  private class CollidingHolder(
+    val first: A,
+    val second: B,
+  )
+
+  @Serializable
+  @SerialName("A")
+  private class A(val kind: AKind)
+
+  @Serializable
+  @SerialName("B")
+  private class B(val kind: BKind)
+
+  @Serializable
+  @SerialName("A.Kind")
+  private enum class AKind { ONE }
+
+  @Serializable
+  @SerialName("B.Kind")
+  private enum class BKind { TWO }
+
+  @Serializable
+  private class IncompatibleInterfaceHolder(
+    val first: InterfaceA,
+    val second: InterfaceB,
+  )
+
+  @Serializable
+  @SerialName("A.Shared")
+  private class InterfaceA(val value: String)
+
+  @Serializable
+  @SerialName("B.Shared")
+  private class InterfaceB(val value: Int)
 
   private class GroupingSource(
     private val group: String?,
