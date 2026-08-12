@@ -1,0 +1,27 @@
+docs/code/example/example-customising-output-01.kt
+  s_94e752ef93469c::t_549f72623fa0d2 20-22
+docs/code/example/example-customising-output-02.kt
+  s_94e752ef93469c::t_9d4ac005e222e0 12-14,20-22,24
+docs/code/example/example-customising-output-03.kt
+  s_94e752ef93469c::t_6ff1452d70f6fc 13-14,21,23
+docs/code/example/example-customising-output-05.kt
+  s_94e752ef93469c::t_2e3b7de5d3ef71 1-45
+docs/code/test/CustomisingOutputTest.kt
+  s_94e752ef93469c::t_9a019d90723baa 49-73,94,98,125,129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d2230f5f5a0c3622d06b05e4c10c591d879ae7ad",
+  "prompts": {},
+  "sessions": {
+    "s_94e752ef93469c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_0092e4ca7ffe9AGrcIZPX3btwn",
+        "model": "glm-5.2"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
