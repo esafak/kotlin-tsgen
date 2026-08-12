@@ -1,0 +1,19 @@
+docs/code/example/example-polymorphic-sealed-class-01.kt
+  s_e52571b299f2b5::t_ae9623c35a86cd 8-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "fe1b466c7dccdcead43acea0237505637402f26c",
+  "prompts": {},
+  "sessions": {
+    "s_e52571b299f2b5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00ccf89f2ffeJmIQVaRAZE8PnC",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
