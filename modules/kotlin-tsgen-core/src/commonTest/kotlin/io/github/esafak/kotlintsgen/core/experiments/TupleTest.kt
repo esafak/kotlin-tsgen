@@ -2,6 +2,7 @@ package io.github.esafak.kotlintsgen.core.experiments
 
 import io.github.esafak.kotlintsgen.core.test.kxsBinary
 import io.kotest.assertions.withClue
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.longs.shouldBeExactly
@@ -101,6 +102,21 @@ class TupleTest : FunSpec({
       }
     }
   }
+
+  test("optional tuple elements are propagated to the descriptor") {
+    val serializer = OptionalCoordinates.Serializer
+
+    serializer.descriptor.isElementOptional(1) shouldBe true
+  }
+
+  test("required tuple elements cannot follow optional elements") {
+    shouldThrow<IllegalArgumentException> {
+      tupleElements<Coordinates> {
+        element(Coordinates::x, isOptional = true)
+        element(Coordinates::y)
+      }
+    }
+  }
 }) {
 
 
@@ -127,6 +143,20 @@ class TupleTest : FunSpec({
         val active = requireNotNull(elements.next() as? Boolean)
         return Coordinates(x, y, data, active)
       }
+    }
+  }
+
+  @Serializable(with = OptionalCoordinates.Serializer::class)
+  data class OptionalCoordinates(
+    val x: Int,
+    val y: Int,
+  ) {
+    object Serializer : TupleSerializer<OptionalCoordinates>("OptionalCoordinates", {
+      element(OptionalCoordinates::x)
+      element(OptionalCoordinates::y, isOptional = true)
+    }) {
+      override fun tupleConstructor(elements: Iterator<Any?>): OptionalCoordinates =
+        OptionalCoordinates(elements.next() as Int, elements.next() as Int)
     }
   }
 }

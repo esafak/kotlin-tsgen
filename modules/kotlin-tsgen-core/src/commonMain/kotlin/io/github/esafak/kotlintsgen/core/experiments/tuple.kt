@@ -23,6 +23,7 @@ data class TupleElement<T, E>(
   val index: Int,
   val elementSerializer: KSerializer<E>,
   val elementAccessor: T.() -> E,
+  val isOptional: Boolean = false,
 ) {
   internal val elementDescriptor: SerialDescriptor
     get() = elementSerializer.descriptor
@@ -61,12 +62,14 @@ inline fun <T, reified E> tupleElement(
   name: String,
   noinline elementAccessor: T.() -> E,
   serializer: KSerializer<E> = serializer(),
+  isOptional: Boolean = false,
 ): TupleElement<T, E> {
   return TupleElement(
     name = name,
     index = index,
     elementSerializer = serializer,
     elementAccessor = elementAccessor,
+    isOptional = isOptional,
   )
 }
 
@@ -90,19 +93,24 @@ class TupleElementsBuilder<T> {
   internal val elementsSize by _elements::size
 
   inline fun <reified E> element(
-    property: KProperty1<T, E>
+    property: KProperty1<T, E>,
+    isOptional: Boolean = false,
   ) {
-    element(property.name, property)
+    element(property.name, property, isOptional)
   }
 
   inline fun <reified E> element(
     name: String,
     noinline elementAccessor: T.() -> E,
+    isOptional: Boolean = false,
   ) {
-    element(tupleElement(elementsSize, name, elementAccessor))
+    element(tupleElement(elementsSize, name, elementAccessor, isOptional = isOptional))
   }
 
   fun element(element: TupleElement<T, *>) {
+    require(_elements.none { it.isOptional } || element.isOptional) {
+      "Optional tuple elements must be trailing; required element '${element.name}' follows an optional element"
+    }
     _elements.addLast(element)
   }
 }
@@ -139,6 +147,7 @@ abstract class TupleSerializer<T>(
         element(
           elementName = tupleElement.name,
           descriptor = tupleElement.elementDescriptor,
+          isOptional = tupleElement.isOptional,
         )
       }
   }

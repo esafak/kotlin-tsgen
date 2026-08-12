@@ -9,26 +9,26 @@ import kotlinx.serialization.*
 @Serializable(with = OptionalFields.Serializer::class)
 data class OptionalFields(
   val requiredString: String,
-  val optionalString: String = "",
   val nullableString: String?,
+  val optionalString: String = "",
   val nullableOptionalString: String? = "",
 ) {
   object Serializer : TupleSerializer<OptionalFields>(
     "OptionalFields",
     {
       element(OptionalFields::requiredString)
-      element(OptionalFields::optionalString)
       element(OptionalFields::nullableString)
-      element(OptionalFields::nullableOptionalString)
+      element(OptionalFields::optionalString, isOptional = true)
+      element(OptionalFields::nullableOptionalString, isOptional = true)
     }
   ) {
     override fun tupleConstructor(elements: Iterator<*>): OptionalFields {
       val iter = elements.iterator()
       return OptionalFields(
         iter.next() as String,
+        iter.next() as String?,
         iter.next() as String,
-        iter.next() as String,
-        iter.next() as String,
+        iter.next() as String?,
       )
     }
   }
