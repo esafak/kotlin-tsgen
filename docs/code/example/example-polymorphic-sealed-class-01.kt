@@ -3,8 +3,9 @@
 package io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 import io.github.esafak.kotlintsgen.*
+
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Serializable
 @JsonClassDiscriminator("kind")

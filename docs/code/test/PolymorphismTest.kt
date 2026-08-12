@@ -78,19 +78,19 @@ class PolymorphismTest : FunSpec({
           |  | Project.OProj;
           |
           |export namespace Project {
-          |  export enum Type {
+          |  export enum Kind {
           |    DeprecatedProject = "io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
           |    OProj = "OProj",
           |  }
           |
           |  export interface DeprecatedProject {
-          |    type: Project.Type.DeprecatedProject;
+          |    kind: Project.Kind.DeprecatedProject;
           |    name: string;
           |    reason: string;
           |  }
           |
           |  export interface OProj {
-          |    type: Project.Type.OProj;
+          |    kind: Project.Kind.OProj;
           |    name: string;
           |    owner: string;
           |  }

@@ -3,7 +3,6 @@
 <!--- TEST_NAME PolymorphismSealedTest -->
 <!--- INCLUDE .*\.kt
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 import io.github.esafak.kotlintsgen.*
 -->
 
@@ -87,6 +86,8 @@ A sealed class will be converted as a
 This has many benefits that closely match how sealed classes work in Kotlin.
 
 ```kotlin
+import kotlinx.serialization.json.JsonClassDiscriminator
+
 @Serializable
 @JsonClassDiscriminator("kind")
 sealed class Project {
