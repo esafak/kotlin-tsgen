@@ -34,6 +34,40 @@ class NamespacesTest : FunSpec({
     }
   }
 
+  context("ExampleNamespacesCrossReference01") {
+    val caseName = testCase.name.name
+
+    val actual = captureOutput(caseName) {
+      io.github.esafak.kotlintsgen.example.exampleNamespacesCrossReference01.main()
+    }.normalizeJoin()
+
+    test("expect actual matches TypeScript") {
+      actual.shouldBe(
+        // language=TypeScript
+        """
+          |export namespace org {
+          |  export namespace one {
+          |    export interface Parent {
+          |      child: org.two.Child;
+          |    }
+          |  }
+          |
+          |  export namespace two {
+          |    export interface Child {
+          |      value: string;
+          |    }
+          |  }
+          |}
+        """.trimMargin()
+        .normalize()
+      )
+    }
+
+    test("expect actual compiles").config(tags = tsCompile) {
+      actual.shouldTypeScriptCompile(caseName)
+    }
+  }
+
   context("ExampleNamespacesStatic01") {
     val caseName = testCase.name.name
 

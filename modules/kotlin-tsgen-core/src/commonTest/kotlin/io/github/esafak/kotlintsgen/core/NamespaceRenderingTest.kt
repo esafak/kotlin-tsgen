@@ -64,6 +64,18 @@ class NamespaceRenderingTest : FunSpec({
       """.trimMargin()
   }
 
+  test("descriptor namespaces qualify cross-namespace references") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+    )
+
+    val ts = KotlinTsGenerator(config).generate(CrossNamespaceParent.serializer())
+
+    ts shouldContain "child: org.two.Child;"
+    ts shouldContain "export namespace one"
+    ts shouldContain "export namespace two"
+  }
+
   test("dotless descriptor names remain flat") {
     val config = KotlinTsConfig(
       namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
@@ -120,6 +132,14 @@ class NamespaceRenderingTest : FunSpec({
   @Serializable
   @SerialName("org.example.PrefixedType")
   private class PrefixedType(val value: String)
+
+  @Serializable
+  @SerialName("org.one.Parent")
+  private class CrossNamespaceParent(val child: CrossNamespaceChild)
+
+  @Serializable
+  @SerialName("org.two.Child")
+  private class CrossNamespaceChild(val value: String)
 
   private class GroupingSource(
     private val group: String?,

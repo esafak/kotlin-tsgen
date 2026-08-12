@@ -234,7 +234,7 @@ open class KotlinTsGenerator(
     groups.forEach { (group, elements) ->
       val declarations = elements
         .filterIsInstance<TsDeclaration>()
-        .map(sourceCodeGenerator::generateDeclaration)
+        .map { element -> sourceCodeGenerator.generateDeclarationInNamespace(element, group) }
         .filter(String::isNotBlank)
 
       if (group.isNullOrBlank()) {

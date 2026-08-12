@@ -21,6 +21,10 @@ interface TsSourceCodeGenerator {
     }
   }
 
+  fun generateDeclarationInNamespace(element: TsDeclaration, namespace: String?): String {
+    return generateDeclaration(element)
+  }
+
   fun generateEnum(enum: TsDeclaration.TsEnum): String
   fun generateInterface(element: TsDeclaration.TsInterface): String
   fun generateNamespace(namespace: TsDeclaration.TsNamespace): String
@@ -37,6 +41,8 @@ interface TsSourceCodeGenerator {
   open class Default(
     private val config: KotlinTsConfig,
   ) : TsSourceCodeGenerator {
+
+    private var renderingNamespace: String? = null
 
 
     override fun groupElementsBy(element: TsElement): String {
@@ -67,6 +73,20 @@ interface TsSourceCodeGenerator {
           appendLine(namespaceContent.prependIndent(config.indent))
         }
         append("}")
+      }
+    }
+
+
+    override fun generateDeclarationInNamespace(
+      element: TsDeclaration,
+      namespace: String?,
+    ): String {
+      val previousNamespace = renderingNamespace
+      renderingNamespace = namespace
+      return try {
+        generateDeclaration(element)
+      } finally {
+        renderingNamespace = previousNamespace
       }
     }
 
@@ -254,7 +274,17 @@ interface TsSourceCodeGenerator {
             val parentRef = generateTypeReference(typeRef.parent)
             "${parentRef}.${typeRef.id.name}"
           } else {
-            typeRef.id.name
+            val declarationNamespace = typeRef.id.namespace
+            if (
+              config.namespaceConfig == KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix &&
+              renderingNamespace != null &&
+              typeRef.id.toString().contains('.') &&
+              declarationNamespace != renderingNamespace
+            ) {
+              "$declarationNamespace.${typeRef.id.name}"
+            } else {
+              typeRef.id.name
+            }
           }
         }
       }

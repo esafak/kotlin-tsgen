@@ -18,11 +18,51 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-namespaces-disabled-01.kt).
+> Full example: [disabled namespaces](./code/example/example-namespaces-disabled-01.kt).
 
 ```typescript
 export interface Widget {
   value: string;
+}
+```
+
+<!--- TEST -->
+
+References between descriptor namespaces are qualified so they remain valid
+after declarations are nested:
+
+```kotlin
+@Serializable
+@SerialName("org.one.Parent")
+class Parent(val child: Child)
+
+@Serializable
+@SerialName("org.two.Child")
+class Child(val value: String)
+
+fun main() {
+  val config = KotlinTsConfig(
+    namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+  )
+  println(KotlinTsGenerator(config).generate(Parent.serializer()))
+}
+```
+
+> Full example: [cross-namespace references](./code/example/example-namespaces-cross-reference-01.kt).
+
+```typescript
+export namespace org {
+  export namespace one {
+    export interface Parent {
+      child: org.two.Child;
+    }
+  }
+
+  export namespace two {
+    export interface Child {
+      value: string;
+    }
+  }
 }
 ```
 
@@ -43,7 +83,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-namespaces-static-01.kt).
+> Full example: [static namespace](./code/example/example-namespaces-static-01.kt).
 
 ```typescript
 export namespace models {
@@ -71,7 +111,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-namespaces-descriptor-prefix-01.kt).
+> Full example: [descriptor-prefix namespaces](./code/example/example-namespaces-descriptor-prefix-01.kt).
 
 ```typescript
 export namespace org {
