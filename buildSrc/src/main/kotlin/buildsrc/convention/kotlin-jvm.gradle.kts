@@ -14,7 +14,7 @@ plugins {
 // IJ still doesn't support script plugins???
 extensions.configure<KotlinJvmProjectExtension> {
 //kotlin {
-  jvmToolchain(21)
+  jvmToolchain(25)
   compilerOptions {
     languageVersion = KOTLIN_2_0
     apiVersion = KOTLIN_2_0

@@ -2,7 +2,7 @@ min_version = "2026.8.0"
 
 [tools]
 # Keep the Java version aligned with the JDK used by the GitHub Actions build.
-java = "temurin-17"
+java = "temurin-25"
 pnpm = "10.15.1"
 hk = "1.55.0"
 ktlint = "1.8.0"
