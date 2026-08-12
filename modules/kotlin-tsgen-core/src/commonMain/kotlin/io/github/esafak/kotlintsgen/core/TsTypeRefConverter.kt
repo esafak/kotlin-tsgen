@@ -24,6 +24,7 @@ fun interface TsTypeRefConverter {
     val serializersModule: SerializersModule = EmptySerializersModule(),
     val primitiveTypeRefOverride: ((SerialDescriptor) -> TsTypeRef?)? = null,
     val indexSignatureKeyTypeRefOverride: ((SerialDescriptor) -> TsTypeRef.Literal?)? = null,
+    val mapKeyTypeRefOverride: ((SerialDescriptor) -> TsTypeRef?)? = null,
   ) : TsTypeRefConverter {
 
     override operator fun invoke(
@@ -92,7 +93,7 @@ fun interface TsTypeRefConverter {
       val keyTypeRef = if (type == TsLiteral.TsMap.Type.INDEX_SIGNATURE) {
         indexSignatureKeyTypeRef(keyDescriptor)
       } else {
-        this(keyDescriptor)
+        mapKeyTypeRefOverride?.invoke(keyDescriptor) ?: this(keyDescriptor)
       }
       val valueTypeRef = this(valueDescriptor)
       val map = TsLiteral.TsMap(keyTypeRef, valueTypeRef, type)

@@ -88,7 +88,6 @@ open class KotlinTsGenerator(
       is TsDeclaration.TsEnum      -> TsLiteral.TsMap.Type.MAPPED_OBJECT
 
       is TsLiteral.Custom,
-      is TsLiteral.ExternalType,
       TsLiteral.Primitive.TsNumber,
       TsLiteral.Primitive.TsString -> TsLiteral.TsMap.Type.INDEX_SIGNATURE
 
@@ -148,6 +147,9 @@ open class KotlinTsGenerator(
           ?.let { TsTypeRef.Declaration(it, null, descriptor.isNullable) }
       },
       indexSignatureKeyTypeRefOverride = { descriptor ->
+        (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
+      },
+      mapKeyTypeRefOverride = { descriptor ->
         (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
       },
     )
@@ -349,6 +351,7 @@ open class KotlinTsGenerator(
 }
 
 
+/** Marks the type-mapping configuration DSL. */
 @DslMarker
 annotation class TsOverrideDsl
 
@@ -359,10 +362,12 @@ class TsOverrideScope internal constructor(
   private val generator: KotlinTsGenerator,
 ) {
 
+  /** Map a serializer's descriptor to a TypeScript element. */
   infix fun KSerializer<*>.mapsTo(element: TsElement) {
     generator.descriptorOverrides[descriptor] = element
   }
 
+  /** Map a serial descriptor to a TypeScript element. */
   infix fun SerialDescriptor.mapsTo(element: TsElement) {
     generator.descriptorOverrides[this] = element
   }

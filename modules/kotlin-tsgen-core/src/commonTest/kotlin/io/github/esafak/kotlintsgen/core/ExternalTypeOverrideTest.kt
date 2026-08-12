@@ -45,7 +45,7 @@ class ExternalTypeOverrideTest : FunSpec({
     generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
 
     generator.generate(ExternalTypeMapHolder.serializer()) shouldContain
-      "values: { [key: double]: string };"
+      "values: Map<double, string>;"
   }
 })
 

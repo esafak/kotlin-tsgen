@@ -34,7 +34,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-01.kt).
+> See the [type-alias example](./code/example/example-customising-output-01.kt).
 
 ```typescript
 export interface Item {
@@ -75,7 +75,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-02.kt).
+> See the [external-type example](./code/example/example-customising-output-02.kt).
 
 ```typescript
 export interface Position {
@@ -108,7 +108,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-03.kt).
+> See the [custom-literal example](./code/example/example-customising-output-03.kt).
 
 This produces no type alias, and `Double` is overridden to be `customDouble`.
 
@@ -157,7 +157,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-04.kt).
+> See the [nullable-property override example](./code/example/example-customising-output-04.kt).
 
 ```typescript
 export interface ItemHolder {
@@ -221,7 +221,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-customising-output-05.kt).
+> See the [nullable and non-nullable override example](./code/example/example-customising-output-05.kt).
 
 ```typescript
 export interface ItemHolder {
