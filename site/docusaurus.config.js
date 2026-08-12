@@ -7,8 +7,16 @@ const config = /** @type {import("@docusaurus/types").Config} */ {
   url: "https://esafak.github.io",
   baseUrl: "/kotlin-tsgen",
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
   favicon: "img/icon.svg",
+
+  markdown: {
+    mdx1Compat: {
+      comments: true,
+    },
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
 
   // GitHub pages deployment config
   organizationName: "esafak",

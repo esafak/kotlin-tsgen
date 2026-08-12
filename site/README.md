@@ -1,6 +1,6 @@
 # Website
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website
 generator.
 
 Some docs are provided by [the documentation subproject](../docs/), as they are processed by Knit.
@@ -8,7 +8,7 @@ Some docs are provided by [the documentation subproject](../docs/), as they are 
 ### Local Development
 
 ```shell
-./gradlew docusaurusRun
+mise run docs
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are
@@ -17,7 +17,7 @@ reflected live without having to restart the server.
 ### Build
 
 ```shell
-./gradlew docusaurusBuild
+mise x -- ./gradlew docusaurusBuild
 ```
 
 This command generates static content into the `build` directory and can be served using any static
