@@ -6,12 +6,7 @@ ktlint = "1.8.0"
 
 [tasks.test]
 description = "Run the same checks as CI"
-run = '''
-if [ -x "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ]; then
-  export CHROME_BIN="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
-fi
-mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
-'''
+run = "mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
 
 [tasks.build]
 description = "Compile all project targets without running tests"
