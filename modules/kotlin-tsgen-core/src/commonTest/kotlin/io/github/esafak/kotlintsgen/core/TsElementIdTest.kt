@@ -43,6 +43,10 @@ class TsElementIdTest : FunSpec({
     id.name shouldBe "User"
   }
 
+  test("empty namespace segments remain visible") {
+    TsElementId(".User").namespaceSegments shouldBe listOf("")
+  }
+
   test("nested references retain their qualified namespace") {
     val generator = TsSourceCodeGenerator.Default(
       KotlinTsConfig(

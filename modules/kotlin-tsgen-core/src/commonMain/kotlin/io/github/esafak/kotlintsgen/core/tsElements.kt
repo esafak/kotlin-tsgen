@@ -15,9 +15,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 value class TsElementId(private val id: String) {
   /** The namespace components used by internal renderers. */
   internal val namespaceSegments: List<String>
-    get() = id
-      .substringBeforeLast('.', missingDelimiterValue = "")
-      .let { if (it.isEmpty()) emptyList() else it.split('.') }
+    get() = if (id.contains('.')) id.substringBeforeLast('.').split('.') else emptyList()
 
   val namespace: String
     get() = id.substringBeforeLast(".")
