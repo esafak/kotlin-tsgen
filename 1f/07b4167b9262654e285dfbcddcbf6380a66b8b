@@ -1,0 +1,29 @@
+docs/code/test/MapsTests.kt
+  s_e186ba49142bd9::t_a393c91fa01c04 155-156,235,261
+docs/maps.md
+  s_daecc29d22c21e::t_c3966e2378d07a 203-204,351,425
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1f07b4167b9262654e285dfbcddcbf6380a66b8b",
+  "prompts": {},
+  "sessions": {
+    "s_daecc29d22c21e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_009598085ffeYnJbhjxibUM1qe",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    },
+    "s_e186ba49142bd9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00958c2e5ffebH4cWw8LMl8Gnf",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
