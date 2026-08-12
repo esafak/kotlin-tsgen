@@ -1,0 +1,22 @@
+.github/workflows/run_gradle_task.yml
+  h_ea91e2db23540f 10,28,98-118
+.github/workflows/run_tests.yml
+  h_ea91e2db23540f 39
+hk.pkl
+  h_ea91e2db23540f 18
+mise.toml
+  h_ea91e2db23540f 1-2,12,17,22
+renovate.json
+  h_ea91e2db23540f 17,20-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "42a5c452ef409b5fe92636332c94e22761b1596b",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
