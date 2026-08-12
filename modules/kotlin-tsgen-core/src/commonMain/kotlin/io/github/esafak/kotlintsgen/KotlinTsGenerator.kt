@@ -138,7 +138,7 @@ open class KotlinTsGenerator(
 
 
   val typeRefConverter: TsTypeRefConverter = object : TsTypeRefConverter {
-    private val converter = TsTypeRefConverter.Default(
+    private val converter = object : TsTypeRefConverter.Default(
       elementIdConverter,
       mapTypeConverter,
       effectiveSerializersModule,
@@ -149,10 +149,13 @@ open class KotlinTsGenerator(
       indexSignatureKeyTypeRefOverride = { descriptor ->
         (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
       },
-      mapKeyTypeRefOverride = { descriptor ->
-        (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
-      },
-    )
+    ) {
+      override fun mapKeyTypeRefOverride(descriptor: SerialDescriptor): TsTypeRef? {
+        return (findOverride(descriptor) as? TsLiteral)?.let {
+          TsTypeRef.Literal(it, descriptor.isNullable)
+        }
+      }
+    }
     val cache: MutableMap<SerialDescriptor, TsTypeRef> = mutableMapOf()
 
     override fun invoke(descriptor: SerialDescriptor): TsTypeRef =

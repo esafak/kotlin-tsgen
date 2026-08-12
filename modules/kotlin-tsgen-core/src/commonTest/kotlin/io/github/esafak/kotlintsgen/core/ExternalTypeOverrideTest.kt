@@ -47,6 +47,14 @@ class ExternalTypeOverrideTest : FunSpec({
     generator.generate(ExternalTypeMapHolder.serializer()) shouldContain
       "values: Map<double, string>;"
   }
+
+  test("nullable external map keys preserve nullability") {
+    val generator = KotlinTsGenerator()
+    generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
+
+    generator.generate(NullableExternalTypeMapHolder.serializer()) shouldContain
+      "values: Map<double | null, string>;"
+  }
 })
 
 
@@ -60,4 +68,10 @@ private data class ExternalTypeHolder(
 @Serializable
 private data class ExternalTypeMapHolder(
   val values: Map<Double, String>,
+)
+
+
+@Serializable
+private data class NullableExternalTypeMapHolder(
+  val values: Map<Double?, String>,
 )
