@@ -245,8 +245,10 @@ class PolymorphismTest : FunSpec({
         // language=TypeScript
         """
           |export interface Box {
-          |  value: number;
+          |  value: Double;
           |}
+          |
+          |export type Double = number;
         """.trimMargin()
         .normalize()
       )

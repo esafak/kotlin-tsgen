@@ -23,9 +23,13 @@ class ListsTests : FunSpec({
         """
           |export interface MyLists {
           |  strings: string[];
-          |  ints: number[];
-          |  longs: number[];
+          |  ints: Int[];
+          |  longs: Long[];
           |}
+          |
+          |export type Int = number;
+          |
+          |export type Long = number;
         """.trimMargin()
         .normalize()
       )
@@ -78,13 +82,15 @@ class ListsTests : FunSpec({
         // language=TypeScript
         """
           |export interface MyLists {
-          |  listOfMaps: { [key: string]: number }[];
+          |  listOfMaps: { [key: string]: Int }[];
           |  listOfColourMaps: { [key: string]: Colour }[];
           |}
           |
           |export interface Colour {
           |  rgb: string;
           |}
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )

@@ -22,8 +22,10 @@ class DefaultValuesTest : FunSpec({
         // language=TypeScript
         """
           |export interface Colour {
-          |  rgb?: number;
+          |  rgb?: Int;
           |}
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )
@@ -46,8 +48,10 @@ class DefaultValuesTest : FunSpec({
         // language=TypeScript
         """
           |export interface Colour {
-          |  rgb: number | null;
+          |  rgb: Int | null;
           |}
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )

@@ -22,11 +22,14 @@ fun interface TsTypeRefConverter {
     val elementIdConverter: TsElementIdConverter = TsElementIdConverter.Default,
     val mapTypeConverter: TsMapTypeConverter = TsMapTypeConverter.Default,
     val serializersModule: SerializersModule = EmptySerializersModule(),
+    val primitiveTypeRefOverride: ((SerialDescriptor) -> TsTypeRef?)? = null,
+    val indexSignatureKeyTypeRefOverride: ((SerialDescriptor) -> TsTypeRef.Literal?)? = null,
   ) : TsTypeRefConverter {
 
     override operator fun invoke(
       descriptor: SerialDescriptor,
     ): TsTypeRef {
+      primitiveTypeRefOverride?.invoke(descriptor)?.let { return it }
       return when (val descriptorKind = descriptor.kind) {
         is PrimitiveKind     -> primitiveTypeRef(descriptor, descriptorKind)
 
@@ -85,11 +88,37 @@ fun interface TsTypeRefConverter {
 
     fun mapTypeRef(descriptor: SerialDescriptor): TsTypeRef.Literal {
       val (keyDescriptor, valueDescriptor) = descriptor.elementDescriptors.toList()
-      val keyTypeRef = this(keyDescriptor)
-      val valueTypeRef = this(valueDescriptor)
       val type = mapTypeConverter(keyDescriptor, valueDescriptor)
+      val keyTypeRef = if (type == TsLiteral.TsMap.Type.INDEX_SIGNATURE) {
+        indexSignatureKeyTypeRef(keyDescriptor)
+      } else {
+        this(keyDescriptor)
+      }
+      val valueTypeRef = this(valueDescriptor)
       val map = TsLiteral.TsMap(keyTypeRef, valueTypeRef, type)
       return TsTypeRef.Literal(map, descriptor.isNullable)
+    }
+
+    /**
+     * Index-signature parameters must be literal `string`/`number`-like types in TypeScript.
+     * Type aliases are valid for mapped-object and `Map` keys, but TypeScript rejects aliases in
+     * `[key: T]` positions. Inline value classes are therefore unwrapped before rendering.
+     */
+    private fun indexSignatureKeyTypeRef(descriptor: SerialDescriptor): TsTypeRef.Literal {
+      indexSignatureKeyTypeRefOverride?.invoke(descriptor)?.let { return it.copy(nullable = false) }
+      val resolved = when {
+        descriptor.isInline && descriptor.elementsCount > 0 ->
+          indexSignatureKeyTypeRef(descriptor.elementDescriptors.first())
+        descriptor.kind == SerialKind.CONTEXTUAL -> {
+          val contextual = runCatching {
+            serializersModule.getContextualDescriptor(descriptor)
+          }.getOrNull()
+          if (contextual != null) indexSignatureKeyTypeRef(contextual)
+          else error("Expected primitive descriptor, got ${descriptor.kind}")
+        }
+        else -> primitiveTypeRef(descriptor, descriptor.kind as PrimitiveKind)
+      }
+      return resolved.copy(nullable = false)
     }
 
 

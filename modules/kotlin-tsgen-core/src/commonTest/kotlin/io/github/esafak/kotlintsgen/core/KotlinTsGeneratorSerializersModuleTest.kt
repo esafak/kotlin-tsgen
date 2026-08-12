@@ -80,7 +80,7 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       ts shouldContain "type Box = any"
   }
 
-  test("contextual - a primitive serializer is rendered using its primitive type") {
+  test("contextual - a primitive serializer is rendered using a named type") {
       val module = SerializersModule {
         contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
       }
@@ -88,9 +88,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       val ts = KotlinTsGenerator(serializersModule = module)
         .generate(PrimitiveContextualExample.Holder.serializer())
 
-      ts shouldContain "required: string;"
-      ts shouldContain "optional: string | null;"
-      ts shouldNotContain "EntityType"
+       ts shouldContain "required: EntityType;"
+       ts shouldContain "optional: EntityType | null;"
+       ts shouldContain "export type EntityType = string;"
   }
 
   test("custom primitive serializer - a root enum is emitted as a named type alias") {

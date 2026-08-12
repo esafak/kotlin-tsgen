@@ -22,8 +22,10 @@ class BasicClassesTest : FunSpec({
         // language=TypeScript
         """
           |export interface Color {
-          |  rgb: number;
+          |  rgb: Int;
           |}
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )
@@ -47,11 +49,15 @@ class BasicClassesTest : FunSpec({
         """
           |export interface SimpleTypes {
           |  aString: string;
-          |  anInt: number;
-          |  aDouble: number;
+          |  anInt: Int;
+          |  aDouble: Double;
           |  bool: boolean;
           |  privateMember: string;
           |}
+          |
+          |export type Int = number;
+          |
+          |export type Double = number;
         """.trimMargin()
         .normalize()
       )
@@ -75,11 +81,15 @@ class BasicClassesTest : FunSpec({
         """
           |export interface SomeDataClass {
           |  aString: string;
-          |  anInt: number;
-          |  aDouble: number;
+          |  anInt: Int;
+          |  aDouble: Double;
           |  bool: boolean;
           |  privateMember: string;
           |}
+          |
+          |export type Int = number;
+          |
+          |export type Double = number;
         """.trimMargin()
         .normalize()
       )

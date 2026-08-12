@@ -22,8 +22,10 @@ fun main() {
 
 ```typescript
 export interface Color {
-  rgb: number;
+  rgb: Int;
 }
+
+export type Int = number;
 ```
 
 <!--- TEST -->
@@ -51,11 +53,15 @@ fun main() {
 ```typescript
 export interface SimpleTypes {
   aString: string;
-  anInt: number;
-  aDouble: number;
+  anInt: Int;
+  aDouble: Double;
   bool: boolean;
   privateMember: string;
 }
+
+export type Int = number;
+
+export type Double = number;
 ```
 
 <!--- TEST -->
@@ -83,11 +89,15 @@ fun main() {
 ```typescript
 export interface SomeDataClass {
   aString: string;
-  anInt: number;
-  aDouble: number;
+  anInt: Int;
+  aDouble: Double;
   bool: boolean;
   privateMember: string;
 }
+
+export type Int = number;
+
+export type Double = number;
 ```
 
 <!--- TEST -->

@@ -200,8 +200,8 @@ fun main() {
 ```typescript
 export interface Example {
   complex: Map<ComplexKey, string>;
-  simple: { [key: SimpleKey]: string };
-  doubleSimple: { [key: DoubleSimpleKey]: string };
+  simple: { [key: string]: string };
+  doubleSimple: { [key: string]: string };
   enum: { [key in EnumKey]: string };
   doubleEnum: { [key in DoubleEnumKey]: string };
 }
@@ -280,7 +280,9 @@ export interface Colour {
   a: UByte;
 }
 
-export type UByte = number;
+export type UByte = Byte;
+
+export type Byte = number;
 ```
 
 <!--- TEST -->
@@ -346,7 +348,7 @@ Because the map now has a non-complex key, an 'indexed type' is generated.
 
 ```typescript
 export interface CanvasProperties {
-  colourNames: { [key: ColourMapKey]: string };
+  colourNames: { [key: string]: string };
 }
 
 export type ColourMapKey = string;
@@ -422,6 +424,8 @@ fun main() {
 export interface CanvasProperties {
   colourNames: { [key: string]: string };
 }
+
+export type Colour = string;
 ```
 
 <!--- TEST -->
