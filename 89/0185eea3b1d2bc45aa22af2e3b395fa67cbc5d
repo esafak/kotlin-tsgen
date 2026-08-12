@@ -1,0 +1,20 @@
+docs/customising-output.md
+  h_ea91e2db23540f 37,78,111,160,224
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 152-154,354,365,370
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsTypeRefConverter.kt
+  h_ea91e2db23540f 27,96
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/ExternalTypeOverrideTest.kt
+  h_ea91e2db23540f 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "890185eea3b1d2bc45aa22af2e3b395fa67cbc5d",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
