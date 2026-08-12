@@ -47,6 +47,12 @@ class NumericAliasesTest : FunSpec({
     ts shouldContain "nullable: Double | null;"
   }
 
+  test("Map<Int, String> uses a numeric index signature and preserves value types") {
+    val ts = KotlinTsGenerator().generate(MapHolder.serializer())
+    ts shouldContain "{ [key: number]: string }"
+    ts shouldContain "map:"
+  }
+
   test("root numeric serializers emit an alias") {
     KotlinTsGenerator().generate(Int.serializer()) shouldBe "export type Int = number;"
   }
@@ -60,6 +66,12 @@ class NumericAliasesTest : FunSpec({
   test("reachable declaration name collisions fail generation") {
     shouldThrow<InvalidTsIdentifierException> {
       KotlinTsGenerator().generate(CollisionHolder.serializer())
+    }
+  }
+
+  test("primitive aliases with the same rendered name fail generation") {
+    shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(PrimitiveAliasCollisionHolder.serializer())
     }
   }
 })
@@ -78,6 +90,11 @@ private data class NumericHolder(
 private data class CollectionHolder(
   val values: List<Int>,
   val nullable: Double?,
+)
+
+@Serializable
+private data class MapHolder(
+  val map: Map<Int, String>,
 )
 
 @Serializable
@@ -105,3 +122,19 @@ private data class CollisionHolder(
 
 @Serializable
 private data class CollisionType(val value: String)
+
+@Serializable
+private data class PrimitiveAliasCollisionHolder(
+  val int: Int,
+  @Serializable(with = StringIntSerializer::class) val custom: StringInt,
+)
+
+@Serializable(with = StringIntSerializer::class)
+@JvmInline
+private value class StringInt(val value: String)
+
+private object StringIntSerializer : KSerializer<StringInt> {
+  override val descriptor = PrimitiveSerialDescriptor("Int", PrimitiveKind.STRING)
+  override fun serialize(encoder: Encoder, value: StringInt) = encoder.encodeString(value.value)
+  override fun deserialize(decoder: Decoder) = StringInt(decoder.decodeString())
+}

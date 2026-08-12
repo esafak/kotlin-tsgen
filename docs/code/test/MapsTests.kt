@@ -152,8 +152,8 @@ class MapsTests : FunSpec({
         """
           |export interface Example {
           |  complex: Map<ComplexKey, string>;
-          |  simple: { [key: SimpleKey]: string };
-          |  doubleSimple: { [key: DoubleSimpleKey]: string };
+          |  simple: { [key: string]: string };
+          |  doubleSimple: { [key: string]: string };
           |  enum: { [key in EnumKey]: string };
           |  doubleEnum: { [key in DoubleEnumKey]: string };
           |}
@@ -232,7 +232,7 @@ class MapsTests : FunSpec({
         // language=TypeScript
         """
           |export interface CanvasProperties {
-          |  colourNames: { [key: ColourMapKey]: string };
+          |  colourNames: { [key: string]: string };
           |}
           |
           |export type ColourMapKey = string;
@@ -258,7 +258,7 @@ class MapsTests : FunSpec({
         // language=TypeScript
         """
           |export interface CanvasProperties {
-          |  colourNames: { [key: Colour]: string };
+          |  colourNames: { [key: string]: string };
           |}
           |
           |export type Colour = string;

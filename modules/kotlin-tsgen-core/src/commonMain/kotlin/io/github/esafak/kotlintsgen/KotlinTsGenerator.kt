@@ -141,6 +141,9 @@ open class KotlinTsGenerator(
         generatedPrimitiveAliases[descriptor.serialName.removeSuffix("?")]
           ?.let { TsTypeRef.Declaration(it, null, descriptor.isNullable) }
       },
+      indexSignatureKeyTypeRefOverride = { descriptor ->
+        (findOverride(descriptor) as? TsLiteral)?.let { TsTypeRef.Literal(it, false) }
+      },
     )
     val cache: MutableMap<SerialDescriptor, TsTypeRef> = mutableMapOf()
 
@@ -223,23 +226,31 @@ open class KotlinTsGenerator(
       .flatMap { serializer -> descriptorsExtractor(serializer) }
       .toSet()
 
-    generatedPrimitiveAliases = descriptors
+    val primitiveAliasDescriptors = descriptors
       .filter { descriptor ->
         val kind = descriptor.kind as? PrimitiveKind ?: return@filter false
         kind !in setOf(PrimitiveKind.BOOLEAN, PrimitiveKind.CHAR, PrimitiveKind.STRING) ||
           descriptor.serialName !in builtInPrimitiveSerialNames
       }
       .filter { findOverride(it) == null }
-      .distinctBy { it.serialName.removeSuffix("?") }
-      .associate { descriptor ->
+      .distinctBy { it.serialName.removeSuffix("?") to it.kind }
+    val aliasEntries = primitiveAliasDescriptors.map { descriptor ->
         val serialName = descriptor.serialName.removeSuffix("?")
         val id = if (serialName in builtInPrimitiveSerialNames) {
           TsElementId(serialName.substringAfterLast('.'))
         } else {
           elementIdConverter(descriptor)
         }
-        serialName to id
-      }
+      serialName to id
+    }
+    // Compare rendered locations rather than descriptor IDs: namespace configuration determines
+    // whether two declarations with the same short name actually collide in TypeScript.
+    aliasEntries.groupingBy { (_, id) ->
+      sourceCodeGenerator.groupElementsBy(TsDeclaration.TsTypeAlias(id, TsTypeRef.Literal(TsLiteral.Primitive.TsString, false))) to id.name
+    }.eachCount().filterValues { it > 1 }.keys.firstOrNull()?.let { (_, name) ->
+      throw InvalidTsIdentifierException(name, "generated numeric type aliases", "multiple reachable primitive aliases render with the same name")
+    }
+    generatedPrimitiveAliases = aliasEntries.distinctBy { it.first }.toMap()
 
     val elements = descriptors
 
@@ -248,13 +259,22 @@ open class KotlinTsGenerator(
       .flatMap { descriptor -> elementConverter(descriptor) }
       .toSet()
 
-    val aliases = descriptors.mapNotNull(::primitiveAlias).distinctBy { it.id }
+    val aliases = descriptors.mapNotNull(::primitiveAlias)
+    val aliasKeys = aliases.groupingBy { alias ->
+      sourceCodeGenerator.groupElementsBy(alias) to alias.id.name
+    }.eachCount()
+    aliasKeys.filterValues { it > 1 }.keys.firstOrNull()?.let { (_, name) ->
+      throw InvalidTsIdentifierException(name, "generated numeric type aliases", "multiple reachable primitive aliases render with the same name")
+    }
     val declarations = elements.filterIsInstance<TsDeclaration>()
-    val aliasNames = aliases.map { it.id.name }.toSet()
-    declarations
-      .filter { it.id.name in aliasNames }
+    val declarationKeys = declarations.associateBy { declaration ->
+      sourceCodeGenerator.groupElementsBy(declaration) to declaration.id.name
+    }
+    aliases
+      .filter { alias -> (sourceCodeGenerator.groupElementsBy(alias) to alias.id.name) in declarationKeys }
       .firstOrNull()
-      ?.let { conflict ->
+      ?.let { alias ->
+        val conflict = declarationKeys[sourceCodeGenerator.groupElementsBy(alias) to alias.id.name]!!
         throw InvalidTsIdentifierException(
           conflict.id.name,
           "generated numeric type alias",

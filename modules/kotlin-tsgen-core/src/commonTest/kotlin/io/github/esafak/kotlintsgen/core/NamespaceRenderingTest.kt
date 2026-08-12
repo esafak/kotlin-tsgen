@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import io.kotest.assertions.throwables.shouldThrow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
@@ -76,6 +77,24 @@ class NamespaceRenderingTest : FunSpec({
     ts shouldContain "export namespace two"
   }
 
+  test("descriptor namespace keeps a reachable namespaced Int distinct from the builtin alias") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+    )
+
+    val ts = KotlinTsGenerator(config).generate(NamespacedInt.serializer())
+    ts shouldContain "export type Int = number;"
+    ts shouldContain "export namespace org"
+    ts shouldContain "export namespace example"
+    ts shouldContain "export interface Int"
+  }
+
+  test("disabled namespace rejects the same rendered-name collision") {
+    shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(NamespacedInt.serializer())
+    }
+  }
+
   test("dotless descriptor names remain flat") {
     val config = KotlinTsConfig(
       namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
@@ -140,6 +159,10 @@ class NamespaceRenderingTest : FunSpec({
   @Serializable
   @SerialName("org.two.Child")
   private class CrossNamespaceChild(val value: String)
+
+  @Serializable
+  @SerialName("org.example.Int")
+  private class NamespacedInt(val value: Int)
 
   private class GroupingSource(
     private val group: String?,
