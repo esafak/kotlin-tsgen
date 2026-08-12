@@ -1,0 +1,14 @@
+mise.toml
+  h_ea91e2db23540f 9-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1ef3b6090dfb957d28f5c6c1ef04ba51fa95bf8c",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
