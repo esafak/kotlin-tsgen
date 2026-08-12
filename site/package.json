@@ -3,11 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.15.1",
-  "pnpm": {
-    "overrides": {
-      "webpack": "5.75.0"
-    }
-  },
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -21,24 +16,26 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "2.4.3",
-    "@docusaurus/preset-classic": "2.4.3",
-    "@mdx-js/react": "^1.6.22",
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-content-docs": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "docusaurus-plugin-sass": "^0.2.2",
     "prism-react-renderer": "^2.0.0",
     "prism-themes": "^1.9.0",
     "prismjs-darcula-theme": "^1.0.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "typescript": "^5.0.0"
-  },
-  "___dependencies": {
-    "highlight.js": "^11.7.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.102.0",
+    "typescript": "^5.1.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "2.4.3",
-    "@tsconfig/docusaurus": "^2.0.0"
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0"
   },
   "browserslist": {
     "production": [
@@ -53,6 +50,6 @@
     ]
   },
   "engines": {
-    "node": ">=16.14"
+    "node": ">=20.0"
   }
 }

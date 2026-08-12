@@ -17,6 +17,11 @@ description = "Compile all project targets without running tests"
 run = "mise x -- ./gradlew assemble"
 run_windows = "mise x -- .\\gradlew.bat assemble"
 
+[tasks.docs]
+description = "Generate and view the documentation site locally"
+run = "mise x -- ./gradlew docusaurusRun"
+run_windows = "mise x -- .\\gradlew.bat docusaurusRun"
+
 [tasks."test:unit"]
 description = "Run the fast JVM unit tests"
 run = "mise x -- ./gradlew :modules:kotlin-tsgen-core:jvmTest"
