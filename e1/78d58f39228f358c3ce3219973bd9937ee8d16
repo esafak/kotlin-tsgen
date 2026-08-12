@@ -1,0 +1,14 @@
+.github/workflows/run_gradle_task.yml
+  h_ea91e2db23540f 62-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e178d58f39228f358c3ce3219973bd9937ee8d16",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
