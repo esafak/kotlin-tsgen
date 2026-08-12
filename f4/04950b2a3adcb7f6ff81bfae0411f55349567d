@@ -1,0 +1,33 @@
+buildSrc/src/main/kotlin/buildsrc/config/nodePlugin.kt
+  s_5a31e1120d0037::t_fe504e8479a20a 4,10-13
+mise.lock
+  s_0850e835a3d6bb::t_c38e3d35e4a940 103-141
+renovate.json
+  s_5a31e1120d0037::t_d87d5091b18c1a 19-32,35-37
+site/pnpm-lock.yaml
+  s_0850e835a3d6bb::t_852d2af438cc8c 1-10331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f404950b2a3adcb7f6ff81bfae0411f55349567d",
+  "prompts": {},
+  "sessions": {
+    "s_0850e835a3d6bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00823c0f5ffeStLGwZ7mGBN4H0",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    },
+    "s_5a31e1120d0037": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00882bbe4ffepAx23V27tR1TAV",
+        "model": "glm-5.2"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
