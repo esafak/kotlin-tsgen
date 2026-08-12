@@ -26,7 +26,7 @@ extensions.configure<KotlinMultiplatformExtension> {
     nodejs()
   }
 
-  jvmToolchain(21)
+  jvmToolchain(25)
 
   compilerOptions {
     languageVersion = KOTLIN_2_0
