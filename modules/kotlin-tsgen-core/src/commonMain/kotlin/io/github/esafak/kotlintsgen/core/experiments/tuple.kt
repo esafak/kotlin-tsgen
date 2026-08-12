@@ -109,10 +109,12 @@ class TupleElementsBuilder<T> {
 
   fun element(element: TupleElement<T, *>) {
     val indexedElements = (_elements + element).sortedBy { it.index }
-    require(indexedElements.zipWithNext().none { (current, next) ->
+    val invalidPair = indexedElements.zipWithNext().firstOrNull { (current, next) ->
       current.isOptional && !next.isOptional
-    }) {
-      "Optional tuple elements must be trailing; required element '${element.name}' follows an optional element"
+    }
+    val invalidRequiredElement = invalidPair?.second?.name
+    require(invalidRequiredElement == null) {
+      "Optional tuple elements must be trailing; required element '$invalidRequiredElement' follows an optional element"
     }
     _elements.addLast(element)
   }
