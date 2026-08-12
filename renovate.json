@@ -10,8 +10,13 @@
     "npm",
     "gradle",
     "gradle-wrapper",
-    "github-actions"
+    "github-actions",
+    "mise"
   ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "matchManagers": ["mise"]
+  },
   "packageRules": [
     {
       "description": "auto-merge all but major releases",
