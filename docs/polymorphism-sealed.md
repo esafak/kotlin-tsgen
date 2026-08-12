@@ -86,7 +86,10 @@ A sealed class will be converted as a
 This has many benefits that closely match how sealed classes work in Kotlin.
 
 ```kotlin
+import kotlinx.serialization.json.JsonClassDiscriminator
+
 @Serializable
+@JsonClassDiscriminator("kind")
 sealed class Project {
   abstract val name: String
 }
@@ -112,19 +115,19 @@ export type Project =
   | Project.OProj;
 
 export namespace Project {
-  export enum Type {
+  export enum Kind {
     DeprecatedProject = "io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01.DeprecatedProject",
     OProj = "OProj",
   }
 
   export interface DeprecatedProject {
-    type: Project.Type.DeprecatedProject;
+    kind: Project.Kind.DeprecatedProject;
     name: string;
     reason: string;
   }
 
   export interface OProj {
-    type: Project.Type.OProj;
+    kind: Project.Kind.OProj;
     name: string;
     owner: string;
   }

@@ -5,7 +5,10 @@ package io.github.esafak.kotlintsgen.example.examplePolymorphicSealedClass01
 import kotlinx.serialization.*
 import io.github.esafak.kotlintsgen.*
 
+import kotlinx.serialization.json.JsonClassDiscriminator
+
 @Serializable
+@JsonClassDiscriminator("kind")
 sealed class Project {
   abstract val name: String
 }

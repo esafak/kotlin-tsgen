@@ -7,10 +7,10 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementDescriptors
-import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.descriptors.getPolymorphicDescriptors
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 
 fun interface TsElementConverter {
@@ -103,10 +103,25 @@ fun interface TsElementConverter {
       val namespaceId = elementIdConverter(descriptor)
       val namespaceRef = TsTypeRef.Declaration(namespaceId, null, false)
 
-      // discriminator name
-      val discriminatorIndex = descriptor.elementDescriptors
-        .indexOfFirst { it.kind == PrimitiveKind.STRING }
-      val discriminatorName = descriptor.elementNames.elementAtOrNull(discriminatorIndex)
+      // The discriminator is configured on the sealed parent. A discriminator annotation on a
+      // subclass cannot be represented here because this generator emits one shared property for
+      // the whole hierarchy. kotlinx.serialization also requires subclass values to match.
+      val discriminatorName = descriptor.annotations
+        .filterIsInstance<JsonClassDiscriminator>()
+        .firstOrNull()
+        ?.discriminator
+        ?: "type"
+
+      // `type` is the historical default and is a valid unquoted property key even though it is
+      // a contextual TypeScript keyword. Other names must at least be identifier-shaped here;
+      // the derived enum name below receives the complete validator, including reserved names.
+      if (!TsIdentifierValidator.isValidIdentifierSyntax(discriminatorName)) {
+        throw InvalidTsIdentifierException(
+          discriminatorName,
+          "discriminator property of '${descriptor.serialName}'",
+          "it must match ^[A-Za-z_$][A-Za-z0-9_$]*$",
+        )
+      }
 
       val subclassesDescriptorToInterface: Map<SerialDescriptor, TsDeclaration.TsInterface> =
         descriptor.elementDescriptors
@@ -121,19 +136,18 @@ fun interface TsElementConverter {
           } ?: emptyMap()
 
       // verify a discriminated interface can be created
-      if (subclassesDescriptorToInterface.isEmpty() || discriminatorName.isNullOrBlank()) {
+      if (subclassesDescriptorToInterface.isEmpty()) {
         // fallback: a type alias to 'any', same as for open-polymorphism
         return setOf(createTypeAliasAny(descriptor))
       } else {
         // discriminator enum
         val discriminatorEnum = run {
-          val id = TsElementId(
-            "${namespaceId.namespace}.${discriminatorName.replaceFirstChar { it.uppercaseChar() }}"
-          )
+          val discriminatorEnumName = discriminatorName.replaceFirstChar { it.uppercaseChar() }
           TsIdentifierValidator.assertValidIdentifier(
-            id.name,
+            discriminatorEnumName,
             "discriminator enum for '${descriptor.serialName}'",
           )
+          val id = TsElementId("${namespaceId.namespace}.$discriminatorEnumName")
 
           val members = subclassesDescriptorToInterface.entries.map { (subclassDescriptor, tsInterface) ->
             val enumMemberName = tsInterface.id.name

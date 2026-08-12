@@ -2,6 +2,7 @@ package io.github.esafak.kotlintsgen.core
 
 import io.github.esafak.kotlintsgen.KotlinTsConfig
 import io.github.esafak.kotlintsgen.KotlinTsGenerator
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
@@ -9,8 +10,10 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import kotlin.jvm.JvmInline
 import kotlinx.serialization.ContextualSerializer
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -24,6 +27,7 @@ import kotlinx.serialization.modules.SerializersModule
  * regressions like a `type Foo = any` placeholder colliding with a resolved `interface Foo`
  * (TS2300 duplicate identifier) are caught.
  */
+@OptIn(ExperimentalSerializationApi::class)
 class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
   test("contextual - a registered type is emitted as an interface, with no duplicate type-alias") {
@@ -177,6 +181,29 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         .toList()
         .shouldBeEmpty()
   }
+
+  test("sealed polymorphic - the parent discriminator annotation selects the property and enum") {
+    val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
+
+    ts shouldContain "export enum Kind {"
+    ts shouldContain "kind: Parent.Kind.Child;"
+    ts shouldNotContain "type: Parent.Kind.Child;"
+  }
+
+  test("sealed polymorphic - a subclass carrying the parent discriminator does not disrupt generation") {
+    val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
+
+    ts shouldContain "kind: Parent.Kind.Child;"
+  }
+
+  test("sealed polymorphic - an invalid discriminator name fails clearly") {
+    val exception = shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(InvalidDiscriminatorExample.Parent.serializer())
+    }
+
+    exception.identifier shouldBe "bad-name"
+    exception.context shouldContain "discriminator property"
+  }
 }) {
   @Suppress("unused")
   private object ContextualExample {
@@ -197,6 +224,27 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
     @Serializable
     class SubClass(val x: String) : Parent()
+  }
+
+  @Suppress("unused")
+  private object AnnotatedSealedExample {
+    @Serializable
+    @JsonClassDiscriminator("kind")
+    sealed class Parent
+
+    @Serializable
+    @JsonClassDiscriminator("kind")
+    class Child : Parent()
+  }
+
+  @Suppress("unused")
+  private object InvalidDiscriminatorExample {
+    @Serializable
+    @JsonClassDiscriminator("bad-name")
+    sealed class Parent
+
+    @Serializable
+    class Child : Parent()
   }
 
   @Suppress("unused")
