@@ -59,6 +59,8 @@ jobs:
     environment: ${{ inputs.environment || null }}
     name: "./gradlew ${{ inputs.gradle-task}} @ ${{ inputs.runs-on }}"
     timeout-minutes: 60
+    env:
+      MISE_LOCKED: "1"
     steps:
 
       ### Gradle task ###
