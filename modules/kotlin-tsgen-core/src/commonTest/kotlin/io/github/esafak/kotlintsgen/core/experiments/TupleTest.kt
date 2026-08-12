@@ -2,6 +2,7 @@ package io.github.esafak.kotlintsgen.core.experiments
 
 import io.github.esafak.kotlintsgen.core.test.kxsBinary
 import io.kotest.assertions.withClue
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.longs.shouldBeExactly
@@ -101,6 +102,39 @@ class TupleTest : FunSpec({
       }
     }
   }
+
+  test("optional tuple elements are propagated to the descriptor") {
+    val serializer = OptionalCoordinates.Serializer
+
+    serializer.descriptor.isElementOptional(1) shouldBe true
+  }
+
+  test("optional tuple elements retain fixed-arity JSON encoding") {
+    val initial = OptionalCoordinates(1, 2)
+
+    val encoded = Json.encodeToString(initial)
+    encoded shouldBe "[1,2]"
+
+    Json.decodeFromString<OptionalCoordinates>(encoded) shouldBe initial
+  }
+
+  test("required tuple elements cannot follow optional elements") {
+    shouldThrow<IllegalArgumentException> {
+      tupleElements<Coordinates> {
+        element(Coordinates::x, isOptional = true)
+        element(Coordinates::y)
+      }
+    }
+  }
+
+  test("optional ordering is validated by element index") {
+    shouldThrow<IllegalArgumentException> {
+      tupleElements<Coordinates> {
+        element(tupleElement(1, "y", { y }))
+        element(tupleElement(0, "x", { x }, isOptional = true))
+      }
+    }
+  }
 }) {
 
 
@@ -127,6 +161,20 @@ class TupleTest : FunSpec({
         val active = requireNotNull(elements.next() as? Boolean)
         return Coordinates(x, y, data, active)
       }
+    }
+  }
+
+  @Serializable(with = OptionalCoordinates.Serializer::class)
+  data class OptionalCoordinates(
+    val x: Int,
+    val y: Int,
+  ) {
+    object Serializer : TupleSerializer<OptionalCoordinates>("OptionalCoordinates", {
+      element(OptionalCoordinates::x)
+      element(OptionalCoordinates::y, isOptional = true)
+    }) {
+      override fun tupleConstructor(elements: Iterator<Any?>): OptionalCoordinates =
+        OptionalCoordinates(elements.next() as Int, elements.next() as Int)
     }
   }
 }

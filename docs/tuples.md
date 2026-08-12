@@ -161,37 +161,35 @@ export type PostalAddressUSA = [
 
 ### Optional elements in tuples
 
-`TupleSerializer` does not consider whether a field is optional. This is intentional, partly because
-it's quite complicated to set up already, and more options won't help! Also, tuples require that
-optional elements must come at the end, which again would make defining tuples more complicated.
-
-If optional tuple elements is important to you, please make an issue and explaining your usecase,
-requirements, and potential solutions or outcomes.
+Tuple elements can be marked optional with `isOptional = true`. Optional elements must be trailing;
+the builder rejects a required element after an optional one. This optionality is propagated to the
+serial descriptor and TypeScript type, but it does not change the fixed-arity wire representation:
+`TupleSerializer` still encodes and decodes every element.
 
 ```kotlin
 @Serializable(with = OptionalFields.Serializer::class)
 data class OptionalFields(
   val requiredString: String,
-  val optionalString: String = "",
   val nullableString: String?,
+  val optionalString: String = "",
   val nullableOptionalString: String? = "",
 ) {
   object Serializer : TupleSerializer<OptionalFields>(
     "OptionalFields",
     {
       element(OptionalFields::requiredString)
-      element(OptionalFields::optionalString)
       element(OptionalFields::nullableString)
-      element(OptionalFields::nullableOptionalString)
+      element(OptionalFields::optionalString, isOptional = true)
+      element(OptionalFields::nullableOptionalString, isOptional = true)
     }
   ) {
     override fun tupleConstructor(elements: Iterator<*>): OptionalFields {
       val iter = elements.iterator()
       return OptionalFields(
         iter.next() as String,
+        iter.next() as String?,
         iter.next() as String,
-        iter.next() as String,
-        iter.next() as String,
+        iter.next() as String?,
       )
     }
   }
@@ -208,9 +206,9 @@ fun main() {
 ```typescript
 export type OptionalFields = [
   requiredString: string,
-  optionalString: string,
   nullableString: string | null,
-  nullableOptionalString: string | null,
+  optionalString?: string,
+  nullableOptionalString?: string | null,
 ];
 ```
 

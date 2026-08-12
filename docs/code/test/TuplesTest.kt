@@ -77,9 +77,9 @@ class TuplesTest : FunSpec({
         """
           |export type OptionalFields = [
           |  requiredString: string,
-          |  optionalString: string,
           |  nullableString: string | null,
-          |  nullableOptionalString: string | null,
+          |  optionalString?: string,
+          |  nullableOptionalString?: string | null,
           |];
         """.trimMargin()
         .normalize()
