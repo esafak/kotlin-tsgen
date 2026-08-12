@@ -1,0 +1,21 @@
+docs/code/example/example-namespaces-cross-reference-01.kt
+  s_e22f2720868724::t_a87a23fe024834 1-21
+docs/code/test/NamespacesTest.kt
+  s_e22f2720868724::t_d9305e335e2b5c 37-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d91cee3554eee8df45884e4ffae5250fbffeb548",
+  "prompts": {},
+  "sessions": {
+    "s_e22f2720868724": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_00cb2d95fffewrsnxn4nrFY4xu",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
