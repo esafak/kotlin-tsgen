@@ -16,12 +16,25 @@
   "lockFileMaintenance": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/buildSrc/src/main/kotlin/buildsrc/convention/node\\.gradle\\.kts$/"
+      ],
+      "matchStrings": [
+        "pnpmVersion\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
+      ],
+      "depNameTemplate": "pnpm",
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
+    }
+  ],
   "packageRules": [
     {
-      "description": "disable npm lock-file maintenance",
-      "matchManagers": ["npm"],
-      "matchUpdateTypes": ["lockFileMaintenance"],
-      "enabled": false
+      "description": "group pnpm version updates",
+      "matchPackageNames": ["pnpm"],
+      "groupName": "pnpm versions"
     },
     {
       "description": "auto-merge all but major releases",

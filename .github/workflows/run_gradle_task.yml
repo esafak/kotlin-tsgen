@@ -79,12 +79,12 @@ jobs:
         with:
           cache: false
 
-      - name: Cache NPM
+      - name: Cache pnpm
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         env:
-          cache-name: cache-npm
+          cache-name: cache-pnpm
         with:
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           path: |
             ./site/node_modules
           restore-keys: |

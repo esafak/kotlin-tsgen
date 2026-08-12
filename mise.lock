@@ -104,3 +104,42 @@ url_api = "https://api.github.com/repos/ktlint/ktlint/releases/assets/316074523"
 checksum = "sha256:3722801dd119b96a2fbeda0b9d66f173994f249998c87bcf2274b51977aa8f77"
 url = "https://github.com/ktlint/ktlint/releases/download/1.8.0/ktlint-1.8.0.zip"
 url_api = "https://api.github.com/repos/ktlint/ktlint/releases/assets/316074523"
+
+[[tools.pnpm]]
+version = "10.15.1"
+backend = "aqua:pnpm/pnpm"
+
+[tools.pnpm."platforms.linux-arm64"]
+checksum = "sha256:19bfe962692d285b0186a7305a0fc8b45dd7f1aeabfa61fc70f039ff8b74829a"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-linux-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389828"
+
+[tools.pnpm."platforms.linux-arm64-musl"]
+checksum = "sha256:19bfe962692d285b0186a7305a0fc8b45dd7f1aeabfa61fc70f039ff8b74829a"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-linux-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389828"
+
+[tools.pnpm."platforms.linux-x64"]
+checksum = "sha256:d4ac2a22e45b50da881855ea6a3734cf83f984eb5fba7163c3f07492fa43c2b0"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-linux-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389830"
+
+[tools.pnpm."platforms.linux-x64-musl"]
+checksum = "sha256:d4ac2a22e45b50da881855ea6a3734cf83f984eb5fba7163c3f07492fa43c2b0"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-linux-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389830"
+
+[tools.pnpm."platforms.macos-arm64"]
+checksum = "sha256:b64bd9e75d92934251bd0b890d3d4d1073e85d71bf39227ff6a6408d27c3106d"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-macos-arm64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389829"
+
+[tools.pnpm."platforms.macos-x64"]
+checksum = "sha256:27b1ee6f58aff241c4527c5974d372021393dff39a1848eaf009c2a03e827dad"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-macos-x64"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389826"
+
+[tools.pnpm."platforms.windows-x64"]
+checksum = "sha256:cb92edf62161aa367c80b9d7c34d4d0e1310ebf8dff843a7e8fa6f03e44ba0ed"
+url = "https://github.com/pnpm/pnpm/releases/download/v10.15.1/pnpm-win-x64.exe"
+url_api = "https://api.github.com/repos/pnpm/pnpm/releases/assets/288389831"
