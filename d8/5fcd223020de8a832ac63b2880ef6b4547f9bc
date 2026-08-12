@@ -1,0 +1,16 @@
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/tuple.kt
+  h_ea91e2db23540f 111-114
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/experiments/TupleTest.kt
+  h_ea91e2db23540f 112-120,129-137
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d85fcd223020de8a832ac63b2880ef6b4547f9bc",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
