@@ -53,7 +53,7 @@ interface TsSourceCodeGenerator {
           when (element) {
             is TsLiteral     -> ""
             is TsDeclaration ->
-              if (element.id.toString().contains('.')) element.id.namespace else ""
+              if (element.id.namespaceSegments.isNotEmpty()) element.id.namespace else ""
           }
       }
     }
@@ -295,7 +295,7 @@ interface TsSourceCodeGenerator {
       return if (
         config.namespaceConfig == KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix &&
         renderingNamespace != null &&
-        id.toString().contains('.') &&
+        id.namespaceSegments.isNotEmpty() &&
         declarationNamespace != renderingNamespace
       ) {
         "$declarationNamespace.${id.name}"

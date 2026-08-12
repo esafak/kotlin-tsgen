@@ -13,6 +13,12 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 // restrictive and clunky, and makes nested references very difficult to decipher.
 @JvmInline
 value class TsElementId(private val id: String) {
+  /** The namespace components used by internal renderers. */
+  internal val namespaceSegments: List<String>
+    get() = id
+      .substringBeforeLast('.', missingDelimiterValue = "")
+      .let { if (it.isEmpty()) emptyList() else it.split('.') }
+
   val namespace: String
     get() = id.substringBeforeLast(".")
   val name: String
