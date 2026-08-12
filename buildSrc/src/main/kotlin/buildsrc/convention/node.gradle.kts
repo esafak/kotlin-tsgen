@@ -14,5 +14,7 @@ node {
 
   workDir.set(rootGradleDir.dir("nodejs"))
   npmWorkDir.set(rootGradleDir.dir("npm"))
+  pnpmVersion.set("10.15.1")
+  pnpmWorkDir.set(rootGradleDir.dir("pnpm"))
   yarnWorkDir.set(rootGradleDir.dir("yarn"))
 }
