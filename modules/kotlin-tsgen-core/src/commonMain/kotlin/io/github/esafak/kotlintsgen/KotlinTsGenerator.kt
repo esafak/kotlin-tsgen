@@ -320,7 +320,16 @@ open class KotlinTsGenerator(
 
 
   private fun canMergeDeclarations(declarations: List<TsDeclaration>): Boolean {
-    return declarations.all { it is TsDeclaration.TsInterface } ||
+    return declarations.all { it is TsDeclaration.TsInterface } &&
+      declarations
+        .flatMap { (it as TsDeclaration.TsInterface).properties }
+        .groupBy { it.name }
+        .values
+        .all { properties ->
+          properties.map { property ->
+            property.optional to sourceCodeGenerator.generateTypeReference(property.typeRef)
+          }.distinct().size == 1
+        } ||
       declarations.count { it is TsDeclaration.TsNamespace } == 1 &&
       declarations.count { it is TsDeclaration.TsTypeUnion } == 1 &&
       declarations.size == 2

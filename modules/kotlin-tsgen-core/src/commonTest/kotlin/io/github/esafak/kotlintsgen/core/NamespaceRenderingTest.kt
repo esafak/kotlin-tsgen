@@ -128,6 +128,16 @@ class NamespaceRenderingTest : FunSpec({
     }
   }
 
+  test("flat namespaces reject incompatible interface merges") {
+    val exception = shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(IncompatibleInterfaceHolder.serializer())
+    }
+
+    exception.identifier shouldBe "Shared"
+    exception.message shouldContain "A.Shared"
+    exception.message shouldContain "B.Shared"
+  }
+
   test("dotless descriptor names remain flat") {
     val config = KotlinTsConfig(
       namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
@@ -218,6 +228,20 @@ class NamespaceRenderingTest : FunSpec({
   @Serializable
   @SerialName("B.Kind")
   private enum class BKind { TWO }
+
+  @Serializable
+  private class IncompatibleInterfaceHolder(
+    val first: InterfaceA,
+    val second: InterfaceB,
+  )
+
+  @Serializable
+  @SerialName("A.Shared")
+  private class InterfaceA(val value: String)
+
+  @Serializable
+  @SerialName("B.Shared")
+  private class InterfaceB(val value: Int)
 
   private class GroupingSource(
     private val group: String?,
