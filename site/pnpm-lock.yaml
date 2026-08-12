@@ -45,7 +45,7 @@ importers:
         specifier: ^1.102.0
         version: 1.102.0
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.1.0
         version: 5.9.3
     devDependencies:
       '@docusaurus/module-type-aliases':
