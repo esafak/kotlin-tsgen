@@ -9,17 +9,17 @@ ktlint = "1.8.0"
 [tasks.test]
 description = "Run the same checks as CI"
 run = "mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
-run_windows = "mise x -- gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
+run_windows = "mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
 
 [tasks.build]
 description = "Compile all project targets without running tests"
 run = "mise x -- ./gradlew assemble"
-run_windows = "mise x -- gradlew.bat assemble"
+run_windows = "mise x -- .\\gradlew.bat assemble"
 
 [tasks."test:unit"]
 description = "Run the fast JVM unit tests"
 run = "mise x -- ./gradlew :modules:kotlin-tsgen-core:jvmTest"
-run_windows = "mise x -- gradlew.bat :modules:kotlin-tsgen-core:jvmTest"
+run_windows = "mise x -- .\\gradlew.bat :modules:kotlin-tsgen-core:jvmTest"
 
 [tasks.lint]
 description = "Run repository linters"

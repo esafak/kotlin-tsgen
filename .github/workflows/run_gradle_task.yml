@@ -101,7 +101,7 @@ jobs:
 
       - name: Run check on Windows
         if: inputs.gradle-task == 'check' && runner.os == 'Windows'
-        run: mise x -- gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+        run: mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
 
       - name: Run site build
         if: inputs.gradle-task == 'docusaurusBuild' && runner.os != 'Windows'
@@ -109,7 +109,7 @@ jobs:
 
       - name: Run site build on Windows
         if: inputs.gradle-task == 'docusaurusBuild' && runner.os == 'Windows'
-        run: mise x -- gradlew.bat docusaurusBuild
+        run: mise x -- .\\gradlew.bat docusaurusBuild
 
       - name: Reject unsupported Gradle task
         if: inputs.gradle-task != 'check' && inputs.gradle-task != 'docusaurusBuild'
