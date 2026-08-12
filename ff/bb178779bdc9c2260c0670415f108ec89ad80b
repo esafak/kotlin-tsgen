@@ -1,0 +1,22 @@
+docs/code/example/example-tuple-03.kt
+  h_ea91e2db23540f 13,21-22,29,31
+docs/code/test/TuplesTest.kt
+  h_ea91e2db23540f 81-82
+docs/tuples.md
+  h_ea91e2db23540f 164-167,174,182-183,190,192,210-211
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/tuple.kt
+  h_ea91e2db23540f 26,65,72,96-97,99,105,107,111-113,150
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/experiments/TupleTest.kt
+  h_ea91e2db23540f 5,105-119,148-161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ffbb178779bdc9c2260c0670415f108ec89ad80b",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
