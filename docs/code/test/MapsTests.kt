@@ -207,7 +207,9 @@ class MapsTests : FunSpec({
           |  a: UByte;
           |}
           |
-          |export type UByte = number;
+          |export type UByte = Byte;
+          |
+          |export type Byte = number;
         """.trimMargin()
         .normalize()
       )
@@ -256,8 +258,10 @@ class MapsTests : FunSpec({
         // language=TypeScript
         """
           |export interface CanvasProperties {
-          |  colourNames: { [key: string]: string };
+          |  colourNames: { [key: Colour]: string };
           |}
+          |
+          |export type Colour = string;
         """.trimMargin()
         .normalize()
       )

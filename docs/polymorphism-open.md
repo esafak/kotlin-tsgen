@@ -123,8 +123,10 @@ fun main() {
 
 ```typescript
 export interface Box {
-  value: number;
+  value: Double;
 }
+
+export type Double = number;
 ```
 
 <!--- TEST -->

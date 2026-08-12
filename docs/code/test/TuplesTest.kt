@@ -23,11 +23,15 @@ class TuplesTest : FunSpec({
         """
           |export type SimpleTypes = [
           |  aString: string,
-          |  anInt: number,
-          |  aDouble: number | null,
+          |  anInt: Int,
+          |  aDouble: Double | null,
           |  bool: boolean,
           |  privateMember: string,
           |];
+          |
+          |export type Int = number;
+          |
+          |export type Double = number;
         """.trimMargin()
         .normalize()
       )
@@ -103,10 +107,12 @@ class TuplesTest : FunSpec({
         // language=TypeScript
         """
           |export type Coordinates = [
-          |  x: number,
-          |  y: number,
-          |  z: number,
+          |  x: Int,
+          |  y: Int,
+          |  z: Int,
           |];
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )
@@ -136,10 +142,12 @@ class TuplesTest : FunSpec({
           |}
           |
           |export type Coordinates = [
-          |  x: number,
-          |  y: number,
-          |  z: number,
+          |  x: Int,
+          |  y: Int,
+          |  z: Int,
           |];
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )

@@ -22,10 +22,12 @@ class CustomisingOutputTest : FunSpec({
         """
           |export interface Item {
           |  price: Double;
-          |  count: number;
+          |  count: Int;
           |}
           |
           |export type Double = double; // assume that 'double' will be provided by another library
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )
@@ -49,8 +51,10 @@ class CustomisingOutputTest : FunSpec({
         """
           |export interface Item {
           |  price: customDouble;
-          |  count: number;
+          |  count: Int;
           |}
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )

@@ -280,7 +280,9 @@ export interface Colour {
   a: UByte;
 }
 
-export type UByte = number;
+export type UByte = Byte;
+
+export type Byte = number;
 ```
 
 <!--- TEST -->
@@ -420,8 +422,10 @@ fun main() {
 
 ```typescript
 export interface CanvasProperties {
-  colourNames: { [key: string]: string };
+  colourNames: { [key: Colour]: string };
 }
+
+export type Colour = string;
 ```
 
 <!--- TEST -->

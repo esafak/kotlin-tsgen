@@ -12,13 +12,12 @@ import io.github.esafak.kotlintsgen.core.TsSourceCodeGenerator
 import io.github.esafak.kotlintsgen.core.TsTypeRef
 import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
 import io.github.esafak.kotlintsgen.core.TsIdentifierValidator
+import io.github.esafak.kotlintsgen.core.InvalidTsIdentifierException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.nullable
-import kotlinx.serialization.descriptors.getContextualDescriptor
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.overwriteWith
@@ -60,6 +59,8 @@ open class KotlinTsGenerator(
   ) : this(config, sourceCodeGenerator, EmptySerializersModule())
 
   private val effectiveSerializersModule = config.serializersModule overwriteWith serializersModule
+
+  private var generatedPrimitiveAliases: Map<String, TsElementId> = emptyMap()
 
 
   val serializerDescriptorOverrides: MutableMap<KSerializer<*>, Set<SerialDescriptor>> =
@@ -136,6 +137,10 @@ open class KotlinTsGenerator(
       elementIdConverter,
       mapTypeConverter,
       effectiveSerializersModule,
+      primitiveTypeRefOverride = { descriptor ->
+        generatedPrimitiveAliases[descriptor.serialName.removeSuffix("?")]
+          ?.let { TsTypeRef.Declaration(it, null, descriptor.isNullable) }
+      },
     )
     val cache: MutableMap<SerialDescriptor, TsTypeRef> = mutableMapOf()
 
@@ -169,49 +174,96 @@ open class KotlinTsGenerator(
   }
 
 
-  private fun rootPrimitiveAlias(
+  private fun primitiveAlias(
     descriptor: SerialDescriptor,
   ): TsDeclaration.TsTypeAlias? {
-    if (descriptor.kind !is PrimitiveKind) return null
-    if (descriptor.serialName in builtInPrimitiveSerialNames) return null
+    val primitiveKind = descriptor.kind as? PrimitiveKind ?: return null
+    if (descriptor.serialName in builtInPrimitiveSerialNames && primitiveKind !in signedPrimitiveKinds) {
+      return null
+    }
     if (findOverride(descriptor) != null) return null
 
+    val id = generatedPrimitiveAliases[descriptor.serialName.removeSuffix("?")] ?: return null
+
     return TsDeclaration.TsTypeAlias(
-      id = elementIdConverter(descriptor),
-      typeRef = typeRefConverter(descriptor),
+      id = id,
+      typeRef = converterPrimitiveLiteral(descriptor),
     )
   }
 
+  private val signedPrimitiveKinds = setOf(
+    PrimitiveKind.BYTE,
+    PrimitiveKind.SHORT,
+    PrimitiveKind.INT,
+    PrimitiveKind.LONG,
+    PrimitiveKind.FLOAT,
+    PrimitiveKind.DOUBLE,
+  )
 
-  private fun rootDescriptors(serializer: KSerializer<*>): Set<SerialDescriptor> {
-    serializerDescriptorOverrides[serializer]?.let { return it }
-
-    val descriptor = serializer.descriptor
-    if (descriptor.kind != SerialKind.CONTEXTUAL) return setOf(descriptor)
-
-    return runCatching {
-      effectiveSerializersModule.getContextualDescriptor(descriptor)
-    }.getOrNull()?.let(::setOf) ?: setOf(descriptor)
+  private fun converterPrimitiveLiteral(descriptor: SerialDescriptor): TsTypeRef {
+    val literal = when (descriptor.kind) {
+      PrimitiveKind.BOOLEAN -> TsLiteral.Primitive.TsBoolean
+      PrimitiveKind.CHAR,
+      PrimitiveKind.STRING -> TsLiteral.Primitive.TsString
+      PrimitiveKind.BYTE,
+      PrimitiveKind.SHORT,
+      PrimitiveKind.INT,
+      PrimitiveKind.LONG,
+      PrimitiveKind.FLOAT,
+      PrimitiveKind.DOUBLE -> TsLiteral.Primitive.TsNumber
+      else -> error("Expected primitive descriptor, got ${descriptor.kind}")
+    }
+    return TsTypeRef.Literal(literal, false)
   }
 
 
   open fun generate(vararg serializers: KSerializer<*>): String {
     val rootSerializers = serializers.toSet()
-    val rootPrimitiveAliases = rootSerializers
-      .flatMap(::rootDescriptors)
-      .mapNotNull(::rootPrimitiveAlias)
-      .distinctBy { it.id }
-
-    return rootSerializers
-
-      // 1. get all SerialDescriptors from a KSerializer
+    val descriptors = rootSerializers
       .flatMap { serializer -> descriptorsExtractor(serializer) }
       .toSet()
 
+    generatedPrimitiveAliases = descriptors
+      .filter { descriptor ->
+        val kind = descriptor.kind as? PrimitiveKind ?: return@filter false
+        kind !in setOf(PrimitiveKind.BOOLEAN, PrimitiveKind.CHAR, PrimitiveKind.STRING) ||
+          descriptor.serialName !in builtInPrimitiveSerialNames
+      }
+      .filter { findOverride(it) == null }
+      .distinctBy { it.serialName.removeSuffix("?") }
+      .associate { descriptor ->
+        val serialName = descriptor.serialName.removeSuffix("?")
+        val id = if (serialName in builtInPrimitiveSerialNames) {
+          TsElementId(serialName.substringAfterLast('.'))
+        } else {
+          elementIdConverter(descriptor)
+        }
+        serialName to id
+      }
+
+    val elements = descriptors
+
+      // 1. get all SerialDescriptors from a KSerializer
       // 2. convert each SerialDescriptor to some TsElements
       .flatMap { descriptor -> elementConverter(descriptor) }
       .toSet()
-      .plus(rootPrimitiveAliases)
+
+    val aliases = descriptors.mapNotNull(::primitiveAlias).distinctBy { it.id }
+    val declarations = elements.filterIsInstance<TsDeclaration>()
+    val aliasNames = aliases.map { it.id.name }.toSet()
+    declarations
+      .filter { it.id.name in aliasNames }
+      .firstOrNull()
+      ?.let { conflict ->
+        throw InvalidTsIdentifierException(
+          conflict.id.name,
+          "generated numeric type alias",
+          "it conflicts with reachable declaration '${conflict.id}'",
+        )
+      }
+
+    return elements
+      .plus(aliases)
 
       // 3. group by namespaces
       .groupBy { element -> sourceCodeGenerator.groupElementsBy(element) }

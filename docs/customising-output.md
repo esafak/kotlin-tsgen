@@ -44,10 +44,12 @@ fun main() {
 ```typescript
 export interface Item {
   price: Double;
-  count: number;
+  count: Int;
 }
 
 export type Double = double; // assume that 'double' will be provided by another library
+
+export type Int = number;
 ```
 
 <!--- TEST TS_COMPILE_OFF -->
@@ -81,8 +83,10 @@ This produces no type alias, and `Double` is overridden to be `customDouble`.
 ```typescript
 export interface Item {
   price: customDouble;
-  count: number;
+  count: Int;
 }
+
+export type Int = number;
 ```
 
 <!--- TEST TS_COMPILE_OFF -->

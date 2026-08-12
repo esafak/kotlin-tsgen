@@ -22,11 +22,13 @@ fun interface TsTypeRefConverter {
     val elementIdConverter: TsElementIdConverter = TsElementIdConverter.Default,
     val mapTypeConverter: TsMapTypeConverter = TsMapTypeConverter.Default,
     val serializersModule: SerializersModule = EmptySerializersModule(),
+    val primitiveTypeRefOverride: ((SerialDescriptor) -> TsTypeRef?)? = null,
   ) : TsTypeRefConverter {
 
     override operator fun invoke(
       descriptor: SerialDescriptor,
     ): TsTypeRef {
+      primitiveTypeRefOverride?.invoke(descriptor)?.let { return it }
       return when (val descriptorKind = descriptor.kind) {
         is PrimitiveKind     -> primitiveTypeRef(descriptor, descriptorKind)
 

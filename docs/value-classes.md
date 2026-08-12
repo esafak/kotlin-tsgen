@@ -52,13 +52,21 @@ fun main() {
 > You can get the full code [here](./code/example/example-value-classes-02.kt).
 
 ```typescript
-export type UByte = number;
+export type UByte = Byte;
 
-export type UShort = number;
+export type UShort = Short;
 
-export type UInt = number;
+export type UInt = Int;
 
-export type ULong = number;
+export type ULong = Long;
+
+export type Byte = number;
+
+export type Short = number;
+
+export type Int = number;
+
+export type Long = number;
 ```
 
 This weakens the unsigned numbers, and the generated TypeScript could be used to produce
@@ -94,7 +102,9 @@ fun main() {
 > You can get the full code [here](./code/example/example-value-classes-03.kt).
 
 ```typescript
-export type ULong = number & { __ULong__: void };
+export type ULong = Long & { __ULong__: void };
+
+export type Long = number & { __Long__: void };
 ```
 
 Now numeric types must be manually converted type aliases.
@@ -124,7 +134,9 @@ fun main() {
 ```typescript
 export type UserCount = UInt;
 
-export type UInt = number;
+export type UInt = Int;
+
+export type Int = number;
 ```
 
 <!--- TEST -->

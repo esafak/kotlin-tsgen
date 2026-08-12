@@ -43,13 +43,21 @@ class ValueClassesTest : FunSpec({
       actual.shouldBe(
         // language=TypeScript
         """
-          |export type UByte = number;
+          |export type UByte = Byte;
           |
-          |export type UShort = number;
+          |export type UShort = Short;
           |
-          |export type UInt = number;
+          |export type UInt = Int;
           |
-          |export type ULong = number;
+          |export type ULong = Long;
+          |
+          |export type Byte = number;
+          |
+          |export type Short = number;
+          |
+          |export type Int = number;
+          |
+          |export type Long = number;
         """.trimMargin()
         .normalize()
       )
@@ -71,7 +79,9 @@ class ValueClassesTest : FunSpec({
       actual.shouldBe(
         // language=TypeScript
         """
-          |export type ULong = number & { __ULong__: void };
+          |export type ULong = Long & { __ULong__: void };
+          |
+          |export type Long = number & { __Long__: void };
         """.trimMargin()
         .normalize()
       )
@@ -95,7 +105,9 @@ class ValueClassesTest : FunSpec({
         """
           |export type UserCount = UInt;
           |
-          |export type UInt = number;
+          |export type UInt = Int;
+          |
+          |export type Int = number;
         """.trimMargin()
         .normalize()
       )

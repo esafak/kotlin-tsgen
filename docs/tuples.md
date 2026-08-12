@@ -97,11 +97,15 @@ fun main() {
 ```typescript
 export type SimpleTypes = [
   aString: string,
-  anInt: number,
-  aDouble: number | null,
+  anInt: Int,
+  aDouble: Double | null,
   bool: boolean,
   privateMember: string,
 ];
+
+export type Int = number;
+
+export type Double = number;
 ```
 
 <!--- TEST -->
@@ -251,10 +255,12 @@ fun main() {
 
 ```typescript
 export type Coordinates = [
-  x: number,
-  y: number,
-  z: number,
+  x: Int,
+  y: Int,
+  z: Int,
 ];
+
+export type Int = number;
 ```
 
 <!--- TEST -->
@@ -289,10 +295,12 @@ export interface GameLocations {
 }
 
 export type Coordinates = [
-  x: number,
-  y: number,
-  z: number,
+  x: Int,
+  y: Int,
+  z: Int,
 ];
+
+export type Int = number;
 ```
 
 <!--- TEST -->

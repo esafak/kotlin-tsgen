@@ -45,7 +45,7 @@ fun interface SerializerDescriptorsExtractor {
       serializer: KSerializer<*>
     ): Set<SerialDescriptor> {
       return extractDescriptors(serializer.descriptor)
-        .distinctBy { it.nullable }
+        .distinctBy { it.serialName.removeSuffix("?") to it.kind }
         .toSet()
     }
 

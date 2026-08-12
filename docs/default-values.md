@@ -28,8 +28,10 @@ fun main() {
 
 ```typescript
 export interface Colour {
-  rgb?: number;
+  rgb?: Int;
 }
+
+export type Int = number;
 ```
 
 <!--- TEST -->
@@ -53,8 +55,10 @@ fun main() {
 
 ```typescript
 export interface Colour {
-  rgb: number | null;
+  rgb: Int | null;
 }
+
+export type Int = number;
 ```
 
 <!--- TEST -->
