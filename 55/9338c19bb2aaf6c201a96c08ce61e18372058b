@@ -1,0 +1,37 @@
+.github/actions/publish-maven/action.yml
+  s_a4e7acec6d3691::t_e1297bb247847a 16,19,21
+.github/workflows/run_gradle_task.yml
+  s_a4e7acec6d3691::t_ae92e5458e4ab6 82,85,87
+.github/workflows/run_publish_site.yml
+  s_a4e7acec6d3691::t_93fffcacb237e2 33,36,38
+buildSrc/src/main/kotlin/buildsrc/config/nodePlugin.kt
+  s_a4e7acec6d3691::t_544ac151df5f9e 4,10-13
+buildSrc/src/main/kotlin/buildsrc/convention/node.gradle.kts
+  s_a4e7acec6d3691::t_826a0cf9b0a355 17-18
+mise.lock
+  s_a4e7acec6d3691::t_3d8e4188a752c4 107-145
+renovate.json
+  s_a4e7acec6d3691::t_141a653d4715a3 19-32,35-37
+site/build.gradle.kts
+  s_a4e7acec6d3691::t_d28f9c82167d40 1,19,22,29
+site/package.json
+  s_a4e7acec6d3691::t_13dcce798dca5c 5-10
+site/pnpm-lock.yaml
+  s_a4e7acec6d3691::t_cf7fe5ff930b77 1-10318
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "559338c19bb2aaf6c201a96c08ce61e18372058b",
+  "prompts": {},
+  "sessions": {
+    "s_a4e7acec6d3691": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_008068cebffeIeirGuz4tgldJc",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
