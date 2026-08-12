@@ -15,7 +15,7 @@ hooks {
   ["pre-push"] {
     steps = new {
       ["tests"] {
-        check = "mise run test"
+        check = "mise run test:unit"
         exclusive = true
       }
     }

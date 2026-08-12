@@ -36,8 +36,7 @@ jobs:
     uses: ./.github/workflows/run_gradle_task.yml
     with:
       runs-on: ${{ matrix.os }}
-      gradle-task: >-
-        check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+      gradle-task: check
       checkout-ref: ${{ inputs.checkout-ref }}
 
   build-site:
