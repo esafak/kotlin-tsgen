@@ -21,9 +21,14 @@ interface TsSourceCodeGenerator {
     }
   }
 
+  fun generateDeclarationInNamespace(element: TsDeclaration, namespace: String?): String {
+    return generateDeclaration(element)
+  }
+
   fun generateEnum(enum: TsDeclaration.TsEnum): String
   fun generateInterface(element: TsDeclaration.TsInterface): String
   fun generateNamespace(namespace: TsDeclaration.TsNamespace): String
+  fun wrapInNamespace(name: String, body: String): String = body
   fun generateTypeAlias(element: TsDeclaration.TsTypeAlias): String
   fun generateTypeUnion(element: TsDeclaration.TsTypeUnion): String
   fun generateTuple(tuple: TsDeclaration.TsTuple): String
@@ -37,6 +42,8 @@ interface TsSourceCodeGenerator {
     private val config: KotlinTsConfig,
   ) : TsSourceCodeGenerator {
 
+    private var renderingNamespace: String? = null
+
 
     override fun groupElementsBy(element: TsElement): String {
       return when (config.namespaceConfig) {
@@ -45,7 +52,8 @@ interface TsSourceCodeGenerator {
         KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix ->
           when (element) {
             is TsLiteral     -> ""
-            is TsDeclaration -> element.id.namespace
+            is TsDeclaration ->
+              if (element.id.toString().contains('.')) element.id.namespace else ""
           }
       }
     }
@@ -63,6 +71,31 @@ interface TsSourceCodeGenerator {
         appendLine("export namespace ${namespace.id.name} {")
         if (namespaceContent.isNotBlank()) {
           appendLine(namespaceContent.prependIndent(config.indent))
+        }
+        append("}")
+      }
+    }
+
+
+    override fun generateDeclarationInNamespace(
+      element: TsDeclaration,
+      namespace: String?,
+    ): String {
+      val previousNamespace = renderingNamespace
+      renderingNamespace = namespace
+      return try {
+        generateDeclaration(element)
+      } finally {
+        renderingNamespace = previousNamespace
+      }
+    }
+
+
+    override fun wrapInNamespace(name: String, body: String): String {
+      return buildString {
+        appendLine("export namespace $name {")
+        if (body.isNotBlank()) {
+          appendLine(body.prependIndent(config.indent))
         }
         append("}")
       }
@@ -241,7 +274,17 @@ interface TsSourceCodeGenerator {
             val parentRef = generateTypeReference(typeRef.parent)
             "${parentRef}.${typeRef.id.name}"
           } else {
-            typeRef.id.name
+            val declarationNamespace = typeRef.id.namespace
+            if (
+              config.namespaceConfig == KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix &&
+              renderingNamespace != null &&
+              typeRef.id.toString().contains('.') &&
+              declarationNamespace != renderingNamespace
+            ) {
+              "$declarationNamespace.${typeRef.id.name}"
+            } else {
+              typeRef.id.name
+            }
           }
         }
       }
