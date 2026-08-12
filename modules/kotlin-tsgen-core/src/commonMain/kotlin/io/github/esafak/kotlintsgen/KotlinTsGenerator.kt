@@ -70,6 +70,11 @@ open class KotlinTsGenerator(
   // their TsElement ids are supplied directly by the caller.
   val descriptorOverrides: MutableMap<SerialDescriptor, TsElement> = mutableMapOf()
 
+  /** Configure descriptor-to-TypeScript type mappings using a Kotlin DSL. */
+  fun mapTypes(block: TsOverrideScope.() -> Unit) {
+    TsOverrideScope(this).block()
+  }
+
   private fun findOverride(descriptor: SerialDescriptor): TsElement? {
     return descriptorOverrides.entries.run {
       firstOrNull { it.key == descriptor } ?: firstOrNull { it.key.nullable == descriptor.nullable }
@@ -83,6 +88,7 @@ open class KotlinTsGenerator(
       is TsDeclaration.TsEnum      -> TsLiteral.TsMap.Type.MAPPED_OBJECT
 
       is TsLiteral.Custom,
+      is TsLiteral.ExternalType,
       TsLiteral.Primitive.TsNumber,
       TsLiteral.Primitive.TsString -> TsLiteral.TsMap.Type.INDEX_SIGNATURE
 
@@ -340,4 +346,24 @@ open class KotlinTsGenerator(
       .joinToString(config.declarationSeparator)
   }
 
+}
+
+
+@DslMarker
+annotation class TsOverrideDsl
+
+
+/** Receiver scope for [KotlinTsGenerator.mapTypes]. */
+@TsOverrideDsl
+class TsOverrideScope internal constructor(
+  private val generator: KotlinTsGenerator,
+) {
+
+  infix fun KSerializer<*>.mapsTo(element: TsElement) {
+    generator.descriptorOverrides[descriptor] = element
+  }
+
+  infix fun SerialDescriptor.mapsTo(element: TsElement) {
+    generator.descriptorOverrides[this] = element
+  }
 }

@@ -9,16 +9,17 @@ import kotlinx.serialization.builtins.serializer
 import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
-data class Item(
-  val price: Double,
-  val count: Int,
+data class Position(
+  val x: Double,
+  val y: Double?,
 )
 
 fun main() {
   val tsGenerator = KotlinTsGenerator()
 
-  tsGenerator.descriptorOverrides +=
-    Double.serializer().descriptor to TsLiteral.Custom("customDouble")
+  tsGenerator.mapTypes {
+    Double.serializer() mapsTo external("double")
+  }
 
-  println(tsGenerator.generate(Item.serializer()))
+  println(tsGenerator.generate(Position.serializer()))
 }

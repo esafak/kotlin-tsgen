@@ -49,6 +49,31 @@ class CustomisingOutputTest : FunSpec({
     test("expect actual matches TypeScript") {
       actual.shouldBe(
         """
+          |export interface Position {
+          |  x: double;
+          |  y: double | null;
+          |}
+        """.trimMargin()
+        .normalize()
+      )
+    }
+
+    // TS_COMPILE_OFF
+    // test("expect actual compiles").config(tags = tsCompile) {
+    //   actual.shouldTypeScriptCompile(caseName)
+    // }
+  }
+
+  context("ExampleCustomisingOutput03") {
+    val caseName = testCase.name.name
+
+    val actual = captureOutput(caseName) {
+      io.github.esafak.kotlintsgen.example.exampleCustomisingOutput03.main()
+    }.normalizeJoin()
+
+    test("expect actual matches TypeScript") {
+      actual.shouldBe(
+        """
           |export interface Item {
           |  price: customDouble;
           |  count: Int;
@@ -66,11 +91,11 @@ class CustomisingOutputTest : FunSpec({
     // }
   }
 
-  context("ExampleCustomisingOutput03") {
+  context("ExampleCustomisingOutput04") {
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      io.github.esafak.kotlintsgen.example.exampleCustomisingOutput03.main()
+      io.github.esafak.kotlintsgen.example.exampleCustomisingOutput04.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {
@@ -97,11 +122,11 @@ class CustomisingOutputTest : FunSpec({
     // }
   }
 
-  context("ExampleCustomisingOutput04") {
+  context("ExampleCustomisingOutput05") {
     val caseName = testCase.name.name
 
     val actual = captureOutput(caseName) {
-      io.github.esafak.kotlintsgen.example.exampleCustomisingOutput04.main()
+      io.github.esafak.kotlintsgen.example.exampleCustomisingOutput05.main()
     }.normalizeJoin()
 
     test("expect actual matches TypeScript") {

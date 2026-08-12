@@ -9,26 +9,16 @@ import kotlinx.serialization.builtins.serializer
 import io.github.esafak.kotlintsgen.core.*
 
 @Serializable
-data class ItemHolder(
-  val item: Item,
-)
-
-@Serializable
 data class Item(
-  val count: UInt? = 0u,
-  val score: Int? = 0,
+  val price: Double,
+  val count: Int,
 )
 
 fun main() {
   val tsGenerator = KotlinTsGenerator()
 
   tsGenerator.descriptorOverrides +=
-    UInt.serializer().descriptor to TsDeclaration.TsTypeAlias(
-      id = TsElementId("kotlin.UInt"),
-      typeRef = TsTypeRef.Declaration(id = TsElementId("uint"), parent = null, nullable = false)
-    )
+    Double.serializer().descriptor to TsLiteral.Custom("customDouble")
 
-  tsGenerator.descriptorOverrides += Int.serializer().descriptor to TsLiteral.Custom("customInt")
-
-  println(tsGenerator.generate(ItemHolder.serializer()))
+  println(tsGenerator.generate(Item.serializer()))
 }

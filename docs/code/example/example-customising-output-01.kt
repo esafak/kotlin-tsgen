@@ -17,15 +17,9 @@ data class Item(
 fun main() {
   val tsGenerator = KotlinTsGenerator()
 
-  tsGenerator.descriptorOverrides +=
-    Double.serializer().descriptor to TsDeclaration.TsTypeAlias(
-      id = TsElementId("Double"),
-      typeRef = TsTypeRef.Declaration(
-        id = TsElementId("double"),
-        parent = null,
-        nullable = false,
-      )
-    )
+  tsGenerator.mapTypes {
+    Double.serializer() mapsTo typeAlias("Double", ref("double"))
+  }
 
   println(tsGenerator.generate(Item.serializer()))
 }
