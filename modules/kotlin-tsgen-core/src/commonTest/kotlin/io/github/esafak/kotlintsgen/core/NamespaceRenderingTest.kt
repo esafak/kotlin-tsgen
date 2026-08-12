@@ -95,6 +95,39 @@ class NamespaceRenderingTest : FunSpec({
     }
   }
 
+  test("flat namespaces reject colliding declarations") {
+    val exception = shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator().generate(CollidingHolder.serializer())
+    }
+
+    exception.identifier shouldBe "Kind"
+    exception.message shouldContain "A.Kind"
+    exception.message shouldContain "B.Kind"
+    exception.message shouldContain "DescriptorNamePrefix"
+  }
+
+  test("descriptor namespaces resolve colliding declarations") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+    )
+
+    val ts = KotlinTsGenerator(config).generate(CollidingHolder.serializer())
+
+    ts shouldContain "export namespace A"
+    ts shouldContain "export namespace B"
+    ts shouldContain "export enum Kind"
+  }
+
+  test("static namespaces reject colliding declarations") {
+    val config = KotlinTsConfig(
+      namespaceConfig = KotlinTsConfig.NamespaceConfig.Static("models"),
+    )
+
+    shouldThrow<InvalidTsIdentifierException> {
+      KotlinTsGenerator(config).generate(CollidingHolder.serializer())
+    }
+  }
+
   test("dotless descriptor names remain flat") {
     val config = KotlinTsConfig(
       namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
@@ -163,6 +196,28 @@ class NamespaceRenderingTest : FunSpec({
   @Serializable
   @SerialName("org.example.Int")
   private class NamespacedInt(val value: Int)
+
+  @Serializable
+  private class CollidingHolder(
+    val first: A,
+    val second: B,
+  )
+
+  @Serializable
+  @SerialName("A")
+  private class A(val kind: AKind)
+
+  @Serializable
+  @SerialName("B")
+  private class B(val kind: BKind)
+
+  @Serializable
+  @SerialName("A.Kind")
+  private enum class AKind { ONE }
+
+  @Serializable
+  @SerialName("B.Kind")
+  private enum class BKind { TWO }
 
   private class GroupingSource(
     private val group: String?,
