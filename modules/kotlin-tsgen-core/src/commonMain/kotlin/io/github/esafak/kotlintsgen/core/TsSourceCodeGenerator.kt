@@ -24,6 +24,7 @@ interface TsSourceCodeGenerator {
   fun generateEnum(enum: TsDeclaration.TsEnum): String
   fun generateInterface(element: TsDeclaration.TsInterface): String
   fun generateNamespace(namespace: TsDeclaration.TsNamespace): String
+  fun wrapInNamespace(name: String, body: String): String = body
   fun generateTypeAlias(element: TsDeclaration.TsTypeAlias): String
   fun generateTypeUnion(element: TsDeclaration.TsTypeUnion): String
   fun generateTuple(tuple: TsDeclaration.TsTuple): String
@@ -45,7 +46,8 @@ interface TsSourceCodeGenerator {
         KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix ->
           when (element) {
             is TsLiteral     -> ""
-            is TsDeclaration -> element.id.namespace
+            is TsDeclaration ->
+              if (element.id.toString().contains('.')) element.id.namespace else ""
           }
       }
     }
@@ -63,6 +65,17 @@ interface TsSourceCodeGenerator {
         appendLine("export namespace ${namespace.id.name} {")
         if (namespaceContent.isNotBlank()) {
           appendLine(namespaceContent.prependIndent(config.indent))
+        }
+        append("}")
+      }
+    }
+
+
+    override fun wrapInNamespace(name: String, body: String): String {
+      return buildString {
+        appendLine("export namespace $name {")
+        if (body.isNotBlank()) {
+          appendLine(body.prependIndent(config.indent))
         }
         append("}")
       }

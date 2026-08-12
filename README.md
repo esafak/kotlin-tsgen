@@ -57,7 +57,7 @@ for working examples.
 
 |                                       | Status                                                          | Notes                                                                                                          |
 |---------------------------------------|-----------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------|
-| Kotlin multiplatform                  | ❓                                                               | The codebase is multiplatform, but only JVM has been tested                                                    |
+| Kotlin multiplatform                  | ✅                                                               | JVM and JS (Node.js and browser) tests run in CI                                                               |
 | `@SerialName`                         | ✅   [example](./docs/enums.md#enum-with-serial-names)             | Names used as TypeScript identifiers are validated; invalid names fail generation with a clear error           |
 | Basic classes                         | ✅   [example](./docs/basic-classes.md)                          |                                                                                                                |
 | Nullable and default-value properties | ✅   [example](./docs/default-values.md)                         |                                                                                                                |
@@ -69,5 +69,6 @@ for working examples.
 | Polymorphism - Open classes           | ✅/⚠ [example](./docs/polymorphism-sealed.md#static-types)         | Registered subclasses in a `SerializersModule` generate a TypeScript union; otherwise falls back to `type MyClass = any` |
 | `SerializersModule` contextual serializers | ✅/⚠                                                   | Registered serializers are resolved; generic providers requiring type arguments fall back to `any`              |
 | `@JsonClassDiscriminator`             | ✅   [example](./docs/polymorphism-sealed.md#sealed-classes)      | Selects the discriminator property and generated enum name for sealed hierarchies; kotlinx.serialization requires subclass values to match |
+| Namespaces                            | ✅   [example](./docs/namespaces.md)                              | Disabled by default; static and descriptor-name-prefix namespaces are supported |
 | JSON Content polymorphism             | ❌   [example](./docs/polymorphism-open.md#json-content-polymorphism) | Not implemented. Converted to `type MyClass = any`                                                             |
 | Edge cases - circular dependencies    | ✅   [example](./docs/edgecases.md)                              |                                                                                                                |

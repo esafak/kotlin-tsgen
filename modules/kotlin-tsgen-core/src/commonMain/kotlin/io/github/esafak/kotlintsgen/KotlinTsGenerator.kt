@@ -11,6 +11,7 @@ import io.github.esafak.kotlintsgen.core.TsMapTypeConverter
 import io.github.esafak.kotlintsgen.core.TsSourceCodeGenerator
 import io.github.esafak.kotlintsgen.core.TsTypeRef
 import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
+import io.github.esafak.kotlintsgen.core.TsIdentifierValidator
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -215,15 +216,55 @@ open class KotlinTsGenerator(
       // 3. group by namespaces
       .groupBy { element -> sourceCodeGenerator.groupElementsBy(element) }
 
-      // 4. convert to source code
-      .mapValues { (_, elements) ->
-        elements
-          .filterIsInstance<TsDeclaration>()
-          .map { element -> sourceCodeGenerator.generateDeclaration(element) }
-          .filter { it.isNotBlank() }
-          .joinToString(config.declarationSeparator)
+      // 4. convert to source code and render configured namespace groups
+      .let(::renderGroups)
+  }
+
+
+  private class NamespaceGroupNode {
+    val declarations: MutableList<String> = mutableListOf()
+    val children: LinkedHashMap<String, NamespaceGroupNode> = linkedMapOf()
+  }
+
+
+  private fun renderGroups(groups: Map<String?, List<TsElement>>): String {
+    val flatGroups = mutableListOf<String>()
+    val root = NamespaceGroupNode()
+
+    groups.forEach { (group, elements) ->
+      val declarations = elements
+        .filterIsInstance<TsDeclaration>()
+        .map(sourceCodeGenerator::generateDeclaration)
+        .filter(String::isNotBlank)
+
+      if (group.isNullOrBlank()) {
+        flatGroups += declarations.joinToString(config.declarationSeparator)
+      } else {
+        val segments = group.split('.')
+        segments.forEach { segment ->
+          TsIdentifierValidator.assertValidIdentifier(segment, "namespace segment")
+        }
+
+        var node = root
+        segments.forEach { segment ->
+          node = node.children.getOrPut(segment) { NamespaceGroupNode() }
+        }
+        node.declarations += declarations
       }
-      .values// TODO  create namespaces
+    }
+
+    fun renderNode(node: NamespaceGroupNode): String {
+      val directDeclarations = node.declarations.joinToString(config.declarationSeparator)
+      val nestedNamespaces = node.children.entries.map { (name, child) ->
+        sourceCodeGenerator.wrapInNamespace(name, renderNode(child))
+      }
+      return (listOf(directDeclarations) + nestedNamespaces)
+        .filter(String::isNotBlank)
+        .joinToString(config.declarationSeparator)
+    }
+
+    return (flatGroups + renderNode(root))
+      .filter(String::isNotBlank)
       .joinToString(config.declarationSeparator)
   }
 
