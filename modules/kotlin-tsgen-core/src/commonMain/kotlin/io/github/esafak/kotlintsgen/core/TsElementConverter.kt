@@ -124,16 +124,14 @@ fun interface TsElementConverter {
       }
 
       val subclassesDescriptorToInterface: Map<SerialDescriptor, TsDeclaration.TsInterface> =
-        descriptor.elementDescriptors
-          .firstOrNull { it.kind == SerialKind.CONTEXTUAL }
-          ?.elementDescriptors
-          ?.associateWith { this(it) }
-          ?.mapValues { (_, v) ->
+        sealedConcreteSubclasses(descriptor)
+          .associateWith { this(it) }
+          .mapValues { (_, v) ->
             v.filterIsInstance<TsDeclaration.TsInterface>()
               .map {
                 it.copy(id = TsElementId("${descriptor.serialName}.${it.id.name}"))
               }.single()
-          } ?: emptyMap()
+          }
 
       // verify a discriminated interface can be created
       if (subclassesDescriptorToInterface.isEmpty()) {
@@ -208,6 +206,20 @@ fun interface TsElementConverter {
         return setOf(subInterfaceTypeUnion, namespace)
       }
     }
+
+    private fun sealedConcreteSubclasses(
+      descriptor: SerialDescriptor,
+    ): List<SerialDescriptor> =
+      descriptor.elementDescriptors
+        .filter { it.kind == SerialKind.CONTEXTUAL }
+        .flatMap { it.elementDescriptors }
+        .flatMap { subclass ->
+          if (subclass.kind == PolymorphicKind.SEALED) {
+            sealedConcreteSubclasses(subclass)
+          } else {
+            listOf(subclass)
+          }
+        }
 
 
     open fun convertTypeAlias(

@@ -196,6 +196,24 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     ts shouldContain "kind: Parent.Kind.Child;"
   }
 
+  test("sealed polymorphic - nested sealed subclasses are flattened recursively") {
+    val ts = KotlinTsGenerator().generate(NestedSealedExample.Parent.serializer())
+
+    ts shouldContain "export type Parent ="
+    ts shouldContain "| Parent.Direct"
+    ts shouldContain "| Parent.Leaf"
+    ts shouldContain "| Parent.Sibling"
+    ts shouldContain "export interface Leaf {"
+    ts shouldContain "export interface Sibling {"
+    ts shouldContain "name: string;"
+    ts shouldContain "colour: string;"
+    ts shouldContain "leaf: string;"
+    ts shouldContain "Sibling ="
+    ts shouldContain "Leaf ="
+    ts shouldNotContain "| Parent.Middle"
+    ts shouldNotContain "| Parent.Inner"
+  }
+
   test("sealed polymorphic - an invalid discriminator name fails clearly") {
     val exception = shouldThrow<InvalidTsIdentifierException> {
       KotlinTsGenerator().generate(InvalidDiscriminatorExample.Parent.serializer())
@@ -235,6 +253,39 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     @Serializable
     @JsonClassDiscriminator("kind")
     class Child : Parent()
+  }
+
+  @Suppress("unused")
+  private object NestedSealedExample {
+    @Serializable
+    sealed class Parent {
+      abstract val name: String
+
+      @Serializable
+      class Direct(override val name: String, val direct: String) : Parent()
+
+      @Serializable
+      sealed class Middle : Parent() {
+        abstract val colour: String
+
+        @Serializable
+        class Sibling(
+          override val name: String,
+          override val colour: String,
+          val sibling: String,
+        ) : Middle()
+
+        @Serializable
+        sealed class Inner : Middle() {
+          @Serializable
+          class Leaf(
+            override val name: String,
+            override val colour: String,
+            val leaf: String,
+          ) : Inner()
+        }
+      }
+    }
   }
 
   @Suppress("unused")

@@ -138,10 +138,15 @@ export namespace Project {
 
 ### Nested sealed classes
 
-Nested sealed classes are 'invisible' to Kotlinx Serialization. In this
-example, `sealed class Retriever` is ignored.
+Kotlinx Serialization recursively includes nested sealed subclasses in the
+parent sealed descriptor. The generator flattens the hierarchy: concrete
+descendants become branches of the parent union, while intermediate sealed
+classes such as `Retriever` are not emitted as branches themselves.
 
-For now, it's recommended to avoid nested sealed classes.
+If two concrete descendants have the same simple name, generation fails with
+a clear declaration-collision error. Use distinct `@SerialName` values with
+different simple names or
+`NamespaceConfig.DescriptorNamePrefix` to disambiguate them.
 
 ```kotlin
 @Serializable
@@ -215,41 +220,6 @@ export namespace Dog {
     adorable?: boolean;
   }
 }
-// Nested sealed classes don't work at the moment :(
-// export type Dog = Dog.Mutt | Dog.Retriever
-//
-// export namespace Dog {
-//   export enum Type {
-//     Mutt = "Mutt",
-//   }
-//
-//   export interface Mutt {
-//     type: Type.Mutt;
-//     name: string;
-//     loveable?: boolean;
-//   }
-//
-//   export type Retriever = Retriever.Golden | Retriever.NovaScotia
-//
-//   export namespace Retriever {
-//     export enum Type {
-//       Golden = "Golden",
-//       NovaScotia = "NovaScotia",
-//     }
-//
-//     export interface Golden {
-//       type: Type.Golden;
-//       name: string;
-//       cute?: boolean;
-//     }
-//
-//     export interface NovaScotia {
-//       type: Type.NovaScotia;
-//       name: string;
-//       adorable?: boolean;
-//     }
-//   }
-// }
 ```
 
 <!--- TEST -->

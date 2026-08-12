@@ -120,9 +120,7 @@ fun interface TsElementDescriptorsExtractor {
             // traverse INTO the subclasses to pick up their property types - the subclass
             // declarations themselves must not be extracted, or they'd be emitted again as
             // top-level interfaces, duplicating the namespaced ones.
-            descriptor.elementDescriptors
-              .flatMap { it.elementDescriptors }
-              .flatMap { it.elementDescriptors }
+            sealedSubclassPropertyDescriptors(descriptor)
 
           PolymorphicKind.OPEN -> {
             val subclasses = serializersModule.getPolymorphicDescriptors(descriptor)
@@ -130,5 +128,19 @@ fun interface TsElementDescriptorsExtractor {
           }
         }
       }
+
+    private fun sealedSubclassPropertyDescriptors(
+      descriptor: SerialDescriptor,
+    ): Iterable<SerialDescriptor> =
+      descriptor.elementDescriptors
+        .filter { it.kind == SerialKind.CONTEXTUAL }
+        .flatMap { it.elementDescriptors }
+        .flatMap { subclass ->
+          if (subclass.kind == PolymorphicKind.SEALED) {
+            sealedSubclassPropertyDescriptors(subclass)
+          } else {
+            subclass.elementDescriptors
+          }
+        }
   }
 }
