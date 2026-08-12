@@ -109,11 +109,29 @@ class TupleTest : FunSpec({
     serializer.descriptor.isElementOptional(1) shouldBe true
   }
 
+  test("optional tuple elements retain fixed-arity JSON encoding") {
+    val initial = OptionalCoordinates(1, 2)
+
+    val encoded = Json.encodeToString(initial)
+    encoded shouldBe "[1,2]"
+
+    Json.decodeFromString<OptionalCoordinates>(encoded) shouldBe initial
+  }
+
   test("required tuple elements cannot follow optional elements") {
     shouldThrow<IllegalArgumentException> {
       tupleElements<Coordinates> {
         element(Coordinates::x, isOptional = true)
         element(Coordinates::y)
+      }
+    }
+  }
+
+  test("optional ordering is validated by element index") {
+    shouldThrow<IllegalArgumentException> {
+      tupleElements<Coordinates> {
+        element(tupleElement(1, "y", { y }))
+        element(tupleElement(0, "x", { x }, isOptional = true))
       }
     }
   }
