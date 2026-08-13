@@ -27,5 +27,11 @@ object ProjectSerializer : JsonContentPolymorphicSerializer<Project>(Project::cl
 
 fun main() {
   val tsGenerator = KotlinTsGenerator()
+  tsGenerator.mapTypes {
+    contentPolymorphism(ProjectSerializer) {
+      subtype<BasicProject>()
+      subtype<OwnedProject>()
+    }
+  }
   println(tsGenerator.generate(ProjectSerializer))
 }

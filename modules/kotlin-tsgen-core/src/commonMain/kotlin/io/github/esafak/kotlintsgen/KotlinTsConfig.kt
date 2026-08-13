@@ -19,6 +19,7 @@ data class KotlinTsConfig(
   val namespaceConfig: NamespaceConfig = NamespaceConfig.Disabled,
   val typeAliasTyping: TypeAliasTypingConfig = TypeAliasTypingConfig.None,
   val serializersModule: SerializersModule = EmptySerializersModule(),
+  val onWarning: (String) -> Unit = {},
 ) {
 
   sealed interface NamespaceConfig {
