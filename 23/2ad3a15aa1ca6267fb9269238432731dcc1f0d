@@ -1,0 +1,18 @@
+docs/polymorphism-open.md
+  h_ea91e2db23540f 175
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsGenerator.kt
+  h_ea91e2db23540f 251
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/KotlinTsGeneratorSerializersModuleTest.kt
+  h_ea91e2db23540f 190-202
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "232ad3a15aa1ca6267fb9269238432731dcc1f0d",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
