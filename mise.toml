@@ -27,6 +27,11 @@ description = "Run the fast JVM unit tests"
 run = "mise x -- ./gradlew :modules:kotlin-tsgen-core:jvmTest"
 run_windows = "mise x -- .\\gradlew.bat :modules:kotlin-tsgen-core:jvmTest"
 
+[tasks."test:docs"]
+description = "Run documentation example tests"
+run = "mise x -- ./gradlew :docs:code:test -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
+run_windows = "mise x -- .\\gradlew.bat :docs:code:test -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
+
 [tasks.lint]
 description = "Run repository linters"
 run = "hk check"
