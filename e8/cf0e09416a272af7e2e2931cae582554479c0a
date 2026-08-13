@@ -1,0 +1,25 @@
+gradle/kotlin-js-store/yarn.lock
+  s_698cf9cc9e064a::t_74af85ab0746ef 1098-1102,1369-1372,1382,1830-1839,1857-1864,2099-2108
+gradle/wrapper/gradle-wrapper.properties
+  s_698cf9cc9e064a::t_98d6f1e7862608 3,5-6
+gradlew
+  s_698cf9cc9e064a::t_0c0759b89948d9 60
+gradlew.bat
+  s_698cf9cc9e064a::t_3a7bcdaeab34d2 26-27,54,68,76-78,80-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e8cf0e09416a272af7e2e2931cae582554479c0a",
+  "prompts": {},
+  "sessions": {
+    "s_698cf9cc9e064a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_006d0295bffedpqtY4228izUkJ",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
