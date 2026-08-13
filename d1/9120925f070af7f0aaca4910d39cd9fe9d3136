@@ -1,0 +1,14 @@
+.github/workflows/run_publish_site.yml
+  h_ea91e2db23540f 18-19,35-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d19120925f070af7f0aaca4910d39cd9fe9d3136",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
