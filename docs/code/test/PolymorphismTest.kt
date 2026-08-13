@@ -224,25 +224,4 @@ class PolymorphismTest : FunSpec({
     }
   }
 
-  context("ExampleJsonPolymorphic01") {
-    val caseName = testCase.name.name
-
-    val actual = captureOutput(caseName) {
-      io.github.esafak.kotlintsgen.example.exampleJsonPolymorphic01.main()
-    }.normalizeJoin()
-
-    test("expect actual matches TypeScript") {
-      actual.shouldBe(
-        // language=TypeScript
-        """
-          |export type Project = any;
-        """.trimMargin()
-        .normalize()
-      )
-    }
-
-    test("expect actual compiles").config(tags = tsCompile) {
-      actual.shouldTypeScriptCompile(caseName)
-    }
-  }
 })

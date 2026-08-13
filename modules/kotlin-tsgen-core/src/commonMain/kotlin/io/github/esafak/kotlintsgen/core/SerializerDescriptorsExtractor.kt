@@ -20,9 +20,13 @@ fun interface SerializerDescriptorsExtractor {
     /** The default [SerializerDescriptorsExtractor], for easy use. */
     fun default(
       serializersModule: SerializersModule,
+      contentPolymorphicSubtypes: Map<SerialDescriptor, List<SerialDescriptor>> = emptyMap(),
     ): SerializerDescriptorsExtractor {
       return WithSerializersModule(
-        elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(serializersModule)
+        elementDescriptorsExtractor = TsElementDescriptorsExtractor.default(
+          serializersModule,
+          contentPolymorphicSubtypes,
+        )
       )
     }
   }
@@ -89,7 +93,12 @@ fun interface TsElementDescriptorsExtractor {
   companion object {
 
     fun default(serializersModule: SerializersModule) =
-      TsElementDescriptorsExtractor { descriptor ->
+      default(serializersModule, emptyMap())
+
+    fun default(
+      serializersModule: SerializersModule,
+      contentPolymorphicSubtypes: Map<SerialDescriptor, List<SerialDescriptor>>,
+    ) = TsElementDescriptorsExtractor { descriptor ->
         when (descriptor.kind) {
           SerialKind.ENUM       -> emptyList()
 
@@ -114,13 +123,9 @@ fun interface TsElementDescriptorsExtractor {
           StructureKind.MAP,
           StructureKind.OBJECT -> descriptor.elementDescriptors
 
-          PolymorphicKind.SEALED ->
-            // Sealed subclasses are already part of the descriptor (sealed classes are closed)
-            // and are rendered as a discriminated namespace by TsElementConverter. We only
-            // traverse INTO the subclasses to pick up their property types - the subclass
-            // declarations themselves must not be extracted, or they'd be emitted again as
-            // top-level interfaces, duplicating the namespaced ones.
-            sealedSubclassPropertyDescriptors(descriptor)
+          PolymorphicKind.SEALED -> contentPolymorphicSubtypes[descriptor]
+            ?.let { subclasses -> subclasses + subclasses.flatMap { it.elementDescriptors } }
+            ?: sealedSubclassPropertyDescriptors(descriptor)
 
           PolymorphicKind.OPEN -> {
             val subclasses = serializersModule.getPolymorphicDescriptors(descriptor)

@@ -13,8 +13,10 @@ import io.github.esafak.kotlintsgen.core.TsTypeRef
 import io.github.esafak.kotlintsgen.core.TsTypeRefConverter
 import io.github.esafak.kotlintsgen.core.TsIdentifierValidator
 import io.github.esafak.kotlintsgen.core.InvalidTsIdentifierException
+import io.github.esafak.kotlintsgen.core.isJsonContentPolymorphicSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.nullable
@@ -70,6 +72,9 @@ open class KotlinTsGenerator(
   // their TsElement ids are supplied directly by the caller.
   val descriptorOverrides: MutableMap<SerialDescriptor, TsElement> = mutableMapOf()
 
+  val contentPolymorphicSubtypes: MutableMap<SerialDescriptor, List<SerialDescriptor>> =
+    mutableMapOf()
+
   /** Configure descriptor-to-TypeScript type mappings using a Kotlin DSL. */
   fun mapTypes(block: TsOverrideScope.() -> Unit) {
     TsOverrideScope(this).block()
@@ -98,7 +103,10 @@ open class KotlinTsGenerator(
 
   open val descriptorsExtractor = object : SerializerDescriptorsExtractor {
     val extractor: SerializerDescriptorsExtractor =
-      SerializerDescriptorsExtractor.default(effectiveSerializersModule)
+      SerializerDescriptorsExtractor.default(
+        effectiveSerializersModule,
+        contentPolymorphicSubtypes,
+      )
     val cache: MutableMap<KSerializer<*>, Set<SerialDescriptor>> = mutableMapOf()
 
     override fun invoke(serializer: KSerializer<*>): Set<SerialDescriptor> =
@@ -175,6 +183,7 @@ open class KotlinTsGenerator(
       mapTypeConverter,
       typeRefConverter,
       effectiveSerializersModule,
+      contentPolymorphicSubtypes,
     )
     val cache: MutableMap<SerialDescriptor, Set<TsElement>> = mutableMapOf()
 
@@ -236,6 +245,16 @@ open class KotlinTsGenerator(
     val descriptors = rootSerializers
       .flatMap { serializer -> descriptorsExtractor(serializer) }
       .toSet()
+
+    descriptors
+      .filter { it.isJsonContentPolymorphicSerializer() }
+      .filter { contentPolymorphicSubtypes[it].isNullOrEmpty() }
+      .forEach { descriptor ->
+        config.onWarning(
+          "${descriptor.serialName} has no configured subtypes; " +
+            "use mapTypes { contentPolymorphism(...) { subtype<T>() } } to generate a union.",
+        )
+      }
 
     val primitiveAliasDescriptors = descriptors
       .filter { descriptor ->
@@ -405,5 +424,29 @@ class TsOverrideScope internal constructor(
   /** Map a serial descriptor to a TypeScript element. */
   infix fun SerialDescriptor.mapsTo(element: TsElement) {
     generator.descriptorOverrides[this] = element
+  }
+
+  fun contentPolymorphism(
+    serializer: KSerializer<*>,
+    block: ContentPolymorphismScope.() -> Unit,
+  ) {
+    val scope = ContentPolymorphismScope().apply(block)
+    val descriptor = serializer.descriptor
+    generator.contentPolymorphicSubtypes[descriptor] =
+      generator.contentPolymorphicSubtypes[descriptor].orEmpty() + scope.descriptors
+  }
+}
+
+@TsOverrideDsl
+class ContentPolymorphismScope {
+  @PublishedApi
+  internal val descriptors = mutableListOf<SerialDescriptor>()
+
+  inline fun <reified T> subtype() {
+    descriptors += serializer<T>().descriptor
+  }
+
+  fun subtype(serializer: KSerializer<*>) {
+    descriptors += serializer.descriptor
   }
 }

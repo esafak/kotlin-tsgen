@@ -14,6 +14,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -153,6 +155,49 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
       ts shouldContain "type Parent = any"
       ts shouldNotContain "export interface SubClass {"
+  }
+
+  test("json content polymorphic - configured subtypes generate a plain union") {
+    val generator = KotlinTsGenerator()
+    generator.mapTypes {
+      contentPolymorphism(JsonContentExample.Serializer) {
+        subtype<JsonContentExample.BasicProject>()
+        subtype<JsonContentExample.OwnedProject>()
+      }
+    }
+
+    val ts = generator.generate(JsonContentExample.Serializer)
+
+    ts shouldContain "export type Project ="
+    ts shouldContain "| BasicProject"
+    ts shouldContain "| OwnedProject"
+    ts shouldContain "export interface BasicProject {"
+    ts shouldContain "export interface OwnedProject {"
+    ts shouldNotContain "type Project = any"
+  }
+
+  test("json content polymorphic - unconfigured serializers warn and fall back to any") {
+    val warnings = mutableListOf<String>()
+    val config = KotlinTsConfig(onWarning = warnings::add)
+
+    val ts = KotlinTsGenerator(config).generate(JsonContentExample.Serializer)
+
+    ts shouldContain "export type Project = any;"
+    warnings.single() shouldContain "JsonContentPolymorphicSerializer"
+    warnings.single() shouldContain "Project"
+  }
+
+  test("json content polymorphic - empty mappings warn and fall back to any") {
+    val warnings = mutableListOf<String>()
+    val generator = KotlinTsGenerator(KotlinTsConfig(onWarning = warnings::add))
+    generator.mapTypes {
+      contentPolymorphism(JsonContentExample.Serializer) {}
+    }
+
+    val ts = generator.generate(JsonContentExample.Serializer)
+
+    ts shouldContain "export type Project = any;"
+    warnings.single() shouldContain "JsonContentPolymorphicSerializer"
   }
 
   test("sealed polymorphic - module registrations do not duplicate subclasses") {
@@ -296,6 +341,24 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
     @Serializable
     class Child : Parent()
+  }
+
+  @Suppress("unused")
+  private object JsonContentExample {
+    @Serializable
+    abstract class Project {
+      abstract val name: String
+    }
+
+    @Serializable
+    data class BasicProject(override val name: String) : Project()
+
+    @Serializable
+    data class OwnedProject(override val name: String, val owner: String) : Project()
+
+    object Serializer : JsonContentPolymorphicSerializer<Project>(Project::class) {
+      override fun selectDeserializer(element: JsonElement) = BasicProject.serializer()
+    }
   }
 
   @Suppress("unused")

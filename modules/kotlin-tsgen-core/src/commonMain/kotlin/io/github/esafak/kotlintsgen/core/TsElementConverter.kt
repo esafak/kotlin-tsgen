@@ -26,6 +26,7 @@ fun interface TsElementConverter {
     val mapTypeConverter: TsMapTypeConverter,
     val typeRefConverter: TsTypeRefConverter,
     val serializersModule: SerializersModule = EmptySerializersModule(),
+    val contentPolymorphicSubtypes: Map<SerialDescriptor, List<SerialDescriptor>> = emptyMap(),
   ) : TsElementConverter {
 
     override operator fun invoke(
@@ -63,7 +64,9 @@ fun interface TsElementConverter {
           }
         )
 
-        PolymorphicKind.SEALED -> convertDiscriminatedInterface(descriptor)
+        PolymorphicKind.SEALED -> contentPolymorphicSubtypes[descriptor]
+          ?.let { convertSubtypeUnion(descriptor, it) }
+          ?: convertDiscriminatedInterface(descriptor)
 
         SerialKind.CONTEXTUAL -> setOf(createTypeAliasAny(descriptor))
 
@@ -75,7 +78,16 @@ fun interface TsElementConverter {
     open fun convertOpenPolymorphic(
       descriptor: SerialDescriptor,
     ): Set<TsDeclaration> {
-      val subclasses = serializersModule.getPolymorphicDescriptors(descriptor)
+      return convertSubtypeUnion(
+        descriptor,
+        serializersModule.getPolymorphicDescriptors(descriptor),
+      )
+    }
+
+    private fun convertSubtypeUnion(
+      descriptor: SerialDescriptor,
+      subclasses: List<SerialDescriptor>,
+    ): Set<TsDeclaration> {
       if (subclasses.isEmpty()) return setOf(createTypeAliasAny(descriptor))
 
       val typeRefs = subclasses

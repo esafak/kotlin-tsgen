@@ -136,7 +136,8 @@ export type Double = number;
 Using a
 [`JsonContentPolymorphicSerializer`](https://kotlin.github.io/kotlinx.serialization/kotlinx-serialization-json/kotlinx.serialization.json/-json-content-polymorphic-serializer/index.html)
 means there's not enough data in the `SerialDescriptor` to generate a TypeScript interface. Instead,
-a named type alias to 'any' will be created instead.
+a named TypeScript union can be configured explicitly because the possible serializers are hidden in
+the custom `selectDeserializer` implementation.
 
 ```kotlin
 import kotlinx.serialization.json.*
@@ -161,14 +162,31 @@ object ProjectSerializer : JsonContentPolymorphicSerializer<Project>(Project::cl
 
 fun main() {
   val tsGenerator = KotlinTsGenerator()
+  tsGenerator.mapTypes {
+    contentPolymorphism(ProjectSerializer) {
+      subtype<BasicProject>()
+      subtype<OwnedProject>()
+    }
+  }
   println(tsGenerator.generate(ProjectSerializer))
 }
 ```
 
-> You can get the full code [here](./code/example/example-json-polymorphic-01.kt).
+> You can get the full code in [`example-json-polymorphic-01.kt`](./code/example/example-json-polymorphic-01.kt).
 
 ```typescript
-export type Project = any;
+export type Project =
+  | BasicProject
+  | OwnedProject;
+
+export interface BasicProject {
+  name: string;
+}
+
+export interface OwnedProject {
+  name: string;
+  owner: string;
+}
 ```
 
 <!--- TEST -->

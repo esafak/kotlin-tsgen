@@ -70,5 +70,5 @@ for working examples.
 | `SerializersModule` contextual serializers | ✅/⚠                                                   | Registered serializers are resolved; generic providers requiring type arguments fall back to `any`              |
 | `@JsonClassDiscriminator`             | ✅   [example](./docs/polymorphism-sealed.md#sealed-classes)      | Selects the discriminator property and generated enum name for sealed hierarchies; kotlinx.serialization requires subclass values to match |
 | Namespaces                            | ✅   [example](./docs/namespaces.md)                              | Disabled by default; static and descriptor-name-prefix namespaces are supported |
-| JSON Content polymorphism             | ❌   [example](./docs/polymorphism-open.md#json-content-polymorphism) | Not implemented. Converted to `type MyClass = any`                                                             |
+| JSON Content polymorphism             | ✅   [example](./docs/polymorphism-open.md#json-content-polymorphism) | Explicit subtype mappings generate a plain TypeScript union                                                  |
 | Edge cases - circular dependencies    | ✅   [example](./docs/edgecases.md)                              |                                                                                                                |

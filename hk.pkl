@@ -18,6 +18,14 @@ hooks {
         check = "mise run test:unit"
         exclusive = true
       }
+      ["docs-tests"] {
+        check = "mise run test:docs"
+        glob = new Listing<String> {
+          "docs/**/*.md"
+          "docs/code/**/*.kt"
+        }
+        exclusive = true
+      }
     }
   }
   ["check"] {
