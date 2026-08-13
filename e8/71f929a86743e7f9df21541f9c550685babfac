@@ -1,0 +1,14 @@
+gradle/wrapper/gradle-wrapper.properties
+  h_ea91e2db23540f 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e871f929a86743e7f9df21541f9c550685babfac",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
