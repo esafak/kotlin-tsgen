@@ -1,0 +1,21 @@
+docs/code/example/example-json-polymorphic-01.kt
+  s_b1dcc912948633::t_18242cf2f2a987 30-35
+docs/code/test/PolymorphismOpenTest.kt
+  s_b1dcc912948633::t_1408bf730a8d5c 129-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "cb38cd46e308dce4d30ea430357a7dd702cd9e55",
+  "prompts": {},
+  "sessions": {
+    "s_b1dcc912948633": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_007acfd44ffeJU2vXFulyHIUDi",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
