@@ -1,0 +1,16 @@
+hk.pkl
+  h_ea91e2db23540f 21-28
+mise.toml
+  h_ea91e2db23540f 30-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2c29ddf54fc2ab9dcc1bf894881f342de53aa18c",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
