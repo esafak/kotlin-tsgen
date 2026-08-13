@@ -172,7 +172,7 @@ fun main() {
 }
 ```
 
-> You can get the full code [here](./code/example/example-json-polymorphic-01.kt).
+> You can get the full code in [`example-json-polymorphic-01.kt`](./code/example/example-json-polymorphic-01.kt).
 
 ```typescript
 export type Project =

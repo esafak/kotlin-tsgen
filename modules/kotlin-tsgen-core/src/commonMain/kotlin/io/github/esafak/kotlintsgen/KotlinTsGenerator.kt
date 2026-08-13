@@ -248,7 +248,7 @@ open class KotlinTsGenerator(
 
     descriptors
       .filter { it.isJsonContentPolymorphicSerializer() }
-      .filter { it !in contentPolymorphicSubtypes }
+      .filter { contentPolymorphicSubtypes[it].isNullOrEmpty() }
       .forEach { descriptor ->
         config.onWarning(
           "${descriptor.serialName} has no configured subtypes; " +

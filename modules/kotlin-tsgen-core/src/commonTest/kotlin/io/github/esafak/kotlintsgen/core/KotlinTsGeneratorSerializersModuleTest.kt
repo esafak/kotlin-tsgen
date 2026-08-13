@@ -187,6 +187,19 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     warnings.single() shouldContain "Project"
   }
 
+  test("json content polymorphic - empty mappings warn and fall back to any") {
+    val warnings = mutableListOf<String>()
+    val generator = KotlinTsGenerator(KotlinTsConfig(onWarning = warnings::add))
+    generator.mapTypes {
+      contentPolymorphism(JsonContentExample.Serializer) {}
+    }
+
+    val ts = generator.generate(JsonContentExample.Serializer)
+
+    ts shouldContain "export type Project = any;"
+    warnings.single() shouldContain "JsonContentPolymorphicSerializer"
+  }
+
   test("sealed polymorphic - module registrations do not duplicate subclasses") {
       val module = SerializersModule {
         polymorphic(SealedExample.Parent::class, SealedExample.SubClass::class, SealedExample.SubClass.serializer())
