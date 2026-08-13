@@ -3,7 +3,7 @@ package buildsrc.convention
 import buildsrc.config.relocateKotlinJsStore
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 
@@ -29,8 +29,8 @@ extensions.configure<KotlinMultiplatformExtension> {
   jvmToolchain(25)
 
   compilerOptions {
-    languageVersion = KOTLIN_2_0
-    apiVersion = KOTLIN_2_0
+    languageVersion = KOTLIN_2_2
+    apiVersion = KOTLIN_2_2
   }
 
   jvm {
