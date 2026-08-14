@@ -9,7 +9,6 @@
   "enabledManagers": [
     "npm",
     "gradle",
-    "gradle-wrapper",
     "github-actions",
     "mise"
   ],
@@ -37,6 +36,11 @@
       "groupName": "pnpm versions"
     },
     {
+      "description": "disable Gradle package updates",
+      "matchPackageNames": ["gradle"],
+      "enabled": false
+    },
+    {
       "description": "auto-merge all but major releases",
       "matchUpdateTypes": [
         "minor",
@@ -52,10 +56,10 @@
   "ignoreTests": false,
   "timezone": "Etc/UTC",
   "schedule": [
-    "after 10am and before 6pm"
+    "* 10-17 * * *"
   ],
   "automergeSchedule": [
-    "after 10am and before 6pm"
+    "* 10-17 * * *"
   ],
   "minimumReleaseAge": "14 days",
   "prCreation": "not-pending",

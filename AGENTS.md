@@ -1,7 +1,6 @@
 * Inspect available MCP tools before starting. Mention relevant ones to subagents.
 * Assume that tests pass in the main branch.
 * Follow conventional commits with the following PR template, printed as a code block for easy copying.
-* Valid PR scopes are: `frontend`, `backend`, `indexer`, `deps`, `ci`, `skills`. Don't use them in commits.
 ```
 ## Why?
 
