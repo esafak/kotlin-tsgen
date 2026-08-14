@@ -1,0 +1,14 @@
+renovate.json
+  h_ea91e2db23540f 38-42,59,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ae98898938426dbc78c08380a7e3a46d0a5f638d",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
