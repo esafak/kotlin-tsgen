@@ -9,13 +9,13 @@ val rootGradleDir: Directory = rootProject.layout.projectDirectory.dir(".gradle"
 
 node {
   download.set(true)
-  version.set("20.19.0")
+  version.set("24.19.0")
 
   distBaseUrl.set(null as String?) // set in repositories.settings.gradle.kts
 
   workDir.set(rootGradleDir.dir("nodejs"))
   npmWorkDir.set(rootGradleDir.dir("npm"))
-  pnpmVersion.set("10.15.1")
+  pnpmVersion.set("11.19.0")
   pnpmWorkDir.set(rootGradleDir.dir("pnpm"))
   yarnWorkDir.set(rootGradleDir.dir("yarn"))
 }

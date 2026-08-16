@@ -27,13 +27,30 @@
       "depNameTemplate": "pnpm",
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/buildSrc/src/main/kotlin/buildsrc/convention/node\\.gradle\\.kts$/"
+      ],
+      "matchStrings": [
+        "version\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
+      ],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
     }
   ],
   "packageRules": [
     {
       "description": "group pnpm version updates",
-      "matchPackageNames": ["pnpm"],
+      "matchPackageNames": ["pnpm", "npm:pnpm"],
       "groupName": "pnpm versions"
+    },
+    {
+      "description": "group Node.js version updates",
+      "matchPackageNames": ["node"],
+      "groupName": "Node.js versions"
     },
     {
       "description": "disable Gradle package updates",
