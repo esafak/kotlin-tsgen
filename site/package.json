@@ -28,7 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.102.0",
-    "typescript": "^5.1.0"
+    "typescript": "^7.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
