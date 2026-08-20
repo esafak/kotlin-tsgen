@@ -1,0 +1,23 @@
+docs/code/test/PrimitiveAliasesTest.kt
+  s_4c2fa11e0b51ad::t_3d9c3b2a97f549 1-89
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/NumericAliasesTest.kt
+  s_4c2fa11e0b51ad::t_b5252f42a1d4ff 4,8,11-12,17,19-23,44-120,123-126,128,151-175,184-186,190-195,207-209,219-221,225-230,233-259
+modules/kotlin-tsgen-core/src/commonTest/kotlin/io/github/esafak/kotlintsgen/core/OverrideDslTest.kt
+  s_4c2fa11e0b51ad::t_3dce421abafb8a 4,7,11-19,21-22,30-31,33-36,38-39,44-45,47-50,52-53,59-87,89-97,116-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8dc198975a0b0156ca675b906b20d6b853d68558",
+  "prompts": {},
+  "sessions": {
+    "s_4c2fa11e0b51ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fe07b3170ffeXGlymQOq3C06B9",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
