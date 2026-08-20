@@ -24,3 +24,5 @@
 * Keep multiplatform Kotest `FunSpec` tests flat; Kotlin/JS does not support nested `context` blocks.
 * Use mise to test and lint; don't call gradle directly.
 * Search for Chrome-compatible browsers if Chrome is missing.
+* Refresh the Kotlin/JS lockfile with `mise x -- ./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon`.
+* Validate Kotlin/JS lockfile changes with `mise x -- ./gradlew kotlinNpmInstall --no-daemon` and `mise x -- ./gradlew :modules:kotlin-tsgen-core:jsTest --no-daemon`.
