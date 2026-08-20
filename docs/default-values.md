@@ -36,6 +36,14 @@ export type Int = number;
 
 <!--- TEST -->
 
+### Primitive alias rendering
+
+Nullable built-in primitives remain lowercase even when they are encountered
+before non-nullable properties. For an `Example` with `description: String?`
+and `createdAt: Instant`, the generated fields are `description: string | null`
+and `createdAt: Instant`, with `type Instant = string` emitted in the same
+output.
+
 ### Nullable values
 
 Properties might be required, but the value can be nullable. In TypeScript that is represented with
