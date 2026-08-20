@@ -14,6 +14,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.serializer
 import kotlin.jvm.JvmInline
 
 class NumericAliasesTest :
@@ -106,6 +107,11 @@ class NumericAliasesTest :
 
     test("root numeric serializers emit an alias") {
       KotlinTsGenerator().generate(Int.serializer()) shouldBe "export type Int = number;"
+    }
+
+    test("required and nullable root numeric serializers emit one alias") {
+      KotlinTsGenerator().generate(Int.serializer(), serializer<Int?>()) shouldBe
+        "export type Int = number;"
     }
 
     test("custom primitive serializers use aliases in nested fields") {

@@ -333,7 +333,7 @@ open class KotlinTsGenerator(
         .flatMap { descriptor -> elementConverter(descriptor) }
         .toSet()
 
-    val aliases = descriptors.mapNotNull(::primitiveAlias)
+    val aliases = primitiveAliasDescriptors.mapNotNull(::primitiveAlias)
     val aliasKeys =
       aliases
         .groupingBy { alias ->
