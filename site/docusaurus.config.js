@@ -5,11 +5,17 @@ const {execFileSync} = require("node:child_process");
 const {readFileSync} = require("node:fs");
 const {resolve} = require("node:path");
 
-const latestRelease = execFileSync(
+const latestReleaseTag = execFileSync(
   "git",
   ["describe", "--tags", "--abbrev=0", "--match", "v[0-9]*"],
   {encoding: "utf8"},
-).trim().replace(/^v/, "");
+).trim();
+
+if (!/^v\d+\.\d+\.\d+$/.test(latestReleaseTag)) {
+  throw new Error(`Invalid release tag: ${latestReleaseTag}`);
+}
+
+const latestRelease = latestReleaseTag.slice(1);
 
 const kotlinVersion = readFileSync(
   resolve(__dirname, "../gradle/libs.versions.toml"),
