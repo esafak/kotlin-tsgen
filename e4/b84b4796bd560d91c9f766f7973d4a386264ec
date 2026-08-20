@@ -1,0 +1,19 @@
+site/docusaurus.config.js
+  s_e7ee9d2645c47b::t_d5dcc3fbdda8f1 4-22,46-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e4b84b4796bd560d91c9f766f7973d4a386264ec",
+  "prompts": {},
+  "sessions": {
+    "s_e7ee9d2645c47b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fdfce211bffeIp1twUgewl23xy",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
