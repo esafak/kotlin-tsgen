@@ -1,0 +1,14 @@
+site/pnpm-workspace.yaml
+  h_ea91e2db23540f 6-8,10-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "5a8233fdce655dea8fc8b1108e4beb4146a75423",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
