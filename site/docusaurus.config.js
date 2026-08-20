@@ -1,6 +1,25 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
+const {execFileSync} = require("node:child_process");
+const {readFileSync} = require("node:fs");
+const {resolve} = require("node:path");
+
+const latestRelease = execFileSync(
+  "git",
+  ["describe", "--tags", "--abbrev=0", "--match", "v[0-9]*"],
+  {encoding: "utf8"},
+).trim().replace(/^v/, "");
+
+const kotlinVersion = readFileSync(
+  resolve(__dirname, "../gradle/libs.versions.toml"),
+  "utf8",
+).match(/^kotlin\s*=\s*"([^"]+)"/m)?.[1];
+
+if (!kotlinVersion) {
+  throw new Error("Could not determine the Kotlin version from gradle/libs.versions.toml");
+}
+
 const config = /** @type {import("@docusaurus/types").Config} */ {
   title: "kotlin-tsgen",
   tagline: "Generate TypeScript interfaces from Kotlin classes",
@@ -23,6 +42,11 @@ const config = /** @type {import("@docusaurus/types").Config} */ {
   projectName: "kotlin-tsgen",
 
   i18n: {defaultLocale: "en", locales: ["en"]},
+
+  customFields: {
+    latestRelease,
+    kotlinVersion,
+  },
 
   presets: [
     [
