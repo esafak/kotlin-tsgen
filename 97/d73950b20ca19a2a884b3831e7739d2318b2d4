@@ -1,0 +1,14 @@
+site/docusaurus.config.js
+  h_ea91e2db23540f 8,12-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "97d73950b20ca19a2a884b3831e7739d2318b2d4",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
