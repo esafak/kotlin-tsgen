@@ -8,19 +8,20 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
-import kotlin.jvm.JvmInline
 import kotlinx.serialization.ContextualSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonClassDiscriminator
-import kotlinx.serialization.json.JsonContentPolymorphicSerializer
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.modules.SerializersModule
+import kotlin.jvm.JvmInline
 
 /**
  * End-to-end tests for [KotlinTsGenerator] driven by a [SerializersModule].
@@ -30,15 +31,18 @@ import kotlinx.serialization.modules.SerializersModule
  * (TS2300 duplicate identifier) are caught.
  */
 @OptIn(ExperimentalSerializationApi::class)
-class KotlinTsGeneratorSerializersModuleTest : FunSpec({
+class KotlinTsGeneratorSerializersModuleTest :
+  FunSpec({
 
-  test("contextual - a registered type is emitted as an interface, with no duplicate type-alias") {
-      val module = SerializersModule {
-        contextual(ContextualExample.SomeType::class, ContextualExample.SomeType.serializer())
-      }
+    test("contextual - a registered type is emitted as an interface") {
+      val module =
+        SerializersModule {
+          contextual(ContextualExample.SomeType::class, ContextualExample.SomeType.serializer())
+        }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(ContextualExample.TypeHolder.serializer())
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(ContextualExample.TypeHolder.serializer())
 
       // the resolved type is generated as an interface...
       ts shouldContain "export interface SomeType {"
@@ -48,7 +52,8 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       // the referencing field must point at the resolved type
       ts shouldContain "required: SomeType;"
 
-      ts shouldBe """
+      ts shouldBe
+        """
         |export interface TypeHolder {
         |  required: SomeType;
         |}
@@ -56,159 +61,213 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
         |export interface SomeType {
         |  a: string;
         |}
-      """.trimMargin()
-  }
+        """.trimMargin()
+    }
 
-  test("contextual - an unregistered type falls back to `type Foo = any`") {
-      val ts = KotlinTsGenerator()
-        .generate(ContextualExample.TypeHolder.serializer())
+    test("contextual - an unregistered type falls back to `type Foo = any`") {
+      val ts =
+        KotlinTsGenerator()
+          .generate(ContextualExample.TypeHolder.serializer())
 
       // no dangling reference: the placeholder becomes a type-alias to `any`...
       ts shouldContain "type SomeType = any"
       // ...and no interface is invented
       ts shouldNotContain "export interface SomeType {"
-  }
+    }
 
-  test("contextual - a generic provider that needs type arguments falls back without throwing") {
-      val module = SerializersModule {
-        contextual(GenericContextualExample.Box::class) { typeArguments ->
-          GenericContextualExample.Box.serializer(typeArguments.single())
+    test("contextual - a generic provider that needs type arguments falls back without throwing") {
+      val module =
+        SerializersModule {
+          contextual(GenericContextualExample.Box::class) { typeArguments ->
+            GenericContextualExample.Box.serializer(typeArguments.single())
+          }
         }
-      }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(GenericContextualExample.Holder.serializer())
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(GenericContextualExample.Holder.serializer())
 
       ts shouldContain "type Box = any"
-  }
+    }
 
-  test("contextual - a primitive serializer is rendered using a named type") {
-      val module = SerializersModule {
-        contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
-      }
+    test("contextual - a primitive serializer is rendered using a named type") {
+      val module =
+        SerializersModule {
+          contextual(
+            PrimitiveContextualExample.EntityType::class,
+            PrimitiveContextualExample.EntityTypeSerializer,
+          )
+        }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(PrimitiveContextualExample.Holder.serializer())
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(PrimitiveContextualExample.Holder.serializer())
 
-       ts shouldContain "required: EntityType;"
-       ts shouldContain "optional: EntityType | null;"
-       ts shouldContain "export type EntityType = string;"
-  }
+      ts shouldContain "required: EntityType;"
+      ts shouldContain "optional: EntityType | null;"
+      ts shouldContain "export type EntityType = string;"
+    }
 
-  test("custom primitive serializer - a root enum is emitted as a named type alias") {
-      val ts = KotlinTsGenerator()
-        .generate(PrimitiveContextualExample.EntityType.serializer())
+    test("contextual - a registered built-in string remains lowercase") {
+      val module =
+        SerializersModule {
+          contextual(String::class, String.serializer())
+        }
+
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(ContextualBuiltInExample.Holder.serializer())
+
+      ts shouldContain "value: string | null;"
+      ts shouldNotContain "String"
+    }
+
+    test("custom primitive serializer - a root enum is emitted as a named type alias") {
+      val serializer = PrimitiveContextualExample.EntityType.serializer()
+      val ts = KotlinTsGenerator().generate(serializer)
 
       ts shouldBe "export type EntityType = string;"
-  }
+    }
 
-  test("custom primitive serializer - a root value class is emitted as a named type alias") {
-      val ts = KotlinTsGenerator()
-        .generate(CustomPrimitiveExample.StringId.serializer())
+    test("custom primitive serializer - a root value class is emitted as a named type alias") {
+      val ts =
+        KotlinTsGenerator()
+          .generate(CustomPrimitiveExample.StringId.serializer())
 
       ts shouldBe "export type StringId = string;"
-  }
+    }
 
-  test("contextual primitive serializer - a resolved root type is emitted as a named type alias") {
-      val module = SerializersModule {
-        contextual(PrimitiveContextualExample.EntityType::class, PrimitiveContextualExample.EntityTypeSerializer)
-      }
+    test(
+      "contextual primitive serializer - a resolved root type is emitted as a named type alias",
+    ) {
+      val module =
+        SerializersModule {
+          contextual(
+            PrimitiveContextualExample.EntityType::class,
+            PrimitiveContextualExample.EntityTypeSerializer,
+          )
+        }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(ContextualSerializer(PrimitiveContextualExample.EntityType::class))
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(ContextualSerializer(PrimitiveContextualExample.EntityType::class))
 
       ts shouldBe "export type EntityType = string;"
-  }
+    }
 
-  test("open polymorphic - registered subclasses are emitted as a union") {
-      val module = SerializersModule {
-        polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
-        polymorphic(OpenExample.OtherParent::class, OpenExample.OtherSubClass::class, OpenExample.OtherSubClass.serializer())
-      }
+    test("open polymorphic - registered subclasses are emitted as a union") {
+      val module =
+        SerializersModule {
+          polymorphic(
+            OpenExample.Parent::class,
+            OpenExample.SubClass::class,
+            OpenExample.SubClass.serializer(),
+          )
+          polymorphic(
+            OpenExample.OtherParent::class,
+            OpenExample.OtherSubClass::class,
+            OpenExample.OtherSubClass.serializer(),
+          )
+        }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(OpenExample.TypeHolder.serializer())
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(OpenExample.TypeHolder.serializer())
 
       ts shouldContain "export type Parent ="
       ts shouldContain "| SubClass;"
       ts shouldContain "export interface SubClass {"
       ts shouldNotContain "OtherSubClass"
       ts shouldNotContain "type Parent = any"
-  }
+    }
 
-  test("open polymorphic - the config module is also used for resolution") {
-      val module = SerializersModule {
-        polymorphic(OpenExample.Parent::class, OpenExample.SubClass::class, OpenExample.SubClass.serializer())
-      }
+    test("open polymorphic - the config module is also used for resolution") {
+      val module =
+        SerializersModule {
+          polymorphic(
+            OpenExample.Parent::class,
+            OpenExample.SubClass::class,
+            OpenExample.SubClass.serializer(),
+          )
+        }
 
-      val ts = KotlinTsGenerator(KotlinTsConfig(serializersModule = module))
-        .generate(OpenExample.TypeHolder.serializer())
+      val ts =
+        KotlinTsGenerator(KotlinTsConfig(serializersModule = module))
+          .generate(OpenExample.TypeHolder.serializer())
 
       ts shouldContain "| SubClass;"
       ts shouldContain "export interface SubClass {"
       ts shouldNotContain "type Parent = any"
-  }
+    }
 
-  test("open polymorphic - without registrations falls back to any") {
-      val ts = KotlinTsGenerator()
-        .generate(OpenExample.TypeHolder.serializer())
+    test("open polymorphic - without registrations falls back to any") {
+      val ts =
+        KotlinTsGenerator()
+          .generate(OpenExample.TypeHolder.serializer())
 
       ts shouldContain "type Parent = any"
       ts shouldNotContain "export interface SubClass {"
-  }
-
-  test("json content polymorphic - configured subtypes generate a plain union") {
-    val generator = KotlinTsGenerator()
-    generator.mapTypes {
-      contentPolymorphism(JsonContentExample.Serializer) {
-        subtype<JsonContentExample.BasicProject>()
-        subtype<JsonContentExample.OwnedProject>()
-      }
     }
 
-    val ts = generator.generate(JsonContentExample.Serializer)
-
-    ts shouldContain "export type Project ="
-    ts shouldContain "| BasicProject"
-    ts shouldContain "| OwnedProject"
-    ts shouldContain "export interface BasicProject {"
-    ts shouldContain "export interface OwnedProject {"
-    ts shouldNotContain "type Project = any"
-  }
-
-  test("json content polymorphic - unconfigured serializers warn and fall back to any") {
-    val warnings = mutableListOf<String>()
-    val config = KotlinTsConfig(onWarning = warnings::add)
-
-    val ts = KotlinTsGenerator(config).generate(JsonContentExample.Serializer)
-
-    ts shouldContain "export type Project = any;"
-    warnings.single() shouldContain "JsonContentPolymorphicSerializer"
-    warnings.single() shouldContain "Project"
-  }
-
-  test("json content polymorphic - empty mappings warn and fall back to any") {
-    val warnings = mutableListOf<String>()
-    val generator = KotlinTsGenerator(KotlinTsConfig(onWarning = warnings::add))
-    generator.mapTypes {
-      contentPolymorphism(JsonContentExample.Serializer) {}
-    }
-
-    val ts = generator.generate(JsonContentExample.Serializer)
-
-    ts shouldContain "export type Project = any;"
-    warnings.single() shouldContain "JsonContentPolymorphicSerializer"
-  }
-
-  test("sealed polymorphic - module registrations do not duplicate subclasses") {
-      val module = SerializersModule {
-        polymorphic(SealedExample.Parent::class, SealedExample.SubClass::class, SealedExample.SubClass.serializer())
+    test("json content polymorphic - configured subtypes generate a plain union") {
+      val generator = KotlinTsGenerator()
+      generator.mapTypes {
+        contentPolymorphism(JsonContentExample.Serializer) {
+          subtype<JsonContentExample.BasicProject>()
+          subtype<JsonContentExample.OwnedProject>()
+        }
       }
 
-      val ts = KotlinTsGenerator(serializersModule = module)
-        .generate(SealedExample.Parent.serializer())
-      val tsWithoutModule = KotlinTsGenerator()
-        .generate(SealedExample.Parent.serializer())
+      val ts = generator.generate(JsonContentExample.Serializer)
+
+      ts shouldContain "export type Project ="
+      ts shouldContain "| BasicProject"
+      ts shouldContain "| OwnedProject"
+      ts shouldContain "export interface BasicProject {"
+      ts shouldContain "export interface OwnedProject {"
+      ts shouldNotContain "type Project = any"
+    }
+
+    test("json content polymorphic - unconfigured serializers warn and fall back to any") {
+      val warnings = mutableListOf<String>()
+      val config = KotlinTsConfig(onWarning = warnings::add)
+
+      val ts = KotlinTsGenerator(config).generate(JsonContentExample.Serializer)
+
+      ts shouldContain "export type Project = any;"
+      warnings.single() shouldContain "JsonContentPolymorphicSerializer"
+      warnings.single() shouldContain "Project"
+    }
+
+    test("json content polymorphic - empty mappings warn and fall back to any") {
+      val warnings = mutableListOf<String>()
+      val generator = KotlinTsGenerator(KotlinTsConfig(onWarning = warnings::add))
+      generator.mapTypes {
+        contentPolymorphism(JsonContentExample.Serializer) {}
+      }
+
+      val ts = generator.generate(JsonContentExample.Serializer)
+
+      ts shouldContain "export type Project = any;"
+      warnings.single() shouldContain "JsonContentPolymorphicSerializer"
+    }
+
+    test("sealed polymorphic - module registrations do not duplicate subclasses") {
+      val module =
+        SerializersModule {
+          polymorphic(
+            SealedExample.Parent::class,
+            SealedExample.SubClass::class,
+            SealedExample.SubClass.serializer(),
+          )
+        }
+
+      val ts =
+        KotlinTsGenerator(serializersModule = module)
+          .generate(SealedExample.Parent.serializer())
+      val tsWithoutModule =
+        KotlinTsGenerator()
+          .generate(SealedExample.Parent.serializer())
 
       ts shouldBe tsWithoutModule
 
@@ -221,57 +280,63 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
 
       // ...and there must be NO flat top-level duplicate of the subclass interface.
       // (A line starting with `export interface SubClass` at column 0 would be such a duplicate.)
-      ts.lineSequence()
+      ts
+        .lineSequence()
         .filter { it.startsWith("export interface SubClass") }
         .toList()
         .shouldBeEmpty()
-  }
-
-  test("sealed polymorphic - the parent discriminator annotation selects the property and enum") {
-    val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
-
-    ts shouldContain "export enum Kind {"
-    ts shouldContain "kind: Parent.Kind.Child;"
-    ts shouldNotContain "type: Parent.Kind.Child;"
-  }
-
-  test("sealed polymorphic - a subclass carrying the parent discriminator does not disrupt generation") {
-    val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
-
-    ts shouldContain "kind: Parent.Kind.Child;"
-  }
-
-  test("sealed polymorphic - nested sealed subclasses are flattened recursively") {
-    val ts = KotlinTsGenerator().generate(NestedSealedExample.Parent.serializer())
-
-    ts shouldContain "export type Parent ="
-    ts shouldContain "| Parent.Direct"
-    ts shouldContain "| Parent.Leaf"
-    ts shouldContain "| Parent.Sibling"
-    ts shouldContain "export interface Leaf {"
-    ts shouldContain "export interface Sibling {"
-    ts shouldContain "name: string;"
-    ts shouldContain "colour: string;"
-    ts shouldContain "leaf: string;"
-    ts shouldContain "Sibling ="
-    ts shouldContain "Leaf ="
-    ts shouldNotContain "| Parent.Middle"
-    ts shouldNotContain "| Parent.Inner"
-  }
-
-  test("sealed polymorphic - an invalid discriminator name fails clearly") {
-    val exception = shouldThrow<InvalidTsIdentifierException> {
-      KotlinTsGenerator().generate(InvalidDiscriminatorExample.Parent.serializer())
     }
 
-    exception.identifier shouldBe "bad-name"
-    exception.context shouldContain "discriminator property"
-  }
-}) {
+    test("sealed polymorphic - the parent discriminator annotation selects the property and enum") {
+      val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
+
+      ts shouldContain "export enum Kind {"
+      ts shouldContain "kind: Parent.Kind.Child;"
+      ts shouldNotContain "type: Parent.Kind.Child;"
+    }
+
+    test(
+      "sealed polymorphic - a subclass carrying the parent discriminator does not disrupt generation",
+    ) {
+      val ts = KotlinTsGenerator().generate(AnnotatedSealedExample.Parent.serializer())
+
+      ts shouldContain "kind: Parent.Kind.Child;"
+    }
+
+    test("sealed polymorphic - nested sealed subclasses are flattened recursively") {
+      val ts = KotlinTsGenerator().generate(NestedSealedExample.Parent.serializer())
+
+      ts shouldContain "export type Parent ="
+      ts shouldContain "| Parent.Direct"
+      ts shouldContain "| Parent.Leaf"
+      ts shouldContain "| Parent.Sibling"
+      ts shouldContain "export interface Leaf {"
+      ts shouldContain "export interface Sibling {"
+      ts shouldContain "name: string;"
+      ts shouldContain "colour: string;"
+      ts shouldContain "leaf: string;"
+      ts shouldContain "Sibling ="
+      ts shouldContain "Leaf ="
+      ts shouldNotContain "| Parent.Middle"
+      ts shouldNotContain "| Parent.Inner"
+    }
+
+    test("sealed polymorphic - an invalid discriminator name fails clearly") {
+      val exception =
+        shouldThrow<InvalidTsIdentifierException> {
+          KotlinTsGenerator().generate(InvalidDiscriminatorExample.Parent.serializer())
+        }
+
+      exception.identifier shouldBe "bad-name"
+      exception.context shouldContain "discriminator property"
+    }
+  }) {
   @Suppress("unused")
   private object ContextualExample {
     @Serializable
-    class SomeType(val a: String)
+    class SomeType(
+      val a: String,
+    )
 
     @Serializable
     class TypeHolder(
@@ -286,7 +351,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     sealed class Parent
 
     @Serializable
-    class SubClass(val x: String) : Parent()
+    class SubClass(
+      val x: String,
+    ) : Parent()
   }
 
   @Suppress("unused")
@@ -307,7 +374,10 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
       abstract val name: String
 
       @Serializable
-      class Direct(override val name: String, val direct: String) : Parent()
+      class Direct(
+        override val name: String,
+        val direct: String,
+      ) : Parent()
 
       @Serializable
       sealed class Middle : Parent() {
@@ -351,10 +421,15 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     }
 
     @Serializable
-    data class BasicProject(override val name: String) : Project()
+    data class BasicProject(
+      override val name: String,
+    ) : Project()
 
     @Serializable
-    data class OwnedProject(override val name: String, val owner: String) : Project()
+    data class OwnedProject(
+      override val name: String,
+      val owner: String,
+    ) : Project()
 
     object Serializer : JsonContentPolymorphicSerializer<Project>(Project::class) {
       override fun selectDeserializer(element: JsonElement) = BasicProject.serializer()
@@ -367,13 +442,17 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     abstract class Parent
 
     @Serializable
-    class SubClass(val x: String) : Parent()
+    class SubClass(
+      val x: String,
+    ) : Parent()
 
     @Serializable
     abstract class OtherParent
 
     @Serializable
-    class OtherSubClass(val y: String) : OtherParent()
+    class OtherSubClass(
+      val y: String,
+    ) : OtherParent()
 
     @Serializable
     class TypeHolder(
@@ -385,7 +464,9 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
   @Suppress("unused")
   private object GenericContextualExample {
     @Serializable
-    class Box<T>(val value: T)
+    class Box<T>(
+      val value: T,
+    )
 
     @Serializable
     class Holder(
@@ -405,7 +486,10 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     object EntityTypeSerializer : KSerializer<EntityType> {
       override val descriptor = PrimitiveSerialDescriptor("EntityType", PrimitiveKind.STRING)
 
-      override fun serialize(encoder: Encoder, value: EntityType) {
+      override fun serialize(
+        encoder: Encoder,
+        value: EntityType,
+      ) {
         encoder.encodeString(value.name)
       }
 
@@ -422,21 +506,33 @@ class KotlinTsGeneratorSerializersModuleTest : FunSpec({
     )
   }
 
+  private object ContextualBuiltInExample {
+    @Serializable
+    class Holder(
+      @kotlinx.serialization.Contextual
+      val value: String?,
+    )
+  }
+
   @Suppress("unused")
   private object CustomPrimitiveExample {
     @Serializable(with = StringIdSerializer::class)
     @JvmInline
-    value class StringId(val value: String)
+    value class StringId(
+      val value: String,
+    )
 
     object StringIdSerializer : KSerializer<StringId> {
       override val descriptor = PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING)
 
-      override fun serialize(encoder: Encoder, value: StringId) {
+      override fun serialize(
+        encoder: Encoder,
+        value: StringId,
+      ) {
         encoder.encodeString(value.value)
       }
 
-      override fun deserialize(decoder: Decoder): StringId =
-        StringId(decoder.decodeString())
+      override fun deserialize(decoder: Decoder): StringId = StringId(decoder.decodeString())
     }
   }
 }
