@@ -6,7 +6,7 @@ overrides:
   # GHSA-qj8w-gfj5-8c6v / CVE-2026-34043. copy-webpack-plugin ->
   # serialize-javascript; remove when the upstream dependency chain resolves
   # 7.0.5+ without an override.
-  serialize-javascript: 7.0.5
+  serialize-javascript: 7.1.0
   # GHSA-w5hq-g745-h8pq / CVE-2026-41907. webpack-dev-server -> sockjs ->
   # uuid; remove when the upstream dependency chain resolves 11.1.1+ without
   # an override.
