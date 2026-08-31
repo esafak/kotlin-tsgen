@@ -35,36 +35,36 @@ url = "https://github.com/jdx/hk/releases/download/v1.55.0/hk-x86_64-pc-windows-
 url_api = "https://api.github.com/repos/jdx/hk/releases/assets/510729674"
 
 [[tools.java]]
-version = "temurin-25.0.4+7.0.LTS"
+version = "temurin-25.0.4+101.0.LTS"
 backend = "core:java"
 
 [tools.java."platforms.linux-arm64"]
-checksum = "sha256:621f7196f0b682fb557da58bec89bd7dfe5419811fe1c0ba75c9cc8432f084c7"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_aarch64_linux_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:69df11a02cfa3ef7d7ca645e03edce6778ec090e100f6ae2b42097865730ac52"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_aarch64_linux_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.linux-arm64-musl"]
-checksum = "sha256:3d1c5c7877e320c2cff8154cfca9af948089912b6efc6123bb21726b7055bc62"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_aarch64_alpine-linux_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:8d19373d427017d86ac87cf6a47ba49746be864832f60b52b7e3b1531c6b2cb8"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_aarch64_alpine-linux_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.linux-x64"]
-checksum = "sha256:e58fcdcd637b25c03ca84cbbcefc70d11efb8f4b4cbd05decc9f661769d77f94"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:dbb698396d478e7fa2b1e50f4103324b2a99b90569ee27c33f2261f9215cf41e"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_linux_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.linux-x64-musl"]
-checksum = "sha256:c6f3e9f975c130169283363bf0ef2fc55f45c36eacc909141ffa7189cd7bdcb7"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_alpine-linux_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:f18648ee5ce45261f50dc9493fdae7ddebaa2a7a857cafda3e2a448a79c03dee"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_alpine-linux_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.macos-arm64"]
-checksum = "sha256:5a101c54abf5a9f16c0f70d8c38ba99e6567c1ba213378f0bb04497284f051bd"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_aarch64_mac_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:61979887f7506a24a57439ff99adb8b3a7fc89977d9cfe3b8984f58a981b7b9d"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_aarch64_mac_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.macos-x64"]
-checksum = "sha256:a5ac9c46dad47ac06df35e36d096913195d8da1f3f71918828bcc2cfe33869b7"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_mac_hotspot_25.0.4_7.tar.gz"
+checksum = "sha256:e6229d9504f7922053ab31821b9e6bee8761daf7b026a3476d1a027563009880"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_mac_hotspot_25.0.4.1_1.tar.gz"
 
 [tools.java."platforms.windows-x64"]
-checksum = "sha256:7caab7db43bf4b94a2e6252c699e70d90084f9aa7c943cd3414761fd540937ae"
-url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4%2B7/OpenJDK25U-jdk_x64_windows_hotspot_25.0.4_7.zip"
+checksum = "sha256:00c847d804f4a78e9f04f2683faf14fed898535b177b7fc704486cb0284e9283"
+url = "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jdk_x64_windows_hotspot_25.0.4.1_1.zip"
 
 [[tools.ktlint]]
 version = "1.8.0"
