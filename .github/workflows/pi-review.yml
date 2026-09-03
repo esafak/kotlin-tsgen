@@ -44,7 +44,9 @@ jobs:
         with:
           client-id: ${{ secrets.PI_REVIEWER_CLIENT_ID }}
           private-key: ${{ secrets.PI_REVIEWER_PK }}
-          permission-contents: read
+          # GitHub's resolveReviewThread mutation requires Contents write,
+          # although the token only writes review-thread state.
+          permission-contents: write
           permission-pull-requests: write
           permission-issues: write
 
