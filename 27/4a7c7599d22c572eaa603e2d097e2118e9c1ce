@@ -1,0 +1,21 @@
+gradle/kotlin-js-store/yarn.lock
+  s_4233e0ea6eacb0::t_774f874647acf9 406,628-631,703,736-739,809-811,1266,1563-1566,1668,1678-1681,1898,1903,1991,2038-2041,2051,2053-2054,2060,2063-2066
+site/pnpm-lock.yaml
+  s_4233e0ea6eacb0::t_0d8864ce9b314e 10,4499-4500,8557,9319,11282
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "274a7c7599d22c572eaa603e2d097e2118e9c1ce",
+  "prompts": {},
+  "sessions": {
+    "s_4233e0ea6eacb0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f97b81a37ffePSm8JB6JTqX6KG",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
