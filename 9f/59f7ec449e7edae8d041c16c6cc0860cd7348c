@@ -1,0 +1,19 @@
+.github/workflows/pi-review.yml
+  s_38cee7caa405f6::t_37d5071112d92f 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9f59f7ec449e7edae8d041c16c6cc0860cd7348c",
+  "prompts": {},
+  "sessions": {
+    "s_38cee7caa405f6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9d202480ffeqNhdzXNECYbvJ3",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
