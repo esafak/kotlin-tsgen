@@ -5,7 +5,7 @@ min_version = "2026.8.0"
 java = "temurin-25"
 node = "24.19.0"
 "npm:pnpm" = "11.22.0"
-hk = "1.55.0"
+hk = "1.56.0"
 ktlint = "1.8.0"
 
 [tasks.test]
