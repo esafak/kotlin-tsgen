@@ -2,6 +2,11 @@ allowBuilds:
   '@parcel/watcher': true
   core-js: true
 
+audit:
+  ignore:
+    - GHSA-w3rx-r6r6-pgpr # image-size is abandoned and published built pages themselves won't be affected
+    - GHSA-5p2g-fcmc-qvqq # ditto
+
 overrides:
   # When adding an override, first try unpinning stale overrides above;
   # remove any override whose upstream dependency chain now resolves safely.
