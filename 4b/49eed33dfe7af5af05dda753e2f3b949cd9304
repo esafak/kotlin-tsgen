@@ -1,0 +1,19 @@
+site/pnpm-lock.yaml
+  s_8eab0a6862cc79::t_01c48d36a8e118 12-14,2347-2348,3418-3419,5013-5014,5404,6924,7479,7513,8034,8762,8854,9915,10832,10975,11213,11897
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4b49eed33dfe7af5af05dda753e2f3b949cd9304",
+  "prompts": {},
+  "sessions": {
+    "s_8eab0a6862cc79": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f77a9e13affe7qWUDuPaC7X6rZ",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
