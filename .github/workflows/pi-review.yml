@@ -44,6 +44,7 @@ jobs:
     outputs:
       head-sha: ${{ steps.commit.outputs.head-sha }}
       comment-authorized: ${{ steps.commit.outputs.comment-authorized }}
+      same-repo: ${{ steps.commit.outputs.same-repo }}
     steps:
       - name: Resolve head commit and authorize commenter
         id: commit
@@ -74,6 +75,19 @@ jobs:
               headSha = pullRequest.head.sha;
             }
             core.setOutput('head-sha', headSha);
+
+            // The review job holds secrets and write permissions, and the
+            // pi-reviewer action reads package.json / pnpm-workspace.yaml from
+            // the checked-out tree, so it must never process fork-controlled
+            // code. Comment events do not carry the PR in the payload, so
+            // resolve the fork decision here and let the caller gate on it.
+            const sameRepo = String(
+              pullRequest
+                ? pullRequest.head.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`
+                : context.eventName !== 'issue_comment' &&
+                    context.eventName !== 'pull_request_review_comment',
+            );
+            core.setOutput('same-repo', sameRepo);
 
             // Review comments carry an unreliable author_association in the
             // Actions payload (an org owner is reported as CONTRIBUTOR), so
@@ -114,12 +128,13 @@ jobs:
       issues: write
     if: |
       !cancelled() &&
+      needs.check-comment.result == 'success' &&
+      needs.check-comment.outputs.same-repo == 'true' &&
       (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
       (github.event_name != 'pull_request_review_comment' || github.event.comment.user.type != 'Bot') &&
       (github.event_name != 'issue_comment' || github.event.comment.user.type != 'Bot') &&
       ((github.event_name != 'pull_request_review_comment' && github.event_name != 'issue_comment') ||
         needs.check-comment.outputs.comment-authorized == 'true') &&
-      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
       (github.event_name != 'pull_request' || !endsWith(github.event.pull_request.user.login || '', 'renovate[bot]'))
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
