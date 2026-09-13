@@ -1,0 +1,21 @@
+mise.lock
+  s_d98085a3ffb93d::t_1ac0f381d81eff 3-42
+site/pnpm-lock.yaml
+  s_d98085a3ffb93d::t_b2b31ad84a098c 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3b034bd53e4a6e20bad2413129c4480f5ef8b75a",
+  "prompts": {},
+  "sessions": {
+    "s_d98085a3ffb93d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f642ba79fffek74d13fbTLZWe1",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
