@@ -3,6 +3,10 @@ name: Pi Reviewer
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
   workflow_dispatch:
     inputs:
       min-severity:
@@ -20,24 +24,109 @@ on:
         required: false
         type: string
 
+# Review every PR update; never abort an in-flight review mid-generation.
+concurrency:
+  group: pi-reviewer-${{ github.repository }}-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr-number || github.run_id }}
+  cancel-in-progress: false
+  # Queue pending runs instead of the single-slot default. Bot-authored
+  # comment events still enter this group but are skipped by the job `if:`;
+  # without a multi-slot queue, a later bot run would evict an earlier
+  # human-triggered run that is still pending.
+  queue: max
+
 jobs:
+  check-comment:
+    name: Resolve PR head
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      head-sha: ${{ steps.commit.outputs.head-sha }}
+      comment-authorized: ${{ steps.commit.outputs.comment-authorized }}
+    steps:
+      - name: Resolve head commit and authorize commenter
+        id: commit
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const payload = context.payload;
+            const pullRequestNumber = payload.pull_request?.number
+              ?? (payload.issue?.pull_request ? payload.issue.number : undefined);
+
+            let pullRequest;
+            if (pullRequestNumber) {
+              try {
+                ({ data: pullRequest } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pullRequestNumber,
+                }));
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+              }
+            }
+
+            let headSha = '';
+            if (pullRequest) {
+              headSha = pullRequest.head.sha;
+            }
+            core.setOutput('head-sha', headSha);
+
+            // Review comments carry an unreliable author_association in the
+            // Actions payload (an org owner is reported as CONTRIBUTOR), so
+            // authorise commenters by their effective repository permission.
+            const isCommentEvent = [
+              'pull_request_review_comment',
+              'issue_comment',
+            ].includes(context.eventName);
+            let commentAuthorized = 'true';
+            if (isCommentEvent) {
+              commentAuthorized = 'false';
+              const commenterLogin = payload.comment?.user?.login;
+              if (commenterLogin) {
+                try {
+                  const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    username: commenterLogin,
+                  });
+                  commentAuthorized = String(
+                    ['admin', 'write'].includes(data.permission),
+                  );
+                } catch (error) {
+                  commentAuthorized = 'false';
+                }
+              }
+            }
+            core.setOutput('comment-authorized', commentAuthorized);
+
   review:
+    name: Review
+    needs: check-comment
     runs-on: ubuntu-latest
     environment: reviews
-    if: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && !endsWith(github.event.pull_request.user.login || '', 'renovate[bot]') }}
     permissions:
       contents: read
       pull-requests: write
       issues: write
-    concurrency:
-      group: pi-reviewer-${{ github.repository }}-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr-number || github.run_id }}
-      cancel-in-progress: false
+    if: |
+      !cancelled() &&
+      (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
+      (github.event_name != 'pull_request_review_comment' || github.event.comment.user.type != 'Bot') &&
+      (github.event_name != 'issue_comment' || github.event.comment.user.type != 'Bot') &&
+      ((github.event_name != 'pull_request_review_comment' && github.event_name != 'issue_comment') ||
+        needs.check-comment.outputs.comment-authorized == 'true') &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) &&
+      (github.event_name != 'pull_request' || !endsWith(github.event.pull_request.user.login || '', 'renovate[bot]'))
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ needs.check-comment.outputs.head-sha || github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: bot-token
@@ -76,7 +165,7 @@ jobs:
           echo "::add-mask::$key"
           printf 'PI_API_KEY=%s\n' "$key" >> "$GITHUB_ENV"
 
-      - uses: esafak/pi-reviewer@2221dd974fd193e705e0094f056ccf6b9fdbcb59 # main
+      - uses: esafak/pi-reviewer@072394fba571a928da2fda5ba1de1dffb756b519 # main
         with:
           github-token: ${{ steps.bot-token.outputs.token }}
           pi-api-key: ${{ env.PI_API_KEY }}
