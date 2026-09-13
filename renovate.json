@@ -10,7 +10,8 @@
     "npm",
     "gradle",
     "github-actions",
-    "mise"
+    "mise",
+    "custom.regex"
   ],
   "lockFileMaintenance": {
     "enabled": true
@@ -22,7 +23,7 @@
         "/buildSrc/src/main/kotlin/buildsrc/convention/node\\.gradle\\.kts$/"
       ],
       "matchStrings": [
-        "version\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
+        "(?:^|\\r\\n|\\r|\\n)\\s*version\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
       ],
       "depNameTemplate": "node",
       "datasourceTemplate": "node-version",
