@@ -52,8 +52,15 @@ jobs:
         with:
           script: |
             const payload = context.payload;
+            // `workflow_dispatch` carries its inputs on the payload but no
+            // `pull_request`, so fall back to the `pr-number` input. The
+            // pi-reviewer action reads the same input itself; resolving it here
+            // is what lets the caller checkout and fork-check the right PR.
+            const dispatchInputs = payload.inputs ?? {};
+            const dispatchPrNumber = Number(dispatchInputs['pr-number'] ?? dispatchInputs.pr_number);
             const pullRequestNumber = payload.pull_request?.number
-              ?? (payload.issue?.pull_request ? payload.issue.number : undefined);
+              ?? (payload.issue?.pull_request ? payload.issue.number : undefined)
+              ?? (Number.isFinite(dispatchPrNumber) && dispatchPrNumber > 0 ? dispatchPrNumber : undefined);
 
             let pullRequest;
             if (pullRequestNumber) {
@@ -79,23 +86,32 @@ jobs:
             // The review job holds secrets and write permissions, and the
             // pi-reviewer action reads package.json / pnpm-workspace.yaml from
             // the checked-out tree, so it must never process fork-controlled
-            // code. Comment events do not carry the PR in the payload, so
-            // resolve the fork decision here and let the caller gate on it.
-            const sameRepo = String(
-              pullRequest
-                ? pullRequest.head.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`
-                : context.eventName !== 'issue_comment' &&
-                    context.eventName !== 'pull_request_review_comment',
-            );
+            // code. Comment events and dispatch do not carry the PR in the
+            // payload, so resolve the fork decision here and let the caller
+            // gate on it. Fail closed when a PR number was supplied but could
+            // not be resolved.
+            let sameRepo = 'true';
+            const isCommentEvent = [
+              'pull_request_review_comment',
+              'issue_comment',
+            ].includes(context.eventName);
+            if (pullRequest) {
+              sameRepo = String(
+                pullRequest.head.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`,
+              );
+            } else if (isCommentEvent || context.eventName === 'workflow_dispatch') {
+              sameRepo = String(!pullRequestNumber);
+            }
+            if (pullRequestNumber && !pullRequest) {
+              // Requested a PR but the lookup failed: do not fall through to a
+              // default-branch checkout of unknown provenance.
+              sameRepo = 'false';
+            }
             core.setOutput('same-repo', sameRepo);
 
             // Review comments carry an unreliable author_association in the
             // Actions payload (an org owner is reported as CONTRIBUTOR), so
             // authorise commenters by their effective repository permission.
-            const isCommentEvent = [
-              'pull_request_review_comment',
-              'issue_comment',
-            ].includes(context.eventName);
             let commentAuthorized = 'true';
             if (isCommentEvent) {
               commentAuthorized = 'false';
