@@ -10,6 +10,14 @@ plugins {
 
 description = "builds the kotlin-tsgen website"
 
+// pnpm is provided by mise (aqua backend). The node plugin's pnpmSetup would
+// fetch `pnpm@latest` from npm into .gradle/pnpm, which drifts from the pinned
+// version and is not the pnpm that runs (pnpm resolves from PATH). Disable it
+// so mise stays the single source of pnpm.
+tasks.pnpmSetup {
+  enabled = false
+}
+
 dependencies {
   knitDocs(projects.docs.code)
 }
