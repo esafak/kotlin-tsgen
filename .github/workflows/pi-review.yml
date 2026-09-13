@@ -20,7 +20,10 @@ on:
         required: false
         type: number
       target-head:
-        description: Optional ancestor commit to review
+        description: >-
+          Optional commit to review up to, instead of the PR head. Must be an
+          ancestor of the PR head, and must leave at least one unreviewed
+          commit above the merge base.
         required: false
         type: string
 
