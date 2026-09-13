@@ -1,0 +1,19 @@
+mise.lock
+  s_d98085a3ffb93d::t_44fc23a6628f04 37-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "25f21e5ad736da44bc46649c0855591f8bd0ee40",
+  "prompts": {},
+  "sessions": {
+    "s_d98085a3ffb93d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f642ba79fffek74d13fbTLZWe1",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
