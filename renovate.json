@@ -44,7 +44,7 @@
   "packageRules": [
     {
       "description": "group pnpm version updates",
-      "matchPackageNames": ["pnpm", "npm:pnpm"],
+      "matchPackageNames": ["pnpm", "npm:pnpm", "aqua:pnpm/pnpm"],
       "groupName": "pnpm versions"
     },
     {
