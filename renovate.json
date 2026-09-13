@@ -22,18 +22,6 @@
         "/buildSrc/src/main/kotlin/buildsrc/convention/node\\.gradle\\.kts$/"
       ],
       "matchStrings": [
-        "pnpmVersion\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
-      ],
-      "depNameTemplate": "pnpm",
-      "datasourceTemplate": "npm",
-      "versioningTemplate": "npm"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/buildSrc/src/main/kotlin/buildsrc/convention/node\\.gradle\\.kts$/"
-      ],
-      "matchStrings": [
         "version\\.set\\(\\\"(?<currentValue>[^\\\"\\n]+)\\\"\\)"
       ],
       "depNameTemplate": "node",
@@ -44,7 +32,7 @@
   "packageRules": [
     {
       "description": "group pnpm version updates",
-      "matchPackageNames": ["pnpm", "npm:pnpm", "aqua:pnpm/pnpm"],
+      "matchPackageNames": ["pnpm", "aqua:pnpm/pnpm"],
       "groupName": "pnpm versions"
     },
     {
