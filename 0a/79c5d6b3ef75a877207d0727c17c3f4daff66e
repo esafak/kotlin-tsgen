@@ -1,0 +1,19 @@
+.github/workflows/pi-review.yml
+  s_32066aca6fcfd5::t_d0328f6646b00f 47,79-91,131-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0a79c5d6b3ef75a877207d0727c17c3f4daff66e",
+  "prompts": {},
+  "sessions": {
+    "s_32066aca6fcfd5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f69634e73ffe7hpJZ1sSiPpSk7",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
