@@ -20,7 +20,7 @@ kotlinProcess = "1.5.1"                  # https://github.com/pgreze/kotlin-proc
 
 gradleNodePlugin = "7.1.0"               # https://github.com/node-gradle/gradle-node-plugin/releases
 
-gradlePlugin-nmcp = "1.6.1"
+gradlePlugin-nmcp = "1.6.2"
 
 [libraries]
 
