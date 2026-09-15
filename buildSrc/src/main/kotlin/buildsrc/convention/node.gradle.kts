@@ -9,7 +9,7 @@ val rootGradleDir: Directory = rootProject.layout.projectDirectory.dir(".gradle"
 
 node {
   download.set(true)
-  version.set("24.19.0")
+  version.set("24.20.0")
 
   distBaseUrl.set(null as String?) // set in repositories.settings.gradle.kts
 
