@@ -133,7 +133,7 @@ importers:
         version: 2.1.1
       docusaurus-plugin-sass:
         specifier: ^0.2.6
-        version: 0.2.6(@docusaurus/core@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(html-minifier-terser@7.2.0)(postcss@8.5.26)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)(typescript@7.0.2))(sass@1.103.1)(webpack@5.109.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.26))
+        version: 0.2.7(@docusaurus/core@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(html-minifier-terser@7.2.0)(postcss@8.5.26)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)(typescript@7.0.2))(sass@1.103.1)(webpack@5.109.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.26))
       prism-react-renderer:
         specifier: ^2.4.1
         version: 2.4.1(react@19.2.8)
@@ -2783,8 +2783,8 @@ packages:
     resolution: {integrity: sha512-l4gcSouhcgIKRvyy99RNVOgxXiicE+2jZoNmaNmZ6JXiGajBOJAesk1OBlJuM5k2c+eudGdLxDqXuPCKIj6kpw==}
     engines: {node: '>=6'}
 
-  docusaurus-plugin-sass@0.2.6:
-    resolution: {integrity: sha512-2hKQQDkrufMong9upKoG/kSHJhuwd+FA3iAe/qzS/BmWpbIpe7XKmq5wlz4J5CJaOPu4x+iDJbgAxZqcoQf0kg==}
+  docusaurus-plugin-sass@0.2.7:
+    resolution: {integrity: sha512-v+XWW2BBlKiBfqNbDr8iF/DUcWIXDTsAVAfkbG0/pzCx9yV0zK6Qu0ZVFxpZXcMihokzl0zFD1HIN/M4TnzEwA==}
     peerDependencies:
       '@docusaurus/core': ^2.0.0-beta || ^3.0.0-alpha
       sass: ^1.30.0
@@ -9185,7 +9185,7 @@ snapshots:
     dependencies:
       '@leichtgewicht/ip-codec': 2.0.5
 
-  docusaurus-plugin-sass@0.2.6(@docusaurus/core@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(html-minifier-terser@7.2.0)(postcss@8.5.26)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)(typescript@7.0.2))(sass@1.103.1)(webpack@5.109.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.26)):
+  docusaurus-plugin-sass@0.2.7(@docusaurus/core@3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(html-minifier-terser@7.2.0)(postcss@8.5.26)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)(typescript@7.0.2))(sass@1.103.1)(webpack@5.109.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(html-minifier-terser@7.2.0)(postcss@8.5.26)):
     dependencies:
       '@docusaurus/core': 3.10.2(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.26))(csso@5.0.5)(debug@4.4.3(supports-color@8.1.1))(html-minifier-terser@7.2.0)(postcss@8.5.26)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(supports-color@8.1.1)(typescript@7.0.2)
       sass: 1.103.1
