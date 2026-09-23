@@ -47,6 +47,19 @@
       "enabled": false
     },
     {
+      "description": "refresh Kotlin/JS Yarn lockfile after Kotlin updates",
+      "matchManagers": ["gradle"],
+      "matchFileNames": ["gradle/libs.versions.toml"],
+      "matchDepNames": ["/^org\\.jetbrains\\.kotlin:/"],
+      "postUpgradeTasks": {
+        "commands": [
+          "mise x -- ./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon"
+        ],
+        "executionMode": "branch",
+        "fileFilters": ["gradle/kotlin-js-store/yarn.lock"]
+      }
+    },
+    {
       "description": "auto-merge all but major releases",
       "matchUpdateTypes": [
         "minor",
@@ -55,6 +68,11 @@
         "pinDigest"
       ],
       "automerge": true
+    },
+    {
+      "description": "disable auto-merge for Kotlin updates until Yarn lock refresh is verified",
+      "matchDepNames": ["/^org\\.jetbrains\\.kotlin:/"],
+      "automerge": false
     }
   ],
   "automergeType": "branch",
