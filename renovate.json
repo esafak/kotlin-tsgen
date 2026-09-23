@@ -53,7 +53,7 @@
       "matchDepNames": ["/^org\\.jetbrains\\.kotlin:/"],
       "postUpgradeTasks": {
         "commands": [
-          "./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon"
+          "mise x -- ./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon"
         ],
         "executionMode": "branch",
         "fileFilters": ["gradle/kotlin-js-store/yarn.lock"]
