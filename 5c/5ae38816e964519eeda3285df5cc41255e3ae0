@@ -1,0 +1,16 @@
+mise.toml
+  h_ea91e2db23540f 36-40
+renovate.json
+  h_ea91e2db23540f 50,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5c5ae38816e964519eeda3285df5cc41255e3ae0",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
