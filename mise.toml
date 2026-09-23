@@ -33,6 +33,11 @@ description = "Run documentation example tests"
 run = "mise x -- ./gradlew :docs:code:test -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
 run_windows = "mise x -- .\\gradlew.bat :docs:code:test -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace"
 
+[tasks."kotlin:refresh-js-lock"]
+description = "Refresh the Kotlin/JS Yarn lockfile after a manual Kotlin version update"
+run = "mise x -- ./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon"
+run_windows = "mise x -- .\\gradlew.bat kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon"
+
 [tasks.lint]
 description = "Run repository linters"
 run = "hk check"
