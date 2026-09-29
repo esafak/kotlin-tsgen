@@ -24,6 +24,7 @@ fun Project.relocateKotlinJsStore() {
       resolution("qs", "6.16.0") // GHSA-4mjr-xmp4-gh2g, GHSA-x5fp-wj9c-mxmx
       // Keep this aligned with the documentation site's patched pin.
       resolution("serialize-javascript", "7.1.0") // GHSA-qj8w-gfj5-8c6v, GHSA-5c6j-r48x-rmvq
+      resolution("fast-uri", "3.1.7") // GHSA-58mr-gqgx-xq4g / CVE-2026-84394
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
     }
   }
