@@ -1,0 +1,19 @@
+gradle/kotlin-js-store/yarn.lock
+  s_00e35c25db9615::t_a195a916056c89 808-811
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9ac90afec56b52d607c57a5e20705fe45d4ef6b1",
+  "prompts": {},
+  "sessions": {
+    "s_00e35c25db9615": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f1557051affehjtzqKNvVZShil",
+        "model": "muse-spark-1.3-contributor"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
