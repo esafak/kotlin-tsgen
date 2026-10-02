@@ -199,7 +199,7 @@ jobs:
           echo "::add-mask::$key"
           printf 'PI_API_KEY=%s\n' "$key" >> "$GITHUB_ENV"
 
-      - uses: esafak/pi-reviewer@072394fba571a928da2fda5ba1de1dffb756b519 # main
+      - uses: esafak/pi-reviewer@c5c857dde10d4daa4c4625c7d2468568ad1feaf6 # main
         with:
           github-token: ${{ steps.bot-token.outputs.token }}
           pi-api-key: ${{ env.PI_API_KEY }}
