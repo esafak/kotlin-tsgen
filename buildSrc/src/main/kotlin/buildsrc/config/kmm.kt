@@ -28,6 +28,7 @@ fun Project.relocateKotlinJsStore() {
       resolution("brace-expansion", "2.1.7") // GHSA-6j4f-fj2g-mc7p / CVE-2026-102276, GHSA-q2hr-2g5m-vwhr / CVE-2026-102277, GHSA-qhr7-859c-m2p7 / CVE-2026-102278
       resolution("engine.io", "6.6.10") // GHSA-2gc4-cqfq-p2gv / CVE-2026-102599
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
+      resolution("source-map-js", "1.2.2") // GHSA-68fv-2mgg-jv7q / CVE-2026-93749
     }
   }
 }
