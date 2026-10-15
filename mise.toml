@@ -5,7 +5,7 @@ min_version = "2026.8.0"
 java = "temurin-25"
 node = "24.21.0"
 "aqua:pnpm/pnpm" = "12.8.2"
-hk = "2.3.0"
+hk = "2.4.0"
 ktlint = "1.8.0"
 
 [tasks.test]
