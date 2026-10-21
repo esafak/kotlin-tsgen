@@ -44,4 +44,5 @@ overrides:
   # major version, keeping the tree on a release recognized as patched.
   # Remove when the Docusaurus/cssnano dependency chain no longer requires
   # 6.x and resolves patched versions (7.1.6+) without an override.
+  # Tracked in #68.
   'postcss-selector-parser@<7.1.6': '7.1.7'
