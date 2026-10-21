@@ -32,12 +32,16 @@ overrides:
   # override.
   'follow-redirects@<1.16.1': '>=1.16.1'
   # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
-  # 2.1.2 are affected. The 1.x line has no patched release, so the whole
-  # 1.x range moves to 2.2.0. Remove when the upstream dependency chain
-  # resolves 2.1.2+ without an override.
+  # 2.1.2 are affected. The 1.x line has no patched release. This overrides
+  # @docusaurus/core's ^1.0.2 requirement across a major version; tinypool
+  # 2.2.0 needs Node ^20 || >=22, and the site requires Node >=24.
+  # Remove when the upstream dependency chain resolves patched versions
+  # (2.1.2+) without an override.
   'tinypool@<2.1.2': '2.2.0'
-  # GHSA-rj75-hqrm-r3gf: postcss-selector-parser versions before 7.1.6 are
-  # affected. The 6.x line has no patched release, so the whole 6.x range
-  # moves to 7.1.7. Remove when the upstream dependency chain resolves
-  # 7.1.6+ without an override.
+  # GHSA-rj75-hqrm-r3gf: the advisory lists versions before 7.1.6 as affected.
+  # 6.1.5 backported the fix, but the advisory still includes that release.
+  # This overrides the legacy cssnano plugins' ^6 requirements across a
+  # major version, keeping the tree on a release recognized as patched.
+  # Remove when the Docusaurus/cssnano dependency chain no longer requires
+  # 6.x and resolves patched versions (7.1.6+) without an override.
   'postcss-selector-parser@<7.1.6': '7.1.7'

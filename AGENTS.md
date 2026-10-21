@@ -27,4 +27,4 @@
 * Refresh the Kotlin/JS lockfile with `mise x -- ./gradlew kotlinUpgradeYarnLock kotlinStoreYarnLock --no-daemon`.
 * Validate Kotlin/JS lockfile changes with `mise x -- ./gradlew kotlinNpmInstall --no-daemon` and `mise x -- ./gradlew :modules:kotlin-tsgen-core:jsTest --no-daemon`.
 * Resolve a dependency advisory by moving to a patched version, even across a major version. Only ignore an advisory when upstream has no patched release, and say so in the ignore entry.
-* Keep the documentation site's dependencies free of high or critical advisories: `:site:check` runs `pnpm audit --audit-level=high`, so a new advisory fails the build. Fix it with a version, not with an ignore entry.
+* Keep the documentation site's dependencies free of unaccepted high or critical advisories: `:site:check` runs `pnpm audit --audit-level=high`, so a new advisory fails the build. Fix it with a version, not with an ignore entry.
