@@ -1,0 +1,28 @@
+.github/workflows/run_tests.yml
+  h_ea91e2db23540f 31-55
+AGENTS.md
+  h_ea91e2db23540f 31
+buildSrc/src/main/kotlin/buildsrc/config/Gradle.kt
+  h_ea91e2db23540f 20
+buildSrc/src/main/kotlin/buildsrc/config/KotlinTsGenBuildSettings.kt
+  h_ea91e2db23540f 7
+docs/code/util/io/github/esafak/kotlintsgen/util/ProcessMatchers.kt
+  h_ea91e2db23540f 10-13,33-36,38-44,46,48,50-52,54-55,57-58
+docs/code/util/io/github/esafak/kotlintsgen/util/Strings.kt
+  h_ea91e2db23540f 13-14,20
+docs/code/util/io/github/esafak/kotlintsgen/util/TypescriptCompile.kt
+  h_ea91e2db23540f 6,11-12,14-15,20-21,23-24,32-36,43
+hk.pkl
+  h_ea91e2db23540f 1-2,5-10,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f0b7223febe1304217927157980947556cd6a8ba",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
