@@ -18,6 +18,5 @@ fun Configuration.asConsumer() {
   isCanBeConsumed = false
 }
 
-
 fun AttributeContainer.knitDocsAttributes(objects: ObjectFactory): AttributeContainer =
   attribute(USAGE_ATTRIBUTE, objects.named("kotlin-tsgen.knit-docs"))

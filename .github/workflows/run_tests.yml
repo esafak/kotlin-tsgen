@@ -28,6 +28,31 @@ permissions:
 
 jobs:
 
+  lint:
+    # The linters run on the files a pull request changes. This also catches an
+    # hk.pkl that no longer matches the hk version: the config then fails to
+    # load, and every linter silently stops running.
+    #
+    # Only the hk configuration can break that way, so the job runs when it
+    # changes. A manual dispatch always runs it.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Setup mise tools
+        uses: jdx/mise-action@2d8d4cafcbd33b2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          cache: false
+      - name: Run the linters when the hk configuration changes
+        run: |
+          if [ -z "${{ github.base_ref }}" ] || git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(hk\.pkl|mise\.(toml|lock)|\.editorconfig)$'; then
+            mise x -- hk check
+          else
+            echo "No hk configuration change; skipping the linters."
+          fi
+
   gradle-check:
     strategy:
       matrix:
