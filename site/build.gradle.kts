@@ -22,6 +22,35 @@ dependencies {
   knitDocs(projects.docs.code)
 }
 
+/**
+ * Fails the build when the site's dependency tree has a high or critical
+ * advisory. Dependabot only reports what it recognizes, so this is what
+ * surfaces the rest.
+ *
+ * `pnpm audit` reads the lockfile, not `node_modules`, and the advisories
+ * live in `pnpm-workspace.yaml` under `audit.ignore`. Every entry there needs
+ * a reason: a patched version that upstream does not release yet.
+ *
+ * The audit runs through mise, because the ignore list needs the pnpm version
+ * that mise.toml pins. An older pnpm on PATH does not read it.
+ */
+val pnpmAudit by tasks.registering(Exec::class) {
+  group = "verification"
+  description = "fails when the site has high or critical dependency advisories"
+
+  workingDir = projectDir
+  commandLine("mise", "x", "aqua:pnpm/pnpm", "--", "pnpm", "audit", "--audit-level=high")
+
+  inputs.file(layout.projectDirectory.file("pnpm-lock.yaml"))
+  inputs.file(layout.projectDirectory.file("pnpm-workspace.yaml"))
+  // The advisory database changes without the lockfile changing.
+  outputs.upToDateWhen { false }
+}
+
+tasks.check {
+  dependsOn(pnpmAudit)
+}
+
 tasks.assemble {
   dependsOn(updateSiteKnitDocs)
   dependsOn(tasks.pnpmInstall)

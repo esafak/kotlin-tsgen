@@ -2,6 +2,14 @@ allowBuilds:
   '@parcel/watcher': true
   core-js: true
 
+audit:
+  ignore:
+    # GHSA-vfj7-8cjw-p6xm: braces 3.0.3 is the latest release, so no patched
+    # version exists. It is a stack-exhaustion denial of service reachable
+    # only through deeply nested glob patterns, which the site's build-time
+    # dependencies do not take from user input.
+    - GHSA-vfj7-8cjw-p6xm
+
 overrides:
   # When adding an override, first try unpinning stale overrides above;
   # remove any override whose upstream dependency chain now resolves safely.
@@ -23,3 +31,13 @@ overrides:
   # Remove when the upstream dependency chain resolves 1.16.1+ without an
   # override.
   'follow-redirects@<1.16.1': '>=1.16.1'
+  # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
+  # 2.1.2 are affected. The 1.x line has no patched release, so the whole
+  # 1.x range moves to 2.2.0. Remove when the upstream dependency chain
+  # resolves 2.1.2+ without an override.
+  'tinypool@<2.1.2': '2.2.0'
+  # GHSA-rj75-hqrm-r3gf: postcss-selector-parser versions before 7.1.6 are
+  # affected. The 6.x line has no patched release, so the whole 6.x range
+  # moves to 7.1.7. Remove when the upstream dependency chain resolves
+  # 7.1.6+ without an override.
+  'postcss-selector-parser@<7.1.6': '7.1.7'
