@@ -16,12 +16,16 @@ plugins {
 }
 
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+  // The Kotlin plugin adds a project repository for its Yarn download, which
+  // Gradle ignores under PREFER_SETTINGS and warns about. Under
+  // PREFER_PROJECT that repository wins, and it points at the same Yarn
+  // release the settings used to declare.
+  repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
 
   repositories {
     mavenCentral()
 
-    // Declare the Node.js & Yarn download repositories
+    // Declare the Node.js download repository
     // Required by Gradle Node plugin: https://github.com/node-gradle/gradle-node-plugin/blob/3.5.1/docs/faq.md#is-this-plugin-compatible-with-centralized-repositories-declaration
     exclusiveContent {
       forRepository {
@@ -33,18 +37,6 @@ dependencyResolutionManagement {
         }
       }
       filter { includeGroup("org.nodejs") }
-    }
-
-    exclusiveContent {
-      forRepository {
-        ivy("https://github.com/yarnpkg/yarn/releases/download") {
-          name = "Yarn Distributions at $url"
-          patternLayout { artifact("v[revision]/[artifact](-v[revision]).[ext]") }
-          metadataSources { artifact() }
-          content { includeModule("com.yarnpkg", "yarn") }
-        }
-      }
-      filter { includeGroup("com.yarnpkg") }
     }
   }
 }

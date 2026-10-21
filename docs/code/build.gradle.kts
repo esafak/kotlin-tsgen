@@ -34,7 +34,7 @@ kotlin {
       languageSettings {
 //        optIn("kotlin.ExperimentalStdlibApi")
 //        optIn("kotlin.time.ExperimentalTime")
-//        optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        optIn("kotlinx.serialization.ExperimentalSerializationApi")
       }
     }
   }
