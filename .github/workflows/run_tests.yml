@@ -42,7 +42,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup mise tools
-        uses: jdx/mise-action@2d8d4cafcbd33b2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
       - name: Run the linters when the hk configuration changes
