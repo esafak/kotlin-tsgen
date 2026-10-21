@@ -11,7 +11,7 @@ node {
   download.set(true)
   version.set("24.21.0")
 
-  distBaseUrl.set(null as String?) // set in repositories.settings.gradle.kts
+  distBaseUrl.set(null as String?) // declared in settings.gradle.kts
 
   workDir.set(rootGradleDir.dir("nodejs"))
   npmWorkDir.set(rootGradleDir.dir("npm"))
