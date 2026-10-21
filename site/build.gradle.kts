@@ -30,20 +30,17 @@ dependencies {
  * `pnpm audit` reads the lockfile, not `node_modules`, and the advisories
  * live in `pnpm-workspace.yaml` under `audit.ignore`. Every entry there needs
  * a reason: a patched version that upstream does not release yet.
- *
- * The audit runs through mise, because the ignore list needs the pnpm version
- * that mise.toml pins. An older pnpm on PATH does not read it.
  */
 val pnpmAudit by tasks.registering(Exec::class) {
   group = "verification"
   description = "fails when the site has high or critical dependency advisories"
 
   workingDir = projectDir
-  commandLine("mise", "x", "aqua:pnpm/pnpm", "--", "pnpm", "audit", "--audit-level=high")
+  commandLine("mise", "x", "--", "pnpm", "audit", "--audit-level=high")
 
-  inputs.file(layout.projectDirectory.file("pnpm-lock.yaml"))
-  inputs.file(layout.projectDirectory.file("pnpm-workspace.yaml"))
-  // The advisory database changes without the lockfile changing.
+  // The advisory database changes without the lockfile changing, so the
+  // audit runs every time. The lockfile is not declared as an input, because
+  // pnpmInstall produces it and the audit must not force that install.
   outputs.upToDateWhen { false }
 }
 
