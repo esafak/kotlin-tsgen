@@ -29,6 +29,7 @@ fun Project.relocateKotlinJsStore() {
       resolution("engine.io", "6.6.10") // GHSA-2gc4-cqfq-p2gv / CVE-2026-102599
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
       resolution("source-map-js", "1.2.2") // GHSA-68fv-2mgg-jv7q / CVE-2026-93749
+      resolution("follow-redirects", "1.16.1") // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8
     }
   }
 }

@@ -38,3 +38,8 @@ overrides:
   # GHSA-2wm5-q62r-hmrv: colord versions before 2.9.4 are affected.
   # Remove when the upstream dependency chain resolves 2.9.4+.
   colord: 2.10.0
+  # GHSA-8r9p-f939-6h3c / CVE-2026-111755 and GHSA-q3jh-wrc6-jgq8 /
+  # CVE-2026-111756: follow-redirects versions before 1.16.1 are affected.
+  # Remove when the upstream dependency chain resolves 1.16.1+ without an
+  # override.
+  'follow-redirects@<1.16.1': '>=1.16.1'
