@@ -23,12 +23,8 @@ fun Project.relocateKotlinJsStore() {
       resolution("diff", "8.0.3") // GHSA-73rr-hh4g-fpgx / CVE-2026-24001
       resolution("qs", "6.16.0") // GHSA-4mjr-xmp4-gh2g, GHSA-x5fp-wj9c-mxmx
       // Keep this aligned with the documentation site's patched pin.
-      resolution("serialize-javascript", "7.1.0") // GHSA-qj8w-gfj5-8c6v, GHSA-5c6j-r48x-rmvq
-      resolution("fast-uri", "3.1.8") // GHSA-hrr3-gc8f-f4qj / CVE-2026-86472
-      resolution("brace-expansion", "2.1.7") // GHSA-6j4f-fj2g-mc7p / CVE-2026-102276, GHSA-q2hr-2g5m-vwhr / CVE-2026-102277, GHSA-qhr7-859c-m2p7 / CVE-2026-102278
-      resolution("engine.io", "6.6.10") // GHSA-2gc4-cqfq-p2gv / CVE-2026-102599
+      resolution("serialize-javascript", "7.1.2") // GHSA-qj8w-gfj5-8c6v, GHSA-5c6j-r48x-rmvq
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
-      resolution("source-map-js", "1.2.2") // GHSA-68fv-2mgg-jv7q / CVE-2026-93749
       resolution("follow-redirects", "1.16.1") // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8
     }
   }
