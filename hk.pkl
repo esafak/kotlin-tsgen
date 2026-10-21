@@ -1,8 +1,13 @@
-amends "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.55.0/hk@1.55.0#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.pkl"
 
 local linters = new Mapping<String, Step> {
-  ["ktlint"] = Builtins.ktlint
+  ["ktlint"] = (Builtins.ktlint) {
+    // The examples under docs/code/example are generated from the markdown
+    // code blocks: their names follow the markdown files, and their content
+    // is documentation snippets rather than project code.
+    exclude = List("docs/code/example/**")
+  }
   ["newlines"] = Builtins.newlines
   ["trailing-whitespace"] = Builtins.trailing_whitespace
 }
@@ -20,10 +25,7 @@ hooks {
       }
       ["docs-tests"] {
         check = "mise run test:docs"
-        glob = new Listing<String> {
-          "docs/**/*.md"
-          "docs/code/**/*.kt"
-        }
+        glob = List("docs/**/*.md", "docs/code/**/*.kt")
         exclusive = true
       }
     }

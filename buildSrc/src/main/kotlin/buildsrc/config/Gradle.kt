@@ -3,7 +3,6 @@ package buildsrc.config
 import org.gradle.api.file.ProjectLayout
 import org.gradle.plugins.ide.idea.model.IdeaModule
 
-
 /** exclude generated Gradle code, so it doesn't clog up search results */
 fun IdeaModule.excludeGeneratedGradleDsl(layout: ProjectLayout) {
   excludeDirs.addAll(
@@ -18,6 +17,6 @@ fun IdeaModule.excludeGeneratedGradleDsl(layout: ProjectLayout) {
       "buildSrc/build/generated-sources/kotlin-dsl-plugins/kotlin",
       "buildSrc/build/generated-sources/kotlin-dsl-plugins/kotlin/dev",
       "buildSrc/build/pluginUnderTestMetadata",
-    )
+    ),
   )
 }

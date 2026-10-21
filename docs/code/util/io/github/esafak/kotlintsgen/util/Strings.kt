@@ -1,6 +1,5 @@
 package io.github.esafak.kotlintsgen.util
 
-
 /**
  * * filter out lines that are `//` comments
  * * convert whitespace-only lines to an empty string
@@ -11,12 +10,11 @@ fun String.normalize(): String =
   lines()
     .filterNot { it.trimStart().startsWith("//") }
     .joinToString("\n") {
-      it.substringBeforeLast("//")
+      it
+        .substringBeforeLast("//")
         .trimEnd()
         .ifBlank { "" }
     }
 
-
 /** [normalize] each String, then [join][joinToString] them */
-fun Iterable<String>.normalizeJoin(): String =
-  joinToString("\n") { it.normalize() }
+fun Iterable<String>.normalizeJoin(): String = joinToString("\n") { it.normalize() }

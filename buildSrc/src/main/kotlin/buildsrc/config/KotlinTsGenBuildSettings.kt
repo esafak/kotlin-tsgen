@@ -4,7 +4,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 abstract class KotlinTsGenBuildSettings(
-  private val providers: ProviderFactory
+  private val providers: ProviderFactory,
 ) {
   val enableTsCompileTests: Provider<Boolean> =
     providers

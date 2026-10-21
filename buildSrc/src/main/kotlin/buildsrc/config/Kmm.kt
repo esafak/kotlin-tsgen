@@ -4,7 +4,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
-
 /**
  * `kotlin-js` adds a directory in the root-dir for the Yarn lock.
  * That's a bit annoying. It's a little neater if it's in the
