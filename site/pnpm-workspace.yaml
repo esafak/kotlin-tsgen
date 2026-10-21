@@ -2,6 +2,14 @@ allowBuilds:
   '@parcel/watcher': true
   core-js: true
 
+audit:
+  ignore:
+    # GHSA-vfj7-8cjw-p6xm: braces 3.0.3 is the latest release, so no patched
+    # version exists. It is a stack-exhaustion denial of service reachable
+    # only through deeply nested glob patterns, which the site's build-time
+    # dependencies do not take from user input.
+    - GHSA-vfj7-8cjw-p6xm
+
 overrides:
   # When adding an override, first try unpinning stale overrides above;
   # remove any override whose upstream dependency chain now resolves safely.
@@ -23,3 +31,18 @@ overrides:
   # Remove when the upstream dependency chain resolves 1.16.1+ without an
   # override.
   'follow-redirects@<1.16.1': '>=1.16.1'
+  # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
+  # 2.1.2 are affected. The 1.x line has no patched release. This overrides
+  # @docusaurus/core's ^1.0.2 requirement across a major version; tinypool
+  # 2.2.0 needs Node ^20 || >=22, and the site requires Node >=24.
+  # Remove when the upstream dependency chain resolves patched versions
+  # (2.1.2+) without an override.
+  'tinypool@<2.1.2': '2.2.0'
+  # GHSA-rj75-hqrm-r3gf: the advisory lists versions before 7.1.6 as affected.
+  # 6.1.5 backported the fix, but the advisory still includes that release.
+  # This overrides the legacy cssnano plugins' ^6 requirements across a
+  # major version, keeping the tree on a release recognized as patched.
+  # Remove when the Docusaurus/cssnano dependency chain no longer requires
+  # 6.x and resolves patched versions (7.1.6+) without an override.
+  # Tracked in #68.
+  'postcss-selector-parser@<7.1.6': '7.1.7'
