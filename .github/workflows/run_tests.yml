@@ -34,7 +34,7 @@ jobs:
     # load, and every linter silently stops running.
     #
     # Only the hk configuration can break that way, so the job runs when it
-    # changes. A manual dispatch always runs it.
+    # changes. A manual dispatch validates the configuration.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -46,11 +46,19 @@ jobs:
         with:
           cache: false
       - name: Run the linters when the hk configuration changes
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          if [ -z "${{ github.base_ref }}" ] || git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(hk\.pkl|mise\.(toml|lock)|\.editorconfig)$'; then
-            mise x -- hk check
+          if [ -z "$BASE_REF" ]; then
+            mise x -- hk validate
           else
-            echo "No hk configuration change; skipping the linters."
+            base="refs/remotes/origin/$BASE_REF"
+            changed_files=$(git diff --name-only "$base...HEAD" --)
+            if grep -qE '^(hk\.pkl|mise\.(toml|lock)|\.editorconfig)$' <<< "$changed_files"; then
+              mise x -- hk check --from-ref "$base" --to-ref HEAD
+            else
+              echo "No hk configuration change; skipping the linters."
+            fi
           fi
 
   gradle-check:
