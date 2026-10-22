@@ -19,6 +19,17 @@ class ClearJsTestResultsAction(private val junitXml: Provider<Directory>) : Acti
   override fun execute(task: Task) {
     junitXml.get().asFile
       .listFiles { file -> file.isFile && file.name.endsWith(".xml") }
-      ?.forEach { it.delete() }
+      ?.forEach { report ->
+        // A report that survives the removal would satisfy the check even when the runner
+        // produced nothing, so say so rather than fail the build on a locked file.
+        if (!report.delete()) {
+          task.logger.warn(
+            "Could not remove the stale test report {}. The check for the test results of " +
+              "'{}' cannot tell it apart from the report of the current run.",
+            report,
+            task.path,
+          )
+        }
+      }
   }
 }
