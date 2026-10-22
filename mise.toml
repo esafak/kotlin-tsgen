@@ -45,6 +45,7 @@ run = "hk check"
 [tasks."lint:ktlint"]
 description = "Run ktlint on the given Kotlin files"
 usage = 'arg "[files]" var=#true help="Kotlin files to lint"'
+shell = "powershell -Command"
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -59,8 +60,8 @@ run_windows = '''
 $json = @'
 {{ usage.files | json_encode }}
 '@
-$files = @(ConvertFrom-Json -InputObject $json)
-if ($files.Count -eq 0) {
+$files = @(ConvertFrom-Json -InputObject $json | Where-Object { $_ })
+if (-not $files -or $files.Count -eq 0) {
   Write-Output "lint:ktlint: no files"
   exit 0
 }
@@ -71,6 +72,7 @@ exit $LASTEXITCODE
 [tasks."lint:ktlint:fix"]
 description = "Format the given Kotlin files with ktlint"
 usage = 'arg "[files]" var=#true help="Kotlin files to format"'
+shell = "powershell -Command"
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -85,8 +87,8 @@ run_windows = '''
 $json = @'
 {{ usage.files | json_encode }}
 '@
-$files = @(ConvertFrom-Json -InputObject $json)
-if ($files.Count -eq 0) {
+$files = @(ConvertFrom-Json -InputObject $json | Where-Object { $_ })
+if (-not $files -or $files.Count -eq 0) {
   Write-Output "lint:ktlint:fix: no files"
   exit 0
 }
@@ -116,8 +118,8 @@ trap 'rm -f "$changed_files" "$ktlint_files"' EXIT
 
 git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
   . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**' > "$changed_files"
-# Match hk's whitespace rules: report trailing/EOF whitespace and CR-at-EOL,
-# but allow space-before-tab indentation and ordinary CRLF files.
+# Match hk's whitespace rules: report trailing/EOF whitespace, allow ordinary
+# CRLF files, and allow space-before-tab indentation.
 git -c core.whitespace=blank-at-eol,blank-at-eof,cr-at-eol,-space-before-tab \
   diff --check "$base...HEAD" -- \
   . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**'
