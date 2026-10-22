@@ -13,4 +13,12 @@ dependencies {
   implementation(libs.gradlePlugin.kotest)
   implementation(libs.gradlePlugin.kotlinSymbolProcessing)
   implementation(libs.gradlePlugin.nmcp)
+
+  testImplementation(platform(libs.kotest.bom))
+  testImplementation(libs.kotest.frameworkEngine)
+  testImplementation(libs.kotest.runnerJUnit5)
+}
+
+tasks.test {
+  useJUnitPlatform()
 }

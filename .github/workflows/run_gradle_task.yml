@@ -99,6 +99,10 @@ jobs:
         if: inputs.gradle-task == 'check' && runner.os != 'Windows'
         run: mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
 
+      - name: Test the build logic
+        if: inputs.gradle-task == 'check' && runner.os != 'Windows'
+        run: mise x -- ./gradlew -p buildSrc test --stacktrace
+
       - name: Run check on Windows
         if: inputs.gradle-task == 'check' && runner.os == 'Windows'
         run: mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
