@@ -29,12 +29,12 @@ permissions:
 jobs:
 
   lint:
-    # The linters run on the files a pull request changes. This also catches an
-    # hk.pkl that no longer matches the hk version: the config then fails to
-    # load, and every linter silently stops running.
+    # The linters run on the Kotlin files a change touches. `hk validate` also
+    # catches an hk.pkl that no longer matches the hk version: the config then
+    # fails to load, and every linter silently stops running.
     #
-    # Only the hk configuration can break that way, so the job runs when it
-    # changes. A manual dispatch validates the configuration.
+    # The linters see the files the change touches, not the whole repository:
+    # the tree still carries ktlint violations that a separate change drains.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -45,21 +45,38 @@ jobs:
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
-      - name: Run the linters when the hk configuration changes
+      - name: Validate the hk configuration
+        run: mise x -- hk validate
+      - name: Run the linters on the changed Kotlin files
+        shell: bash
         env:
           BASE_REF: ${{ github.base_ref }}
+          BEFORE_SHA: ${{ github.event.before }}
+          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          REF: ${{ github.ref }}
         run: |
-          if [ -z "$BASE_REF" ]; then
-            mise x -- hk validate
-          else
+          if [ -n "$BASE_REF" ]; then
+            # a pull request: compare against the branch it targets
             base="refs/remotes/origin/$BASE_REF"
-            changed_files=$(git diff --name-only "$base...HEAD" --)
-            if grep -qE '^(hk\.pkl|mise\.(toml|lock)|\.editorconfig)$' <<< "$changed_files"; then
-              mise x -- hk check --from-ref "$base" --to-ref HEAD
-            else
-              echo "No hk configuration change; skipping the linters."
-            fi
+          elif [ -n "$MERGE_GROUP_BASE_SHA" ]; then
+            # a merge group: compare against the branch it merges into
+            base="$MERGE_GROUP_BASE_SHA"
+          elif [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
+            && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            # a push to main: compare against the commit before the push
+            base="$BEFORE_SHA"
+          else
+            # a branch push or a manual run: compare against main
+            base=$(git merge-base HEAD refs/remotes/origin/main) || {
+              echo "No main branch to compare against; skipping the linters."
+              exit 0
+            }
           fi
+          files=$(mktemp)
+          git diff --name-only -z --diff-filter=d "$base...HEAD" -- '*.kt' '*.kts' > "$files"
+          echo "Linting the Kotlin files that changed since $base:"
+          tr '\0' '\n' < "$files" | sed 's/^/  /'
+          mise x -- hk check --files0-from "$files"
 
   gradle-check:
     strategy:

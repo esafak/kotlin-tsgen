@@ -13,15 +13,17 @@ plugins {
 
 // IJ still doesn't support script plugins???
 extensions.configure<KotlinJvmProjectExtension> {
-//kotlin {
+// kotlin {
   jvmToolchain(25)
   compilerOptions {
     languageVersion = KOTLIN_2_2
     apiVersion = KOTLIN_2_2
     jvmTarget = JvmTarget.JVM_11
-    freeCompilerArgs.add(jvmTarget.map { target ->
-      "-Xjdk-release=${target.target}"
-    })
+    freeCompilerArgs.add(
+      jvmTarget.map { target ->
+        "-Xjdk-release=${target.target}"
+      },
+    )
     freeCompilerArgs.addAll(
       "-opt-in=kotlin.ExperimentalStdlibApi",
       "-opt-in=kotlin.time.ExperimentalTime",

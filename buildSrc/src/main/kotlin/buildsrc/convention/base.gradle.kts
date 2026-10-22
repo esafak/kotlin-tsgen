@@ -1,8 +1,8 @@
 package buildsrc.convention
 
 import buildsrc.config.KotlinTsGenBuildSettings
-import java.time.Duration
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.time.Duration
 
 plugins {
   base
