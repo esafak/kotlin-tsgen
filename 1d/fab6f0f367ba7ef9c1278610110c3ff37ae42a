@@ -1,0 +1,20 @@
+.editorconfig
+  h_ea91e2db23540f 11-16
+AGENTS.md
+  h_ea91e2db23540f 31
+build.gradle.kts
+  h_ea91e2db23540f 2,17-20
+buildSrc/src/main/kotlin/buildsrc/config/YarnAudit.kt
+  h_ea91e2db23540f 1-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1dfab6f0f367ba7ef9c1278610110c3ff37ae42a",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
