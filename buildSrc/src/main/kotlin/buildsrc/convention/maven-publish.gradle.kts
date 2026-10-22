@@ -42,7 +42,6 @@ afterEvaluate {
 }
 //endregion
 
-
 //region Javadoc JAR stub
 // use creating, not registering, because the signing plugin doesn't accept task providers
 val javadocJarStub by tasks.registering(Jar::class) {
@@ -51,7 +50,6 @@ val javadocJarStub by tasks.registering(Jar::class) {
   archiveClassifier.set("javadoc")
 }
 //endregion
-
 
 publishing {
   repositories {
@@ -63,7 +61,9 @@ publishing {
   publications.withType<MavenPublication>().configureEach {
     pom {
       name.set("kotlin-tsgen")
-      description.set("kotlin-tsgen creates TypeScript interfaces from Kotlinx Serialization @Serializable classes")
+      description.set(
+        "kotlin-tsgen creates TypeScript interfaces from Kotlinx Serialization @Serializable classes",
+      )
       url.set("https://github.com/esafak/kotlin-tsgen")
 
       licenses {
@@ -95,10 +95,9 @@ plugins.withType<JavaPlatformPlugin>().configureEach {
 //  val javadocJarStub = javadocStubTask()
   publishing.publications.create<MavenPublication>("mavenJavaPlatform") {
     from(components["javaPlatform"])
-    //artifact(javadocJarStub)
+    // artifact(javadocJarStub)
   }
 }
-
 
 //region Fix Gradle warning about signing tasks using publishing task outputs without explicit dependencies
 // https://youtrack.jetbrains.com/issue/KT-46466 https://github.com/gradle/gradle/issues/26091
@@ -108,19 +107,17 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
 }
 //endregion
 
-
 //region publishing logging
 tasks.withType<AbstractPublishToMaven>().configureEach {
   val publicationGAV = provider { publication?.run { "$group:$artifactId:$version" } }
   inputs.property("publicationGAV", publicationGAV).optional(true)
   doLast("log publication GAV") {
     if (publicationGAV.isPresent) {
-      logger.lifecycle("[task: ${path}] ${publicationGAV.get()}")
+      logger.lifecycle("[task: $path] ${publicationGAV.get()}")
     }
   }
 }
 //endregion
-
 
 //region Maven Central can't handle parallel uploads, so limit parallel uploads with a service.
 abstract class MavenPublishLimiter : BuildService<BuildServiceParameters.None>
