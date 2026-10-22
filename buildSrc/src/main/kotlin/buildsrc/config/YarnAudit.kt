@@ -8,6 +8,7 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
 
 /**
  * The advisories this repository accepts, and why.
@@ -20,8 +21,7 @@ private val acceptedAdvisories = mapOf(
   // patched version to move to. It is a stack-exhaustion denial of service that
   // needs deeply nested glob patterns, which the build does not take from user
   // input.
-  "GHSA-vfj7-8cjw-p6xm" to
-    "braces 3.0.3 is the latest release",
+  "GHSA-vfj7-8cjw-p6xm" to "braces 3.0.3 is the latest release",
 )
 
 /**
@@ -48,7 +48,8 @@ fun Project.yarnAudit() {
     mustRunAfter(tasks.matching { it.name == "kotlinStoreYarnLock" })
 
     doLast {
-      val advisories = YarnAudit.advisoriesIn(lockFile.asFile.readText())
+      val packages = YarnAudit.packagesIn(lockFile.asFile.readText())
+      val advisories = YarnAudit.advisoriesIn(packages)
       val unaccepted = advisories.filter { it.id !in acceptedAdvisories }
       if (unaccepted.isNotEmpty()) {
         val details =
@@ -59,7 +60,10 @@ fun Project.yarnAudit() {
           "The Kotlin/JS dependencies have advisories that are not accepted:\n$details",
         )
       }
-      logger.lifecycle("The Kotlin/JS dependencies have no unaccepted advisories.")
+      logger.lifecycle(
+        "The Kotlin/JS dependencies have no unaccepted advisories " +
+          "(${packages.size} packages checked).",
+      )
     }
   }
   tasks.named("check") { dependsOn(task) }
@@ -78,30 +82,18 @@ object YarnAudit {
     val url: String,
   )
 
-  fun advisoriesIn(lockFile: String): List<Advisory> {
-    val versions = mutableMapOf<String, MutableSet<String>>()
-    for (block in lockFile.split("\n\n")) {
-      val lines = block.lines()
-      if (lines.isEmpty() || !lines[0].endsWith(":")) continue
-      val version = VERSION.find(block)?.groupValues?.get(1) ?: continue
-      for (key in lines[0].dropLast(1).split(", ")) {
-        val name = key.trim('"').substringBefore('@')
-        if (name.isNotEmpty() && '@' !in name) {
-          versions.getOrPut(name) { mutableSetOf() } += version
-        }
-      }
-    }
-    if (versions.isEmpty()) return emptyList()
-
-    val body = JsonOutput.toJson(versions.mapValues { it.value.sorted() })
+  fun advisoriesIn(packages: Map<String, Set<String>>): List<Advisory> {
+    val body = JsonOutput.toJson(packages.mapValues { it.value.sorted() })
     val request = HttpRequest
       .newBuilder()
       .uri(URI("https://registry.npmjs.org/-/npm/v1/security/advisories/bulk"))
       .header("Content-Type", "application/json")
       .header("Accept", "application/json")
+      .timeout(Duration.ofSeconds(60))
       .POST(HttpRequest.BodyPublishers.ofString(body))
       .build()
-    val response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
+    val client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(30)).build()
+    val response = client.send(request, HttpResponse.BodyHandlers.ofString())
     check(response.statusCode() == 200) {
       "The advisory endpoint answered ${response.statusCode()}"
     }
@@ -119,6 +111,50 @@ object YarnAudit {
         )
       }
     }
+  }
+
+  /**
+   * The packages in a yarn.lock, with the versions they resolved to.
+   */
+  fun packagesIn(lockFile: String): Map<String, Set<String>> {
+    val versions = mutableMapOf<String, MutableSet<String>>()
+    val normalized = lockFile.replace("\r\n", "\n").replace('\r', '\n')
+    for (block in normalized.split("\n\n")) {
+      val lines = block.lines()
+      if (lines.isEmpty() || !lines[0].endsWith(":")) continue
+      val version = VERSION.find(block)?.groupValues?.get(1) ?: continue
+      for (key in lines[0].dropLast(1).split(", ")) {
+        val name = packageName(key)
+        versions.getOrPut(name) { mutableSetOf() } += version
+      }
+    }
+    check(versions.isNotEmpty()) { "No packages were parsed from the yarn.lock" }
+    return versions
+  }
+
+  /**
+   * The number of packages in a yarn.lock.
+   */
+  fun packageCount(lockFile: String): Int = packagesIn(lockFile).size
+
+  /**
+   * The package a yarn.lock selector refers to.
+   *
+   * A selector is "<name>@<range>", where a scoped name starts with an "@" of
+   * its own, and an alias is "<alias>@npm:<name>@<range>". An alias label is
+   * not a package of its own, so the aliased name is used.
+   */
+  fun packageName(key: String): String {
+    val raw = key.trim().removeSurrounding("\"")
+    val separator = raw.indexOf('@', if (raw.startsWith("@")) 1 else 0)
+    require(separator > 0) { "Invalid yarn.lock selector: $key" }
+
+    val range = raw.substring(separator + 1)
+    val target = if (range.startsWith("npm:")) range.removePrefix("npm:") else raw
+    val end = target.indexOf('@', if (target.startsWith("@")) 1 else 0)
+    val name = if (end < 0) target else target.substring(0, end)
+    require(name.isNotEmpty()) { "Invalid yarn.lock selector: $key" }
+    return name
   }
 
   private val VERSION = Regex("""^\s+version "([^"]+)"""", RegexOption.MULTILINE)

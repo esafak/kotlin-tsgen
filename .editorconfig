@@ -10,7 +10,6 @@ trim_trailing_whitespace = true
 max_line_length = 100
 
 [*.{kt,kts}]
-# ktlint's default style expects four-space indentation and indents Gradle's
-# plugins block, which the build scripts cannot use. The IntelliJ style honours
-# the two-space indentation above.
+# ktlint's default code style expects four-space indentation; the IntelliJ one
+# honours the two-space indentation above, which is what the build scripts use.
 ktlint_code_style = intellij_idea
