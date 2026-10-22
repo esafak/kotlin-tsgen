@@ -2,15 +2,20 @@
 
 package io.github.esafak.kotlintsgen.core.experiments
 
-import kotlin.reflect.KProperty1
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.buildSerialDescriptor
-import kotlinx.serialization.encoding.*
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import kotlinx.serialization.encoding.encodeCollection
+import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.serializer
-
+import kotlin.reflect.KProperty1
 
 /**
  * A single element of a Tuple.
@@ -28,11 +33,7 @@ data class TupleElement<T, E>(
   internal val elementDescriptor: SerialDescriptor
     get() = elementSerializer.descriptor
 
-  fun encodeElement(
-    encoder: CompositeEncoder,
-    tupleDescriptor: SerialDescriptor,
-    value: T,
-  ) {
+  fun encodeElement(encoder: CompositeEncoder, tupleDescriptor: SerialDescriptor, value: T) {
     encoder.encodeSerializableElement(
       descriptor = tupleDescriptor,
       index = index,
@@ -41,18 +42,13 @@ data class TupleElement<T, E>(
     )
   }
 
-  fun decodeElement(
-    decoder: CompositeDecoder,
-    tupleDescriptor: SerialDescriptor,
-  ): E {
-    return decoder.decodeSerializableElement(
+  fun decodeElement(decoder: CompositeDecoder, tupleDescriptor: SerialDescriptor): E =
+    decoder.decodeSerializableElement(
       descriptor = tupleDescriptor,
       index = index,
       deserializer = elementSerializer,
     )
-  }
 }
-
 
 /**
  * Create a new [TupleElement].
@@ -63,25 +59,19 @@ inline fun <T, reified E> tupleElement(
   noinline elementAccessor: T.() -> E,
   serializer: KSerializer<E> = serializer(),
   isOptional: Boolean = false,
-): TupleElement<T, E> {
-  return TupleElement(
-    name = name,
-    index = index,
-    elementSerializer = serializer,
-    elementAccessor = elementAccessor,
-    isOptional = isOptional,
-  )
-}
+): TupleElement<T, E> = TupleElement(
+  name = name,
+  index = index,
+  elementSerializer = serializer,
+  elementAccessor = elementAccessor,
+  isOptional = isOptional,
+)
 
-
-fun <T> tupleElements(
-  builder: TupleElementsBuilder<T>.() -> Unit
-): List<TupleElement<T, *>> {
+fun <T> tupleElements(builder: TupleElementsBuilder<T>.() -> Unit): List<TupleElement<T, *>> {
   val tupleElementsBuilder = TupleElementsBuilder<T>()
   tupleElementsBuilder.builder()
   return tupleElementsBuilder.elements
 }
-
 
 class TupleElementsBuilder<T> {
 
@@ -92,10 +82,7 @@ class TupleElementsBuilder<T> {
   @PublishedApi
   internal val elementsSize by _elements::size
 
-  inline fun <reified E> element(
-    property: KProperty1<T, E>,
-    isOptional: Boolean = false,
-  ) {
+  inline fun <reified E> element(property: KProperty1<T, E>, isOptional: Boolean = false) {
     element(property.name, property, isOptional)
   }
 
@@ -120,7 +107,6 @@ class TupleElementsBuilder<T> {
   }
 }
 
-
 /**
  * Encode a serializable class as a Tuple: a collection of the class' properties.
  *
@@ -129,7 +115,7 @@ class TupleElementsBuilder<T> {
  */
 abstract class TupleSerializer<T>(
   serialName: String,
-  buildElements: TupleElementsBuilder<T>.() -> Unit
+  buildElements: TupleElementsBuilder<T>.() -> Unit,
 ) : KSerializer<T> {
 
   val tupleElements: List<TupleElement<T, *>> = run {
@@ -164,7 +150,6 @@ abstract class TupleSerializer<T>(
   }
 
   override fun deserialize(decoder: Decoder): T = decoder.decodeStructure(descriptor) {
-
     // the collection size isn't required here, but we need to decode it to get it out of the way
     decodeCollectionSize(descriptor)
 
@@ -176,10 +161,10 @@ abstract class TupleSerializer<T>(
       generateSequence { decodeElementIndex(descriptor) }
         .takeWhile { index ->
           when (index) {
-            CompositeDecoder.UNKNOWN_NAME         -> error("unknown name at index:$index")
-            CompositeDecoder.DECODE_DONE          -> false
+            CompositeDecoder.UNKNOWN_NAME -> error("unknown name at index:$index")
+            CompositeDecoder.DECODE_DONE -> false
             !in indexedTupleElements.keys.indices -> error("unexpected index:$index")
-            else                                  -> true
+            else -> true
           }
         }.map { index ->
           val tupleElement = indexedTupleElements.getOrElse(index) {

@@ -8,23 +8,22 @@ import java.nio.file.Path
 import kotlin.io.path.invariantSeparatorsPathString
 
 @OptIn(ExperimentalCoroutinesApi::class)
-suspend fun typescriptCompile(typeScriptFile: Path): ProcessResult =
-  process(
-    npxCmd,
-    "-p",
-    "typescript",
-    "tsc",
-    typeScriptFile.invariantSeparatorsPathString,
-    "--noEmit",
-    "--listFiles", // so we can check $file is compiled
-    "--pretty",
-    "false", // doesn't work?
-    "--strict",
-    "--target",
-    "esnext", // required for Map<>
-    stdout = Redirect.CAPTURE,
-    stderr = Redirect.CAPTURE,
-  )
+suspend fun typescriptCompile(typeScriptFile: Path): ProcessResult = process(
+  npxCmd,
+  "-p",
+  "typescript",
+  "tsc",
+  typeScriptFile.invariantSeparatorsPathString,
+  "--noEmit",
+  "--listFiles", // so we can check $file is compiled
+  "--pretty",
+  "false", // doesn't work?
+  "--strict",
+  "--target",
+  "esnext", // required for Map<>
+  stdout = Redirect.CAPTURE,
+  stderr = Redirect.CAPTURE,
+)
 
 private val npxCmd: String by lazy {
   // this is untested on non-Windows

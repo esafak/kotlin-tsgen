@@ -35,7 +35,7 @@ which is more compact than an equivalent JSON object, which requires property na
 ## Tuples in KotlinTsGen
 
 Tuples are a bit difficult to create in Kotlinx Serialization, but KotlinTsGen includes
-[TupleSerializer](../modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/tuple.kt)
+[TupleSerializer](../modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/experiments/Tuple.kt)
 which can help. It requires a name, an ordered list of elements, and a constructor for
 deserializing.
 

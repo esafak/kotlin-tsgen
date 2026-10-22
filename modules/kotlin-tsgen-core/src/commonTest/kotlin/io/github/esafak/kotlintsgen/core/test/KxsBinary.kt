@@ -15,13 +15,11 @@ import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
 
-
 val kxsBinary: KxsBinary = KxsBinary()
 
 /** [`https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/formats.md#efficient-binary-format`](https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/formats.md#efficient-binary-format) */
-class KxsBinary(
-  override val serializersModule: SerializersModule = EmptySerializersModule()
-) : BinaryFormat {
+class KxsBinary(override val serializersModule: SerializersModule = EmptySerializersModule()) :
+  BinaryFormat {
 
   override fun <T> encodeToByteArray(serializer: SerializationStrategy<T>, value: T): ByteArray {
     val output = Buffer()
@@ -32,7 +30,7 @@ class KxsBinary(
 
   override fun <T> decodeFromByteArray(
     deserializer: DeserializationStrategy<T>,
-    bytes: ByteArray
+    bytes: ByteArray,
   ): T {
     val input = Buffer().write(bytes)
     val decoder = KxsDataInputDecoder(input, serializersModule)
@@ -65,7 +63,7 @@ class KxsDataOutputEncoder(
 
   override fun beginCollection(
     descriptor: SerialDescriptor,
-    collectionSize: Int
+    collectionSize: Int,
   ): CompositeEncoder {
     encodeCompactSize(collectionSize)
     return this
@@ -77,7 +75,7 @@ class KxsDataOutputEncoder(
   override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
     when (serializer.descriptor) {
       byteArraySerializer.descriptor -> encodeByteArray(value as ByteArray)
-      else                           -> super.encodeSerializableValue(serializer, value)
+      else -> super.encodeSerializableValue(serializer, value)
     }
   }
 
@@ -95,7 +93,6 @@ class KxsDataOutputEncoder(
     }
   }
 }
-
 
 class KxsDataInputDecoder(
   private val input: BufferedSource,
@@ -136,12 +133,12 @@ class KxsDataInputDecoder(
 
   override fun <T> decodeSerializableValue(
     deserializer: DeserializationStrategy<T>,
-    previousValue: T?
+    previousValue: T?,
   ): T {
     @Suppress("UNCHECKED_CAST")
     return when (deserializer.descriptor) {
       byteArraySerializer.descriptor -> decodeByteArray() as T
-      else                           -> super.decodeSerializableValue(deserializer, previousValue)
+      else -> super.decodeSerializableValue(deserializer, previousValue)
     }
   }
 
@@ -156,5 +153,4 @@ class KxsDataInputDecoder(
     if (byte < 0xff) return byte
     return input.readInt()
   }
-
 }

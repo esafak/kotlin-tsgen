@@ -1,6 +1,5 @@
 package io.github.esafak.kotlintsgen.core
 
-
 @Target(
   AnnotationTarget.CLASS,
   AnnotationTarget.PROPERTY,

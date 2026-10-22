@@ -97,34 +97,19 @@ class OverrideDslTest :
   })
 
 @Serializable
-private data class OverrideDslHolder(
-  val external: Double,
-  val inline: Int,
-  val alias: UInt,
-)
+private data class OverrideDslHolder(val external: Double, val inline: Int, val alias: UInt)
 
 @Serializable
-private data class AccumulatedOverrideHolder(
-  val external: Double,
-  val inline: Int,
-)
+private data class AccumulatedOverrideHolder(val external: Double, val inline: Int)
 
 @Serializable
-private data class ExternalTypeHolderForBuilders(
-  val value: Double,
-)
+private data class ExternalTypeHolderForBuilders(val value: Double)
 
 @Serializable
-private data class OverrideCacheHolder(
-  val value: String,
-)
+private data class OverrideCacheHolder(val value: String)
 
 @Serializable
-private data class DescriptorReplacement(
-  val replacement: Int,
-)
+private data class DescriptorReplacement(val replacement: Int)
 
 @Serializable
-private data class CustomIndexKeyHolder(
-  val values: Map<String, String>,
-)
+private data class CustomIndexKeyHolder(val values: Map<String, String>)

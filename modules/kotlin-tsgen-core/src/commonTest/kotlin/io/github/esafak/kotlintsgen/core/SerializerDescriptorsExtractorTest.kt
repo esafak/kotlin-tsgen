@@ -13,146 +13,147 @@ import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
-class SerializerDescriptorsExtractorTest : FunSpec({
+class SerializerDescriptorsExtractorTest :
+  FunSpec({
 
-  val module = SerializersModule { }
-  val extractor = SerializerDescriptorsExtractor.default(module)
-
-  test("Example1: given parent class, expect subclass property descriptor extracted") {
-
-    val expected = listOf(
-      Example1.Parent.serializer().descriptor,
-      Example1.Nested.serializer().descriptor,
-      String.serializer().descriptor,
-    )
-
-    val actual = extractor(Example1.Parent.serializer())
-
-    actual shouldContainDescriptors expected
-  }
-
-  test("Example2: given parent class, expect subclass property descriptor extracted") {
-
-    val expected = listOf(
-      Example2.Parent.serializer().descriptor,
-      Example2.Nested.serializer().descriptor,
-      String.serializer().descriptor,
-    )
-
-    val actual = extractor(Example2.Parent.serializer())
-
-    actual shouldContainDescriptors expected
-  }
-
-  test("Example3: expect nullable/non-nullable SerialDescriptors be de-duplicated") {
-
-    val expected = listOf(
-      Example3.SomeType.serializer().descriptor,
-      Example3.TypeHolder.serializer().descriptor,
-      String.serializer().descriptor,
-    )
-
-    val actual = extractor(Example3.TypeHolder.serializer())
-
-    actual shouldContainDescriptors expected
-  }
-
-  test("Example4: contextual serializer is extracted from SerializersModule") {
-    val module = SerializersModule {
-      contextual(Example4.SomeType::class, Example4.SomeType.serializer())
-    }
+    val module = SerializersModule { }
     val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val actual = extractor(Example4.TypeHolder.serializer())
+    test("Example1: given parent class, expect subclass property descriptor extracted") {
 
-    val someTypeDescriptor = Example4.SomeType.serializer().descriptor
-    withClue("Should contain SomeType descriptor from module") {
-      actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe true
+      val expected = listOf(
+        Example1.Parent.serializer().descriptor,
+        Example1.Nested.serializer().descriptor,
+        String.serializer().descriptor,
+      )
+
+      val actual = extractor(Example1.Parent.serializer())
+
+      actual shouldContainDescriptors expected
     }
-  }
 
-  test("Example4b: contextual placeholder is suppressed when resolvable from the module") {
-    val module = SerializersModule {
-      contextual(Example4.SomeType::class, Example4.SomeType.serializer())
+    test("Example2: given parent class, expect subclass property descriptor extracted") {
+
+      val expected = listOf(
+        Example2.Parent.serializer().descriptor,
+        Example2.Nested.serializer().descriptor,
+        String.serializer().descriptor,
+      )
+
+      val actual = extractor(Example2.Parent.serializer())
+
+      actual shouldContainDescriptors expected
     }
-    val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val actual = extractor(Example4.TypeHolder.serializer())
+    test("Example3: expect nullable/non-nullable SerialDescriptors be de-duplicated") {
 
-    // the resolved SomeType descriptor must be present...
-    val someTypeDescriptor = Example4.SomeType.serializer().descriptor
-    withClue("resolved SomeType descriptor should be present") {
-      actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe true
+      val expected = listOf(
+        Example3.SomeType.serializer().descriptor,
+        Example3.TypeHolder.serializer().descriptor,
+        String.serializer().descriptor,
+      )
+
+      val actual = extractor(Example3.TypeHolder.serializer())
+
+      actual shouldContainDescriptors expected
     }
-    // ...and the contextual placeholder must NOT survive into the extracted set - otherwise it
-    // renders as `type SomeType = any`, colliding with the resolved `interface SomeType`
-    // (TS2300 duplicate identifier).
-    withClue("no contextual placeholder should remain") {
-      actual.none { it.kind == SerialKind.CONTEXTUAL } shouldBe true
+
+    test("Example4: contextual serializer is extracted from SerializersModule") {
+      val module = SerializersModule {
+        contextual(Example4.SomeType::class, Example4.SomeType.serializer())
+      }
+      val extractor = SerializerDescriptorsExtractor.default(module)
+
+      val actual = extractor(Example4.TypeHolder.serializer())
+
+      val someTypeDescriptor = Example4.SomeType.serializer().descriptor
+      withClue("Should contain SomeType descriptor from module") {
+        actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe true
+      }
     }
-  }
 
-  test("Example4c: contextual resolution matches by name boundary, not a loose suffix") {
-    val module = SerializersModule {
-      contextual(Example4c.Foo::class, Example4c.Foo.serializer())
-      contextual(Example4c.BarFoo::class, Example4c.BarFoo.serializer())
+    test("Example4b: contextual placeholder is suppressed when resolvable from the module") {
+      val module = SerializersModule {
+        contextual(Example4.SomeType::class, Example4.SomeType.serializer())
+      }
+      val extractor = SerializerDescriptorsExtractor.default(module)
+
+      val actual = extractor(Example4.TypeHolder.serializer())
+
+      // the resolved SomeType descriptor must be present...
+      val someTypeDescriptor = Example4.SomeType.serializer().descriptor
+      withClue("resolved SomeType descriptor should be present") {
+        actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe true
+      }
+      // ...and the contextual placeholder must NOT survive into the extracted set - otherwise it
+      // renders as `type SomeType = any`, colliding with the resolved `interface SomeType`
+      // (TS2300 duplicate identifier).
+      withClue("no contextual placeholder should remain") {
+        actual.none { it.kind == SerialKind.CONTEXTUAL } shouldBe true
+      }
     }
-    val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val actual = extractor(Example4c.Holder.serializer())
+    test("Example4c: contextual resolution matches by name boundary, not a loose suffix") {
+      val module = SerializersModule {
+        contextual(Example4c.Foo::class, Example4c.Foo.serializer())
+        contextual(Example4c.BarFoo::class, Example4c.BarFoo.serializer())
+      }
+      val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val fooDescriptor = Example4c.Foo.serializer().descriptor
-    val barFooDescriptor = Example4c.BarFoo.serializer().descriptor
+      val actual = extractor(Example4c.Holder.serializer())
 
-    // A `@Contextual Foo` must resolve to Foo only, and must NOT also pick up the unrelated
-    // BarFoo, whose simple name merely ends in "Foo".
-    withClue("Should contain Foo") {
-      actual.any { it.serialName == fooDescriptor.serialName } shouldBe true
+      val fooDescriptor = Example4c.Foo.serializer().descriptor
+      val barFooDescriptor = Example4c.BarFoo.serializer().descriptor
+
+      // A `@Contextual Foo` must resolve to Foo only, and must NOT also pick up the unrelated
+      // BarFoo, whose simple name merely ends in "Foo".
+      withClue("Should contain Foo") {
+        actual.any { it.serialName == fooDescriptor.serialName } shouldBe true
+      }
+      withClue("Should NOT contain BarFoo") {
+        actual.any { it.serialName == barFooDescriptor.serialName } shouldBe false
+      }
     }
-    withClue("Should NOT contain BarFoo") {
-      actual.any { it.serialName == barFooDescriptor.serialName } shouldBe false
+
+    test("Example6: contextual without module registration does not extract descriptor") {
+      val emptyModule = SerializersModule { }
+      val extractor = SerializerDescriptorsExtractor.default(emptyModule)
+
+      val actual = extractor(Example4.TypeHolder.serializer())
+
+      val someTypeDescriptor = Example4.SomeType.serializer().descriptor
+      withClue("Should NOT contain SomeType descriptor when not registered") {
+        actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe false
+      }
     }
-  }
 
-  test("Example6: contextual without module registration does not extract descriptor") {
-    val emptyModule = SerializersModule { }
-    val extractor = SerializerDescriptorsExtractor.default(emptyModule)
+    test("Example7: contextual lookup returning a contextual serializer terminates") {
+      val module = SerializersModule {
+        contextual(Example7.Value::class, ContextualSerializer(Example7.Value::class))
+      }
+      val extractor = SerializerDescriptorsExtractor.default(module)
 
-    val actual = extractor(Example4.TypeHolder.serializer())
+      val actual = extractor(Example7.Holder.serializer())
 
-    val someTypeDescriptor = Example4.SomeType.serializer().descriptor
-    withClue("Should NOT contain SomeType descriptor when not registered") {
-      actual.any { it.serialName == someTypeDescriptor.serialName } shouldBe false
+      actual shouldContainDescriptors listOf(Example7.Holder.serializer().descriptor)
     }
-  }
-
-  test("Example7: contextual lookup returning a contextual serializer terminates") {
-    val module = SerializersModule {
-      contextual(Example7.Value::class, ContextualSerializer(Example7.Value::class))
-    }
-    val extractor = SerializerDescriptorsExtractor.default(module)
-
-    val actual = extractor(Example7.Holder.serializer())
-
-    actual shouldContainDescriptors listOf(Example7.Holder.serializer().descriptor)
-  }
-
   }) {
   companion object {
-    private infix fun Collection<SerialDescriptor>.shouldContainDescriptors(expected: Collection<SerialDescriptor>) {
+    private infix fun Collection<SerialDescriptor>.shouldContainDescriptors(
+      expected: Collection<SerialDescriptor>,
+    ) {
       val actual = this
       withClue(
         """
           expected: ${expected.map { it.serialName }.sorted().joinToString()}
           actual:   ${actual.map { it.serialName }.sorted().joinToString()}
-        """.trimIndent()
+        """.trimIndent(),
       ) {
         actual shouldContainExactlyInAnyOrder expected
       }
     }
   }
 }
-
 
 @Suppress("unused")
 private object Example1 {
@@ -165,7 +166,6 @@ private object Example1 {
   @Serializable
   class SubClass(val n: Nested) : Parent()
 }
-
 
 @Suppress("unused")
 private object Example2 {
@@ -182,7 +182,6 @@ private object Example2 {
   class SubClass1(val n: Nested) : SealedSub()
 }
 
-
 @Suppress("unused")
 private object Example3 {
 
@@ -190,12 +189,8 @@ private object Example3 {
   class SomeType(val a: String)
 
   @Serializable
-  class TypeHolder(
-    val required: SomeType,
-    val optional: SomeType?,
-  )
+  class TypeHolder(val required: SomeType, val optional: SomeType?)
 }
-
 
 @Suppress("unused")
 private object Example4 {
@@ -209,7 +204,6 @@ private object Example4 {
     val required: SomeType,
   )
 }
-
 
 @Suppress("unused")
 private object Example4c {
@@ -226,7 +220,6 @@ private object Example4c {
     val x: Foo,
   )
 }
-
 
 @Suppress("unused")
 private object Example7 {

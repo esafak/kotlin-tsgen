@@ -4,7 +4,6 @@ import kotlin.jvm.JvmName
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-
 class MutableMapWithDefaultPut<K, V>(
   initial: Map<K, V> = emptyMap(),
   private val defaultValue: (key: K) -> V,
@@ -18,7 +17,6 @@ class MutableMapWithDefaultPut<K, V>(
     this.map = value.withDefaultPut(defaultValue)
   }
 }
-
 
 class MapWithDefaultPut<K, V>(
   initial: Map<K, V> = emptyMap(),
@@ -36,13 +34,11 @@ class MapWithDefaultPut<K, V>(
   }
 }
 
-
 @JvmName("mapWithDefaultPut")
 fun <K, V> Map<K, V>.withDefaultPut(defaultValue: (key: K) -> V): Map<K, V> =
   with(this.toMutableMap()) {
     withDefault { key -> getOrPut(key) { defaultValue(key) } }
   }
-
 
 @JvmName("mutableMapWithDefaultPut")
 fun <K, V> MutableMap<K, V>.withDefaultPut(defaultValue: (key: K) -> V): MutableMap<K, V> =

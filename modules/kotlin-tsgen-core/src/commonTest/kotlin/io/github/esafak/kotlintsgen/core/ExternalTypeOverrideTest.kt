@@ -8,70 +8,60 @@ import io.kotest.matchers.string.shouldContain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 
+class ExternalTypeOverrideTest :
+  FunSpec({
+    test("external type overrides are referenced but not emitted") {
+      val generator = KotlinTsGenerator()
+      generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
 
-class ExternalTypeOverrideTest : FunSpec({
-  test("external type overrides are referenced but not emitted") {
-    val generator = KotlinTsGenerator()
-    generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
-
-    generator.generate(ExternalTypeHolder.serializer()) shouldBe """
+      generator.generate(ExternalTypeHolder.serializer()) shouldBe """
       |export interface ExternalTypeHolder {
       |  value: double;
       |  nullable: double | null;
       |}
-    """.trimMargin()
-  }
+      """.trimMargin()
+    }
 
-  test("external type references preserve namespaces") {
-    val generator = KotlinTsGenerator(
-      config = KotlinTsConfig(
-        namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
-      ),
-    )
-    generator.descriptorOverrides[Double.serializer().descriptor] = external("library.double")
+    test("external type references preserve namespaces") {
+      val generator = KotlinTsGenerator(
+        config = KotlinTsConfig(
+          namespaceConfig = KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix,
+        ),
+      )
+      generator.descriptorOverrides[Double.serializer().descriptor] = external("library.double")
 
-    generator.generate(ExternalTypeHolder.serializer()) shouldContain "value: library.double;"
-  }
+      generator.generate(ExternalTypeHolder.serializer()) shouldContain "value: library.double;"
+    }
 
-  test("external type names remain exact with namespaces disabled") {
-    val generator = KotlinTsGenerator()
-    generator.descriptorOverrides[Double.serializer().descriptor] = external("library.double")
+    test("external type names remain exact with namespaces disabled") {
+      val generator = KotlinTsGenerator()
+      generator.descriptorOverrides[Double.serializer().descriptor] = external("library.double")
 
-    generator.generate(ExternalTypeHolder.serializer()) shouldContain "value: library.double;"
-  }
+      generator.generate(ExternalTypeHolder.serializer()) shouldContain "value: library.double;"
+    }
 
-  test("external type overrides work as map keys") {
-    val generator = KotlinTsGenerator()
-    generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
+    test("external type overrides work as map keys") {
+      val generator = KotlinTsGenerator()
+      generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
 
-    generator.generate(ExternalTypeMapHolder.serializer()) shouldContain
-      "values: Map<double, string>;"
-  }
+      generator.generate(ExternalTypeMapHolder.serializer()) shouldContain
+        "values: Map<double, string>;"
+    }
 
-  test("nullable external map keys preserve nullability") {
-    val generator = KotlinTsGenerator()
-    generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
+    test("nullable external map keys preserve nullability") {
+      val generator = KotlinTsGenerator()
+      generator.descriptorOverrides[Double.serializer().descriptor] = external("double")
 
-    generator.generate(NullableExternalTypeMapHolder.serializer()) shouldContain
-      "values: Map<double | null, string>;"
-  }
-})
-
-
-@Serializable
-private data class ExternalTypeHolder(
-  val value: Double,
-  val nullable: Double?,
-)
-
+      generator.generate(NullableExternalTypeMapHolder.serializer()) shouldContain
+        "values: Map<double | null, string>;"
+    }
+  })
 
 @Serializable
-private data class ExternalTypeMapHolder(
-  val values: Map<Double, String>,
-)
-
+private data class ExternalTypeHolder(val value: Double, val nullable: Double?)
 
 @Serializable
-private data class NullableExternalTypeMapHolder(
-  val values: Map<Double?, String>,
-)
+private data class ExternalTypeMapHolder(val values: Map<Double, String>)
+
+@Serializable
+private data class NullableExternalTypeMapHolder(val values: Map<Double?, String>)

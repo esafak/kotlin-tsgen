@@ -1,15 +1,10 @@
 package io.github.esafak.kotlintsgen.core
 
-
 /** Thrown when a generator-created TypeScript identifier cannot be emitted safely. */
-class InvalidTsIdentifierException(
-  val identifier: String,
-  val context: String,
-  reason: String,
-) : IllegalArgumentException(
-  "Invalid TypeScript identifier '$identifier' for $context: $reason"
-)
-
+class InvalidTsIdentifierException(val identifier: String, val context: String, reason: String) :
+  IllegalArgumentException(
+    "Invalid TypeScript identifier '$identifier' for $context: $reason",
+  )
 
 /** Validates names that are emitted in TypeScript identifier positions. */
 internal object TsIdentifierValidator {
@@ -95,10 +90,7 @@ internal object TsIdentifierValidator {
     "yield",
   )
 
-  fun assertValidIdentifier(
-    identifier: String,
-    context: String,
-  ) {
+  fun assertValidIdentifier(identifier: String, context: String) {
     val reason = when {
       !isValidIdentifier(identifier) -> when {
         !identifierPattern.matches(identifier) ->
@@ -116,11 +108,8 @@ internal object TsIdentifierValidator {
     }
   }
 
-  fun isValidIdentifier(identifier: String): Boolean {
-    return isValidIdentifierSyntax(identifier) && identifier !in reservedNames
-  }
+  fun isValidIdentifier(identifier: String): Boolean =
+    isValidIdentifierSyntax(identifier) && identifier !in reservedNames
 
-  fun isValidIdentifierSyntax(identifier: String): Boolean {
-    return identifierPattern.matches(identifier)
-  }
+  fun isValidIdentifierSyntax(identifier: String): Boolean = identifierPattern.matches(identifier)
 }

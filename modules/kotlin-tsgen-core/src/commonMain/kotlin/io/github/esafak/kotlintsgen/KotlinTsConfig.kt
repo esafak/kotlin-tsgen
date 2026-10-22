@@ -1,10 +1,9 @@
 package io.github.esafak.kotlintsgen
 
 import io.github.esafak.kotlintsgen.core.TsDeclaration
-import kotlin.jvm.JvmInline
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-
+import kotlin.jvm.JvmInline
 
 /**
  * @param[indent] Define the indentation that is used when generating source code
@@ -25,8 +24,10 @@ data class KotlinTsConfig(
   sealed interface NamespaceConfig {
     /** Use the prefix of the [SerialDescriptor]  */
     object DescriptorNamePrefix : NamespaceConfig
+
     /** don't generate a namespace */
     object Disabled : NamespaceConfig
+
     @JvmInline
     value class Static(val namespace: String) : NamespaceConfig
   }
@@ -35,5 +36,4 @@ data class KotlinTsConfig(
     object None : TypeAliasTypingConfig
     object BrandTyping : TypeAliasTypingConfig
   }
-
 }

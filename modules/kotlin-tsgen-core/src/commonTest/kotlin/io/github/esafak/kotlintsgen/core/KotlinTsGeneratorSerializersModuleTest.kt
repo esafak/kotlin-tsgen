@@ -334,9 +334,7 @@ class KotlinTsGeneratorSerializersModuleTest :
   @Suppress("unused")
   private object ContextualExample {
     @Serializable
-    class SomeType(
-      val a: String,
-    )
+    class SomeType(val a: String)
 
     @Serializable
     class TypeHolder(
@@ -351,9 +349,7 @@ class KotlinTsGeneratorSerializersModuleTest :
     sealed class Parent
 
     @Serializable
-    class SubClass(
-      val x: String,
-    ) : Parent()
+    class SubClass(val x: String) : Parent()
   }
 
   @Suppress("unused")
@@ -374,10 +370,7 @@ class KotlinTsGeneratorSerializersModuleTest :
       abstract val name: String
 
       @Serializable
-      class Direct(
-        override val name: String,
-        val direct: String,
-      ) : Parent()
+      class Direct(override val name: String, val direct: String) : Parent()
 
       @Serializable
       sealed class Middle : Parent() {
@@ -393,11 +386,8 @@ class KotlinTsGeneratorSerializersModuleTest :
         @Serializable
         sealed class Inner : Middle() {
           @Serializable
-          class Leaf(
-            override val name: String,
-            override val colour: String,
-            val leaf: String,
-          ) : Inner()
+          class Leaf(override val name: String, override val colour: String, val leaf: String) :
+            Inner()
         }
       }
     }
@@ -421,15 +411,10 @@ class KotlinTsGeneratorSerializersModuleTest :
     }
 
     @Serializable
-    data class BasicProject(
-      override val name: String,
-    ) : Project()
+    data class BasicProject(override val name: String) : Project()
 
     @Serializable
-    data class OwnedProject(
-      override val name: String,
-      val owner: String,
-    ) : Project()
+    data class OwnedProject(override val name: String, val owner: String) : Project()
 
     object Serializer : JsonContentPolymorphicSerializer<Project>(Project::class) {
       override fun selectDeserializer(element: JsonElement) = BasicProject.serializer()
@@ -442,17 +427,13 @@ class KotlinTsGeneratorSerializersModuleTest :
     abstract class Parent
 
     @Serializable
-    class SubClass(
-      val x: String,
-    ) : Parent()
+    class SubClass(val x: String) : Parent()
 
     @Serializable
     abstract class OtherParent
 
     @Serializable
-    class OtherSubClass(
-      val y: String,
-    ) : OtherParent()
+    class OtherSubClass(val y: String) : OtherParent()
 
     @Serializable
     class TypeHolder(
@@ -464,9 +445,7 @@ class KotlinTsGeneratorSerializersModuleTest :
   @Suppress("unused")
   private object GenericContextualExample {
     @Serializable
-    class Box<T>(
-      val value: T,
-    )
+    class Box<T>(val value: T)
 
     @Serializable
     class Holder(
@@ -486,10 +465,7 @@ class KotlinTsGeneratorSerializersModuleTest :
     object EntityTypeSerializer : KSerializer<EntityType> {
       override val descriptor = PrimitiveSerialDescriptor("EntityType", PrimitiveKind.STRING)
 
-      override fun serialize(
-        encoder: Encoder,
-        value: EntityType,
-      ) {
+      override fun serialize(encoder: Encoder, value: EntityType) {
         encoder.encodeString(value.name)
       }
 
@@ -518,17 +494,12 @@ class KotlinTsGeneratorSerializersModuleTest :
   private object CustomPrimitiveExample {
     @Serializable(with = StringIdSerializer::class)
     @JvmInline
-    value class StringId(
-      val value: String,
-    )
+    value class StringId(val value: String)
 
     object StringIdSerializer : KSerializer<StringId> {
       override val descriptor = PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING)
 
-      override fun serialize(
-        encoder: Encoder,
-        value: StringId,
-      ) {
+      override fun serialize(encoder: Encoder, value: StringId) {
         encoder.encodeString(value.value)
       }
 
