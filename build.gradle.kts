@@ -1,4 +1,5 @@
 import buildsrc.config.excludeGeneratedGradleDsl
+import buildsrc.config.yarnAudit
 
 plugins {
   idea
@@ -7,12 +8,15 @@ plugins {
   id("com.gradleup.nmcp.aggregation")
 }
 
-
 project.group = "io.github.esafak.kotlintsgen"
 project.version = object {
   private val gitVersion = project.gitVersion
   override fun toString(): String = gitVersion.get()
 }
+
+// The Kotlin/JS dependency tree is shared by every Kotlin/JS project, so the
+// audit belongs to the root project.
+yarnAudit()
 
 idea {
   module {
