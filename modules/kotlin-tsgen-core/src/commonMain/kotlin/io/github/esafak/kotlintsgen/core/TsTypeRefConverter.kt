@@ -11,11 +11,9 @@ import kotlinx.serialization.descriptors.getContextualDescriptor
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 
-
 fun interface TsTypeRefConverter {
 
   operator fun invoke(descriptor: SerialDescriptor): TsTypeRef
-
 
   @OptIn(ExperimentalSerializationApi::class)
   open class Default(
@@ -29,26 +27,26 @@ fun interface TsTypeRefConverter {
     /** Override the type reference used for non-index-signature map keys. */
     open fun mapKeyTypeRefOverride(descriptor: SerialDescriptor): TsTypeRef? = null
 
-    override operator fun invoke(
-      descriptor: SerialDescriptor,
-    ): TsTypeRef {
+    override operator fun invoke(descriptor: SerialDescriptor): TsTypeRef {
       primitiveTypeRefOverride?.invoke(descriptor)?.let { return it }
       return when (val descriptorKind = descriptor.kind) {
-        is PrimitiveKind     -> primitiveTypeRef(descriptor, descriptorKind)
+        is PrimitiveKind -> primitiveTypeRef(descriptor, descriptorKind)
 
-        StructureKind.LIST   -> when {
+        StructureKind.LIST -> when {
           descriptor.elementDescriptors.count() > 1 -> declarationTypeRef(descriptor)
-          else                                      -> listTypeRef(descriptor)
+          else -> listTypeRef(descriptor)
         }
-        StructureKind.MAP    -> mapTypeRef(descriptor)
 
-        SerialKind.CONTEXTUAL    -> resolveContextual(descriptor)
+        StructureKind.MAP -> mapTypeRef(descriptor)
+
+        SerialKind.CONTEXTUAL -> resolveContextual(descriptor)
 
         PolymorphicKind.SEALED,
         PolymorphicKind.OPEN,
         SerialKind.ENUM,
         StructureKind.CLASS,
-        StructureKind.OBJECT -> declarationTypeRef(descriptor)
+        StructureKind.OBJECT,
+        -> declarationTypeRef(descriptor)
       }
     }
 
@@ -60,18 +58,12 @@ fun interface TsTypeRefConverter {
       return withNullable(this(resolved), descriptor.isNullable)
     }
 
-    private fun withNullable(
-      typeRef: TsTypeRef,
-      nullable: Boolean,
-    ): TsTypeRef = when (typeRef) {
-      is TsTypeRef.Literal     -> typeRef.copy(nullable = nullable)
+    private fun withNullable(typeRef: TsTypeRef, nullable: Boolean): TsTypeRef = when (typeRef) {
+      is TsTypeRef.Literal -> typeRef.copy(nullable = nullable)
       is TsTypeRef.Declaration -> typeRef.copy(nullable = nullable)
     }
 
-    fun primitiveTypeRef(
-      descriptor: SerialDescriptor,
-      kind: PrimitiveKind,
-    ): TsTypeRef.Literal {
+    fun primitiveTypeRef(descriptor: SerialDescriptor, kind: PrimitiveKind): TsTypeRef.Literal {
       val tsPrimitive = when (kind) {
         PrimitiveKind.BOOLEAN -> TsLiteral.Primitive.TsBoolean
 
@@ -80,14 +72,15 @@ fun interface TsTypeRefConverter {
         PrimitiveKind.INT,
         PrimitiveKind.LONG,
         PrimitiveKind.FLOAT,
-        PrimitiveKind.DOUBLE  -> TsLiteral.Primitive.TsNumber
+        PrimitiveKind.DOUBLE,
+        -> TsLiteral.Primitive.TsNumber
 
         PrimitiveKind.CHAR,
-        PrimitiveKind.STRING  -> TsLiteral.Primitive.TsString
+        PrimitiveKind.STRING,
+        -> TsLiteral.Primitive.TsString
       }
       return TsTypeRef.Literal(tsPrimitive, descriptor.isNullable)
     }
-
 
     fun mapTypeRef(descriptor: SerialDescriptor): TsTypeRef.Literal {
       val (keyDescriptor, valueDescriptor) = descriptor.elementDescriptors.toList()
@@ -112,18 +105,22 @@ fun interface TsTypeRefConverter {
       val resolved = when {
         descriptor.isInline && descriptor.elementsCount > 0 ->
           indexSignatureKeyTypeRef(descriptor.elementDescriptors.first())
+
         descriptor.kind == SerialKind.CONTEXTUAL -> {
           val contextual = runCatching {
             serializersModule.getContextualDescriptor(descriptor)
           }.getOrNull()
-          if (contextual != null) indexSignatureKeyTypeRef(contextual)
-          else error("Expected primitive descriptor, got ${descriptor.kind}")
+          if (contextual != null) {
+            indexSignatureKeyTypeRef(contextual)
+          } else {
+            error("Expected primitive descriptor, got ${descriptor.kind}")
+          }
         }
+
         else -> primitiveTypeRef(descriptor, descriptor.kind as PrimitiveKind)
       }
       return resolved.copy(nullable = false)
     }
-
 
     fun listTypeRef(descriptor: SerialDescriptor): TsTypeRef.Literal {
       val elementDescriptor = descriptor.elementDescriptors.first()
@@ -132,13 +129,9 @@ fun interface TsTypeRefConverter {
       return TsTypeRef.Literal(listRef, descriptor.isNullable)
     }
 
-
-    fun declarationTypeRef(
-      descriptor: SerialDescriptor
-    ): TsTypeRef.Declaration {
+    fun declarationTypeRef(descriptor: SerialDescriptor): TsTypeRef.Declaration {
       val id = elementIdConverter(descriptor)
       return TsTypeRef.Declaration(id, null, descriptor.isNullable)
     }
   }
-
 }

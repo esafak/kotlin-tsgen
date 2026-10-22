@@ -12,15 +12,13 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.visitor.KSTopDownVisitor
-import java.io.OutputStreamWriter
 import kotlinx.serialization.SerialInfo
+import java.io.OutputStreamWriter
 
 class KotlinTsGenProcessorProvider : SymbolProcessorProvider {
-  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
-    return KotlinTsGenProcessor(environment.codeGenerator, environment.logger)
-  }
+  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+    KotlinTsGenProcessor(environment.codeGenerator, environment.logger)
 }
-
 
 class KotlinTsGenProcessor(
   private val codeGenerator: CodeGenerator,
@@ -29,7 +27,6 @@ class KotlinTsGenProcessor(
   private var invoked = false
 
   override fun process(resolver: Resolver): List<KSAnnotated> {
-
     val allFiles = resolver.getAllFiles().map { it.fileName }
     logger.warn(allFiles.toList().joinToString())
     if (invoked) {
@@ -53,33 +50,33 @@ class KotlinTsGenProcessor(
                 ClassKind.CLASS,
                 ClassKind.ENUM_CLASS,
                 ClassKind.OBJECT,
-                ClassKind.INTERFACE  -> true
+                ClassKind.INTERFACE,
+                -> true
+
                 ClassKind.ANNOTATION_CLASS,
-                ClassKind.ENUM_ENTRY -> false
+                ClassKind.ENUM_ENTRY,
+                -> false
               }
             }
             .forEach {
               logger.info("Visiting $it")
               it.accept(visitor, writer)
             }
-
         }
       }
     return emptyList()
   }
 }
 
-class ClassVisitor(
-  private val codeGenerator: CodeGenerator,
-  private val resolver: Resolver
-) : KSTopDownVisitor<OutputStreamWriter, Unit>() {
+class ClassVisitor(private val codeGenerator: CodeGenerator, private val resolver: Resolver) :
+  KSTopDownVisitor<OutputStreamWriter, Unit>() {
 
   override fun defaultHandler(node: KSNode, data: OutputStreamWriter) {
   }
 
   override fun visitClassDeclaration(
     classDeclaration: KSClassDeclaration,
-    data: OutputStreamWriter
+    data: OutputStreamWriter,
   ) {
     super.visitClassDeclaration(classDeclaration, data)
 
@@ -87,13 +84,11 @@ class ClassVisitor(
 
     val containingFile = classDeclaration.containingFile!!
 
-
     codeGenerator.createNewFile(
       Dependencies(true, containingFile),
       containingFile.packageName.toString(),
       "asd",
     )
-
 
     val symbolName = classDeclaration.simpleName.asString()
 
@@ -120,17 +115,15 @@ class ClassVisitor(
 //      }
 //    )
   }
-
 }
 //
 //
-//data class KxsIntrospectionInfo(
+// data class KxsIntrospectionInfo(
 //  val ksType: KSType,
 //  val descriptorHashCode: KxsDescriptorHashCode,
 //  val sealedParent: SerialDescriptor? = null,
 //  val sealedSubclasses: Set<SerialDescriptor>? = null,
-//)
-
+// )
 
 /**
  * Mark [Serializable] classes that will be converted to TypeScript.

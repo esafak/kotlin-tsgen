@@ -2,7 +2,6 @@ package io.github.esafak.kotlintsgen.core
 
 import io.github.esafak.kotlintsgen.KotlinTsConfig
 
-
 /**
  * Writes [TsElement]s as TypeScript source code.
  */
@@ -10,20 +9,17 @@ interface TsSourceCodeGenerator {
 
   fun groupElementsBy(element: TsElement): String?
 
-  fun generateDeclaration(element: TsDeclaration): String {
-    return when (element) {
-      is TsDeclaration.TsEnum      -> generateEnum(element)
-      is TsDeclaration.TsInterface -> generateInterface(element)
-      is TsDeclaration.TsNamespace -> generateNamespace(element)
-      is TsDeclaration.TsTypeUnion -> generateTypeUnion(element)
-      is TsDeclaration.TsTypeAlias -> generateTypeAlias(element)
-      is TsDeclaration.TsTuple     -> generateTuple(element)
-    }
+  fun generateDeclaration(element: TsDeclaration): String = when (element) {
+    is TsDeclaration.TsEnum -> generateEnum(element)
+    is TsDeclaration.TsInterface -> generateInterface(element)
+    is TsDeclaration.TsNamespace -> generateNamespace(element)
+    is TsDeclaration.TsTypeUnion -> generateTypeUnion(element)
+    is TsDeclaration.TsTypeAlias -> generateTypeAlias(element)
+    is TsDeclaration.TsTuple -> generateTuple(element)
   }
 
-  fun generateDeclarationInNamespace(element: TsDeclaration, namespace: String?): String {
-    return generateDeclaration(element)
-  }
+  fun generateDeclarationInNamespace(element: TsDeclaration, namespace: String?): String =
+    generateDeclaration(element)
 
   fun generateEnum(enum: TsDeclaration.TsEnum): String
   fun generateInterface(element: TsDeclaration.TsInterface): String
@@ -38,26 +34,23 @@ interface TsSourceCodeGenerator {
   fun generatePrimitive(primitive: TsLiteral.Primitive): String
   fun generateTypeReference(typeRef: TsTypeRef): String
 
-  open class Default(
-    private val config: KotlinTsConfig,
-  ) : TsSourceCodeGenerator {
+  open class Default(private val config: KotlinTsConfig) : TsSourceCodeGenerator {
 
     private var renderingNamespace: String? = null
 
+    override fun groupElementsBy(element: TsElement): String = when (config.namespaceConfig) {
+      is KotlinTsConfig.NamespaceConfig.Static -> config.namespaceConfig.namespace
 
-    override fun groupElementsBy(element: TsElement): String {
-      return when (config.namespaceConfig) {
-        is KotlinTsConfig.NamespaceConfig.Static            -> config.namespaceConfig.namespace
-        KotlinTsConfig.NamespaceConfig.Disabled             -> ""
-        KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix ->
-          when (element) {
-            is TsLiteral     -> ""
-            is TsDeclaration ->
-              if (element.id.namespaceSegments.isNotEmpty()) element.id.namespace else ""
-          }
-      }
+      KotlinTsConfig.NamespaceConfig.Disabled -> ""
+
+      KotlinTsConfig.NamespaceConfig.DescriptorNamePrefix ->
+        when (element) {
+          is TsLiteral -> ""
+
+          is TsDeclaration ->
+            if (element.id.namespaceSegments.isNotEmpty()) element.id.namespace else ""
+        }
     }
-
 
     override fun generateNamespace(namespace: TsDeclaration.TsNamespace): String {
       val namespaceContent =
@@ -76,7 +69,6 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
     override fun generateDeclarationInNamespace(
       element: TsDeclaration,
       namespace: String?,
@@ -90,20 +82,15 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
-    override fun wrapInNamespace(name: String, body: String): String {
-      return buildString {
-        appendLine("export namespace $name {")
-        if (body.isNotBlank()) {
-          appendLine(body.prependIndent(config.indent))
-        }
-        append("}")
+    override fun wrapInNamespace(name: String, body: String): String = buildString {
+      appendLine("export namespace $name {")
+      if (body.isNotBlank()) {
+        appendLine(body.prependIndent(config.indent))
       }
+      append("}")
     }
 
-
     override fun generateEnum(enum: TsDeclaration.TsEnum): String {
-
       val enumMembers = enum.members.joinToString("\n") { member ->
         """
           |${member.name} = "${generateTypeReference(member.typeRef)}",
@@ -113,14 +100,12 @@ interface TsSourceCodeGenerator {
 
       return """
         |export enum ${enum.id.name} {
-        |${enumMembers}
+        |$enumMembers
         |}
       """.trimMargin()
     }
 
-
     override fun generateInterface(element: TsDeclaration.TsInterface): String {
-
       val properties = element.properties
         .joinToString(separator = "\n") { generateInterfaceProperty(it) }
 
@@ -133,7 +118,6 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
     /**
      * Generate
      * ```typescript
@@ -144,9 +128,7 @@ interface TsSourceCodeGenerator {
      * name:? Type;
      * ```
      */
-    open fun generateInterfaceProperty(
-      property: TsProperty
-    ): String {
+    open fun generateInterfaceProperty(property: TsProperty): String {
       val separator = if (property.optional) "?: " else ": "
       val propertyType = generateTypeReference(property.typeRef)
       val propertyName = if (TsIdentifierValidator.isValidIdentifierSyntax(property.name)) {
@@ -154,26 +136,25 @@ interface TsSourceCodeGenerator {
       } else {
         quotePropertyName(property.name)
       }
-      return "${propertyName}${separator}${propertyType};"
+      return "${propertyName}${separator}$propertyType;"
     }
-
 
     override fun generateTypeAlias(element: TsDeclaration.TsTypeAlias): String {
       val aliasedRef = generateTypeReference(element.typeRef)
 
       return when (config.typeAliasTyping) {
-        KotlinTsConfig.TypeAliasTypingConfig.None        ->
+        KotlinTsConfig.TypeAliasTypingConfig.None ->
           """
-            |export type ${element.id.name} = ${aliasedRef};
+            |export type ${element.id.name} = $aliasedRef;
           """.trimMargin()
-        KotlinTsConfig.TypeAliasTypingConfig.BrandTyping -> {
 
+        KotlinTsConfig.TypeAliasTypingConfig.BrandTyping -> {
           val brandType = element.id.name
             .mapNotNull { c ->
               when {
-                c == '.'      -> '_'
+                c == '.' -> '_'
                 !c.isLetter() -> null
-                else          -> c
+                else -> c
               }
             }.joinToString("")
 
@@ -184,9 +165,8 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
-    override fun generateTypeUnion(element: TsDeclaration.TsTypeUnion): String {
-      return if (element.typeRefs.isEmpty()) {
+    override fun generateTypeUnion(element: TsDeclaration.TsTypeUnion): String =
+      if (element.typeRefs.isEmpty()) {
         """
           |export type ${element.id.name} = ${generatePrimitive(TsLiteral.Primitive.TsUnknown)};
         """.trimMargin()
@@ -201,11 +181,8 @@ interface TsSourceCodeGenerator {
           ¦$aliases;
         """.trimMargin("¦")
       }
-    }
-
 
     override fun generateTuple(tuple: TsDeclaration.TsTuple): String {
-
       val types = tuple.elements.mapIndexed { index, property ->
         val optionalMarker = if (property.optional) "?" else ""
         val typeRef = generateTypeReference(property.typeRef)
@@ -224,18 +201,24 @@ interface TsSourceCodeGenerator {
       """.trimMargin("¦")
     }
 
-
     private fun quotePropertyName(name: String): String = buildString {
       append('"')
       name.forEach { character ->
         when (character) {
           '\\' -> append("\\\\")
-          '"'  -> append("\\\"")
+
+          '"' -> append("\\\"")
+
           '\b' -> append("\\b")
+
           '\u000C' -> append("\\f")
+
           '\n' -> append("\\n")
+
           '\r' -> append("\\r")
+
           '\t' -> append("\\t")
+
           else -> if (character.code < 0x20) {
             append("\\u${character.code.toString(16).padStart(4, '0')}")
           } else {
@@ -246,34 +229,31 @@ interface TsSourceCodeGenerator {
       append('"')
     }
 
-
     /**
      * A type-reference, be it for the field of an interface, a type alias, or a generic type
      * constraint.
      */
-    override fun generateTypeReference(
-      typeRef: TsTypeRef,
-    ): String {
+    override fun generateTypeReference(typeRef: TsTypeRef): String {
       val plainType: String = when (typeRef) {
-        is TsTypeRef.Literal     -> when (typeRef.element) {
+        is TsTypeRef.Literal -> when (typeRef.element) {
           is TsLiteral.Primitive -> generatePrimitive(typeRef.element)
 
-          is TsLiteral.TsList    -> {
+          is TsLiteral.TsList -> {
             val valueTypeRef = generateTypeReference(typeRef.element.valueTypeRef)
             "$valueTypeRef[]"
           }
 
-          is TsLiteral.TsMap     -> generateMapTypeReference(typeRef.element)
+          is TsLiteral.TsMap -> generateMapTypeReference(typeRef.element)
 
-          is TsLiteral.Custom       -> typeRef.element.value
+          is TsLiteral.Custom -> typeRef.element.value
+
           is TsLiteral.ExternalType -> typeRef.element.id.toString()
         }
 
         is TsTypeRef.Declaration -> {
-
           if (typeRef.parent != null) {
             val parentRef = generateTypeReference(typeRef.parent)
-            "${parentRef}.${typeRef.id.name}"
+            "$parentRef.${typeRef.id.name}"
           } else {
             generateDeclarationReference(typeRef.id)
           }
@@ -289,7 +269,6 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
     private fun generateDeclarationReference(id: TsElementId): String {
       val declarationNamespace = id.namespace
       return if (
@@ -304,33 +283,27 @@ interface TsSourceCodeGenerator {
       }
     }
 
-
-    override fun generatePrimitive(primitive: TsLiteral.Primitive): String {
-      return when (primitive) {
-        TsLiteral.Primitive.TsString    -> "string"
-        TsLiteral.Primitive.TsNumber    -> "number"
-        TsLiteral.Primitive.TsBoolean   -> "boolean"
-        TsLiteral.Primitive.TsObject    -> "object"
-        TsLiteral.Primitive.TsAny       -> "any"
-        TsLiteral.Primitive.TsNever     -> "never"
-        TsLiteral.Primitive.TsNull      -> "null"
-        TsLiteral.Primitive.TsUndefined -> "undefined"
-        TsLiteral.Primitive.TsUnknown   -> "unknown"
-        TsLiteral.Primitive.TsVoid      -> "void"
-      }
+    override fun generatePrimitive(primitive: TsLiteral.Primitive): String = when (primitive) {
+      TsLiteral.Primitive.TsString -> "string"
+      TsLiteral.Primitive.TsNumber -> "number"
+      TsLiteral.Primitive.TsBoolean -> "boolean"
+      TsLiteral.Primitive.TsObject -> "object"
+      TsLiteral.Primitive.TsAny -> "any"
+      TsLiteral.Primitive.TsNever -> "never"
+      TsLiteral.Primitive.TsNull -> "null"
+      TsLiteral.Primitive.TsUndefined -> "undefined"
+      TsLiteral.Primitive.TsUnknown -> "unknown"
+      TsLiteral.Primitive.TsVoid -> "void"
     }
 
-
-    override fun generateMapTypeReference(
-      tsMap: TsLiteral.TsMap
-    ): String {
+    override fun generateMapTypeReference(tsMap: TsLiteral.TsMap): String {
       val keyTypeRef = generateTypeReference(tsMap.keyTypeRef)
       val valueTypeRef = generateTypeReference(tsMap.valueTypeRef)
 
       return when (tsMap.type) {
         TsLiteral.TsMap.Type.INDEX_SIGNATURE -> "{ [key: $keyTypeRef]: $valueTypeRef }"
-        TsLiteral.TsMap.Type.MAPPED_OBJECT   -> "{ [key in $keyTypeRef]: $valueTypeRef }"
-        TsLiteral.TsMap.Type.MAP             -> "Map<$keyTypeRef, $valueTypeRef>"
+        TsLiteral.TsMap.Type.MAPPED_OBJECT -> "{ [key in $keyTypeRef]: $valueTypeRef }"
+        TsLiteral.TsMap.Type.MAP -> "Map<$keyTypeRef, $valueTypeRef>"
       }
     }
   }

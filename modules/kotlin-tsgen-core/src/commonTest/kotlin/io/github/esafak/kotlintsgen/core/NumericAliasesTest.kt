@@ -144,15 +144,10 @@ private data class NumericHolder(
 )
 
 @Serializable
-private data class CollectionHolder(
-  val values: List<Int>,
-  val nullable: Double?,
-)
+private data class CollectionHolder(val values: List<Int>, val nullable: Double?)
 
 @Serializable
-private data class MapHolder(
-  val map: Map<Int, String>,
-)
+private data class MapHolder(val map: Map<Int, String>)
 
 @Serializable
 private data class BuiltInPrimitiveHolder(
@@ -163,21 +158,13 @@ private data class BuiltInPrimitiveHolder(
 )
 
 @Serializable
-private data class NullableFirstPrimitiveHolder(
-  val nullable: String?,
-  val plain: String,
-)
+private data class NullableFirstPrimitiveHolder(val nullable: String?, val plain: String)
 
 @Serializable
-private data class NullableNestedHolder(
-  val value: String?,
-)
+private data class NullableNestedHolder(val value: String?)
 
 @Serializable
-private data class MixedPrimitiveHolder(
-  val plain: String,
-  val nested: NullableNestedHolder,
-)
+private data class MixedPrimitiveHolder(val plain: String, val nested: NullableNestedHolder)
 
 @Serializable
 private data class CustomHolder(
@@ -187,32 +174,22 @@ private data class CustomHolder(
 
 @Serializable(with = CustomIntSerializer::class)
 @JvmInline
-private value class CustomInt(
-  val value: Int,
-)
+private value class CustomInt(val value: Int)
 
 private object CustomIntSerializer : KSerializer<CustomInt> {
   override val descriptor = PrimitiveSerialDescriptor("CustomInt", PrimitiveKind.INT)
 
-  override fun serialize(
-    encoder: Encoder,
-    value: CustomInt,
-  ) = encoder.encodeInt(value.value)
+  override fun serialize(encoder: Encoder, value: CustomInt) = encoder.encodeInt(value.value)
 
   override fun deserialize(decoder: Decoder) = CustomInt(decoder.decodeInt())
 }
 
 @Serializable
 @SerialName("Int")
-private data class CollisionHolder(
-  val numeric: Int,
-  val value: CollisionType,
-)
+private data class CollisionHolder(val numeric: Int, val value: CollisionType)
 
 @Serializable
-private data class CollisionType(
-  val value: String,
-)
+private data class CollisionType(val value: String)
 
 @Serializable
 private data class PrimitiveAliasCollisionHolder(
@@ -222,44 +199,30 @@ private data class PrimitiveAliasCollisionHolder(
 
 @Serializable(with = StringIntSerializer::class)
 @JvmInline
-private value class StringInt(
-  val value: String,
-)
+private value class StringInt(val value: String)
 
 private object StringIntSerializer : KSerializer<StringInt> {
   override val descriptor = PrimitiveSerialDescriptor("Int", PrimitiveKind.STRING)
 
-  override fun serialize(
-    encoder: Encoder,
-    value: StringInt,
-  ) = encoder.encodeString(value.value)
+  override fun serialize(encoder: Encoder, value: StringInt) = encoder.encodeString(value.value)
 
   override fun deserialize(decoder: Decoder) = StringInt(decoder.decodeString())
 }
 
 @Serializable
-private data class CustomStringKeyHolder(
-  val values: Map<StringId, String>,
-)
+private data class CustomStringKeyHolder(val values: Map<StringId, String>)
 
 @Serializable
-private data class StringMapHolder(
-  val values: Map<String, String>,
-)
+private data class StringMapHolder(val values: Map<String, String>)
 
 @Serializable(with = StringIdSerializer::class)
 @JvmInline
-private value class StringId(
-  val value: String,
-)
+private value class StringId(val value: String)
 
 private object StringIdSerializer : KSerializer<StringId> {
   override val descriptor = PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING)
 
-  override fun serialize(
-    encoder: Encoder,
-    value: StringId,
-  ) = encoder.encodeString(value.value)
+  override fun serialize(encoder: Encoder, value: StringId) = encoder.encodeString(value.value)
 
   override fun deserialize(decoder: Decoder) = StringId(decoder.decodeString())
 }

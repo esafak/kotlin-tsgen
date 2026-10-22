@@ -85,12 +85,11 @@ open class KotlinTsGenerator(
     TsOverrideScope(this).block()
   }
 
-  private fun findOverride(descriptor: SerialDescriptor): TsElement? =
-    descriptorOverrides.entries
-      .run {
-        firstOrNull { it.key == descriptor }
-          ?: firstOrNull { it.key.nullable == descriptor.nullable }
-      }?.value
+  private fun findOverride(descriptor: SerialDescriptor): TsElement? = descriptorOverrides.entries
+    .run {
+      firstOrNull { it.key == descriptor }
+        ?: firstOrNull { it.key.nullable == descriptor.nullable }
+    }?.value
 
   open fun findMapTypeOverride(descriptor: SerialDescriptor): TsLiteral.TsMap.Type? =
     when (findOverride(descriptor)) {
@@ -140,10 +139,9 @@ open class KotlinTsGenerator(
       override fun invoke(
         keyDescriptor: SerialDescriptor,
         valDescriptor: SerialDescriptor,
-      ): TsLiteral.TsMap.Type =
-        mapTypeCache.getOrPut(keyDescriptor to valDescriptor) {
-          findMapTypeOverride(keyDescriptor) ?: converter(keyDescriptor, valDescriptor)
-        }
+      ): TsLiteral.TsMap.Type = mapTypeCache.getOrPut(keyDescriptor to valDescriptor) {
+        findMapTypeOverride(keyDescriptor) ?: converter(keyDescriptor, valDescriptor)
+      }
     }
 
   val typeRefConverter: TsTypeRefConverter =
@@ -397,24 +395,23 @@ open class KotlinTsGenerator(
       .let(::renderGroups)
   }
 
-  private fun canMergeDeclarations(declarations: List<TsDeclaration>): Boolean =
-    (
-      declarations.all { it is TsDeclaration.TsInterface } &&
-        declarations
-          .flatMap { (it as TsDeclaration.TsInterface).properties }
-          .groupBy { it.name }
-          .values
-          .all { properties ->
-            properties
-              .map { property ->
-                property.optional to sourceCodeGenerator.generateTypeReference(property.typeRef)
-              }.distinct()
-              .size == 1
-          }
+  private fun canMergeDeclarations(declarations: List<TsDeclaration>): Boolean = (
+    declarations.all { it is TsDeclaration.TsInterface } &&
+      declarations
+        .flatMap { (it as TsDeclaration.TsInterface).properties }
+        .groupBy { it.name }
+        .values
+        .all { properties ->
+          properties
+            .map { property ->
+              property.optional to sourceCodeGenerator.generateTypeReference(property.typeRef)
+            }.distinct()
+            .size == 1
+        }
     ) || (
-      declarations.count { it is TsDeclaration.TsNamespace } == 1 &&
-        declarations.count { it is TsDeclaration.TsTypeUnion } == 1 &&
-        declarations.size == 2
+    declarations.count { it is TsDeclaration.TsNamespace } == 1 &&
+      declarations.count { it is TsDeclaration.TsTypeUnion } == 1 &&
+      declarations.size == 2
     )
 
   private class NamespaceGroupNode {
@@ -472,9 +469,7 @@ annotation class TsOverrideDsl
 
 /** Receiver scope for [KotlinTsGenerator.mapTypes]. */
 @TsOverrideDsl
-class TsOverrideScope internal constructor(
-  private val generator: KotlinTsGenerator,
-) {
+class TsOverrideScope internal constructor(private val generator: KotlinTsGenerator) {
   /** Map a serializer's descriptor to a TypeScript element. */
   infix fun KSerializer<*>.mapsTo(element: TsElement) {
     generator.descriptorOverrides[descriptor] = element
@@ -485,10 +480,7 @@ class TsOverrideScope internal constructor(
     generator.descriptorOverrides[this] = element
   }
 
-  fun contentPolymorphism(
-    serializer: KSerializer<*>,
-    block: ContentPolymorphismScope.() -> Unit,
-  ) {
+  fun contentPolymorphism(serializer: KSerializer<*>, block: ContentPolymorphismScope.() -> Unit) {
     val scope = ContentPolymorphismScope().apply(block)
     val descriptor = serializer.descriptor
     generator.contentPolymorphicSubtypes[descriptor] =

@@ -2,14 +2,12 @@ package io.github.esafak.kotlintsgen.core
 
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-
 fun interface TsElementIdConverter {
 
   operator fun invoke(descriptor: SerialDescriptor): TsElementId
 
   object Default : TsElementIdConverter {
     override operator fun invoke(descriptor: SerialDescriptor): TsElementId {
-
       val serialName = descriptor.serialName.removeSuffix("?")
 
       val lastDot = serialName.lastIndexOf('.')
@@ -32,7 +30,7 @@ fun interface TsElementIdConverter {
 
       return when {
         namespace.isBlank() -> TsElementId(id)
-        else                -> TsElementId("$namespace.$id")
+        else -> TsElementId("$namespace.$id")
       }
     }
   }

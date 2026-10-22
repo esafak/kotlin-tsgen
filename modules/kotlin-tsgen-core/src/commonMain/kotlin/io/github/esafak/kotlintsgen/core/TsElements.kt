@@ -1,8 +1,7 @@
 package io.github.esafak.kotlintsgen.core
 
-import kotlin.jvm.JvmInline
 import kotlinx.serialization.descriptors.SerialDescriptor
-
+import kotlin.jvm.JvmInline
 
 /**
  * A unique identifier for a [TsElement].
@@ -30,7 +29,6 @@ value class TsElementId(private val id: String) {
  */
 sealed interface TsElement
 
-
 /**
  * Declarations are named elements that developers create in TypeScript source code.
  *
@@ -41,47 +39,24 @@ sealed interface TsElement
 sealed interface TsDeclaration : TsElement {
   val id: TsElementId
 
-
   /** A named reference to another type. */
-  data class TsTypeAlias(
-    override val id: TsElementId,
-    val typeRef: TsTypeRef,
-  ) : TsDeclaration
-
+  data class TsTypeAlias(override val id: TsElementId, val typeRef: TsTypeRef) : TsDeclaration
 
   /** A named reference to one or more other types. */
-  data class TsTypeUnion(
-    override val id: TsElementId,
-    val typeRefs: Set<TsTypeRef>,
-  ) : TsDeclaration
-
+  data class TsTypeUnion(override val id: TsElementId, val typeRefs: Set<TsTypeRef>) :
+    TsDeclaration
 
   /**  A [tuple type](https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types). */
-  data class TsTuple(
-    override val id: TsElementId,
-    val elements: Set<TsProperty>,
-  ) : TsDeclaration
+  data class TsTuple(override val id: TsElementId, val elements: Set<TsProperty>) : TsDeclaration
 
+  data class TsInterface(override val id: TsElementId, val properties: Set<TsProperty>) :
+    TsDeclaration
 
-  data class TsInterface(
-    override val id: TsElementId,
-    val properties: Set<TsProperty>,
-  ) : TsDeclaration
+  data class TsEnum(override val id: TsElementId, val members: Set<TsProperty>) : TsDeclaration
 
-
-  data class TsEnum(
-    override val id: TsElementId,
-    val members: Set<TsProperty>,
-  ) : TsDeclaration
-
-
-  data class TsNamespace(
-    override val id: TsElementId,
-    val members: Set<TsDeclaration>,
-  ) : TsDeclaration
-
+  data class TsNamespace(override val id: TsElementId, val members: Set<TsDeclaration>) :
+    TsDeclaration
 }
-
 
 /** TypeScript elements that are referenced inline or provided externally. */
 sealed interface TsLiteral : TsElement {
@@ -104,19 +79,12 @@ sealed interface TsLiteral : TsElement {
     object TsVoid : Primitive
   }
 
-
   /** A list with elements of type [valueTypeRef]. */
-  data class TsList(
-    val valueTypeRef: TsTypeRef,
-  ) : TsLiteral
-
+  data class TsList(val valueTypeRef: TsTypeRef) : TsLiteral
 
   /** A key-value map. */
-  data class TsMap(
-    val keyTypeRef: TsTypeRef,
-    val valueTypeRef: TsTypeRef,
-    val type: Type,
-  ) : TsLiteral {
+  data class TsMap(val keyTypeRef: TsTypeRef, val valueTypeRef: TsTypeRef, val type: Type) :
+    TsLiteral {
     enum class Type {
       INDEX_SIGNATURE,
       MAPPED_OBJECT,
@@ -128,12 +96,10 @@ sealed interface TsLiteral : TsElement {
   @JvmInline
   value class Custom(val value: String) : TsLiteral
 
-
   /** A named TypeScript type provided outside of the generated source. */
   @JvmInline
   value class ExternalType(val id: TsElementId) : TsLiteral
 }
-
 
 /**
  * A reference to some [TsElement]. The reference may be [nullable].
@@ -150,21 +116,14 @@ sealed interface TsTypeRef {
    */
   val nullable: Boolean
 
-
-  data class Literal(
-    val element: TsLiteral,
-    override val nullable: Boolean,
-  ) : TsTypeRef
-
+  data class Literal(val element: TsLiteral, override val nullable: Boolean) : TsTypeRef
 
   data class Declaration(
     val id: TsElementId,
     val parent: Declaration?,
     override val nullable: Boolean,
   ) : TsTypeRef
-
 }
-
 
 /**
  * A property within an
