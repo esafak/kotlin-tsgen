@@ -48,32 +48,19 @@ jobs:
       - name: Validate the hk configuration
         run: mise x -- hk validate
       - name: Run the linters on the changed files
-        shell: bash
         env:
-          BASE_REF: ${{ github.base_ref }}
           BEFORE_SHA: ${{ github.event.before }}
-          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           REF: ${{ github.ref }}
         run: |
-          if [ -n "$BASE_REF" ]; then
-            # a pull request: compare against the branch it targets
-            base="refs/remotes/origin/$BASE_REF"
-          elif [ -n "$MERGE_GROUP_BASE_SHA" ]; then
-            # a merge group: compare against the branch it merges into
-            base="$MERGE_GROUP_BASE_SHA"
-          elif [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
+          if [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
             && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
             # a push to main: compare against the commit before the push
-            base="$BEFORE_SHA"
+            CI_BASE_REF="$BEFORE_SHA" mise run lint:ci
           else
-            # a branch push or a manual run: compare against main
-            base=$(git merge-base HEAD refs/remotes/origin/main)
+            # a pull request, a merge group, a branch push or a manual run:
+            # hk compares against the default branch from hk.pkl
+            mise run lint:ci
           fi
-          # hk falls back to checking every file when it cannot resolve the
-          # base, so refuse to run rather than check the wrong set of files
-          git rev-parse --verify --quiet "$base" > /dev/null
-          echo "Linting the files that changed since $base"
-          mise x -- hk check --from-ref "$base" --to-ref HEAD
 
   gradle-check:
     strategy:

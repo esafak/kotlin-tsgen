@@ -9,6 +9,12 @@ import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.
 // generated directory and stays out with it.)
 exclude = List("docs/code/example/**", "docs/code/test/**")
 
+// The branch the changes are compared against: `hk check --pr` diffs against
+// it, and the pre-push hook falls back to it. The remote-tracking name is
+// the one that resolves in a CI checkout, where the branch itself is not
+// checked out.
+default_branch = "origin/main"
+
 // The glob covers the Kotlin sources and the Gradle build scripts: the
 // builtin only matches `**/*.kt`.
 local ktlint = (Builtins.ktlint) {
