@@ -32,8 +32,8 @@ jobs:
     # CI uses mise directly; hk configuration is validated by local developer
     # hooks (`mise x -- hk validate`) rather than running hk in this job.
     #
-    # ktlint sees changed Kotlin files; whitespace checks cover all changed
-    # files. The repository still carries ktlint violations outside the diff.
+    # ktlint checks every configured Kotlin source through mise templates;
+    # whitespace checks cover the event's changed-file range.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
@@ -45,16 +45,16 @@ jobs:
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
-      - name: Lint changed Kotlin files and check whitespace
+      - name: Lint Kotlin sources and check changed-file whitespace
         env:
           BASE_REF: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: |
           if [ -z "$BASE_REF" ] || [ "$BASE_REF" = "0000000000000000000000000000000000000000" ]; then
             BASE_REF=origin/main
           fi
-          # lint:ci validates this ref before diffing; never allow a missing
-          # event base to widen the lint to the whole repository.
-          mise run lint:ci "$BASE_REF"
+          # The task fails if this base cannot be resolved. --force ensures
+          # mise runs the source-glob lint on each fresh CI checkout.
+          mise run --force lint:ci "$BASE_REF"
 
   gradle-check:
     strategy:
