@@ -1,6 +1,7 @@
 package buildsrc.config
 
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
@@ -14,22 +15,24 @@ import org.gradle.api.provider.Provider
  *
  * Removing them before the task runs keeps the check honest: it only sees the reports that
  * the current run produced.
+ *
+ * A report that cannot be removed - a locked file, say - would satisfy the check even when
+ * the runner produced nothing, so the task fails instead. The check cannot tell such a report
+ * apart from the report of the current run.
  */
 class ClearJsTestResultsAction(private val junitXml: Provider<Directory>) : Action<Task> {
   override fun execute(task: Task) {
-    junitXml.get().asFile
+    val stale = junitXml.get().asFile
       .listFiles { file -> file.isFile && file.name.endsWith(".xml") }
-      ?.forEach { report ->
-        // A report that survives the removal would satisfy the check even when the runner
-        // produced nothing, so say so rather than fail the build on a locked file.
-        if (!report.delete()) {
-          task.logger.warn(
-            "Could not remove the stale test report {}. The check for the test results of " +
-              "'{}' cannot tell it apart from the report of the current run.",
-            report,
-            task.path,
-          )
-        }
-      }
+      ?.filter { report -> !report.delete() }
+      .orEmpty()
+
+    if (stale.isNotEmpty()) {
+      throw GradleException(
+        "The stale test reports ${stale.joinToString()} could not be removed, so the check " +
+          "for the test results of '${task.path}' cannot tell them apart from the reports of " +
+          "the current run. Remove them by hand and run the task again.",
+      )
+    }
   }
 }
