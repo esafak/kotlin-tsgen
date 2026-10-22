@@ -199,11 +199,10 @@ jobs:
           echo "::add-mask::$key"
           printf 'PI_API_KEY=%s\n' "$key" >> "$GITHUB_ENV"
 
-      - uses: esafak/pi-reviewer@c5c857dde10d4daa4c4625c7d2468568ad1feaf6 # main
+      - uses: esafak/pi-reviewer@6a4e47e1f12d9705ff4065100d61392cd842df01 # main
         with:
           github-token: ${{ steps.bot-token.outputs.token }}
           pi-api-key: ${{ env.PI_API_KEY }}
           model: ${{ vars.MODEL_NAME }}
           min-severity: ${{ inputs.min-severity || 'warn' }}
           review-drafts: 'false'
-          react-on-no-findings: 'true'
