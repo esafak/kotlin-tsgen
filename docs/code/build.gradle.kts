@@ -22,6 +22,9 @@ dependencies {
   testFixturesImplementation(libs.kotlinProcess)
   testFixturesImplementation(libs.kotest.frameworkEngine)
   testFixturesImplementation(libs.kotest.assertionsCore)
+  // The test fixtures source set does not inherit the main source set's
+  // dependencies, so the opt-in marker below cannot resolve without it.
+  testFixturesImplementation(libs.kotlinx.serialization.core)
 
   testImplementation("io.kotest:kotest-runner-junit5")
   testImplementation("io.kotest:kotest-assertions-core")
