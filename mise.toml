@@ -42,6 +42,55 @@ run_windows = "mise x -- .\\gradlew.bat kotlinUpgradeYarnLock kotlinStoreYarnLoc
 description = "Run repository linters"
 run = "hk check"
 
+[tasks."lint:ktlint"]
+description = "Run ktlint on the given Kotlin files"
+usage = 'arg "<files>" var=#true help="Kotlin files to lint"'
+shell = "powershell -ExecutionPolicy Bypass -Command"
+run = '''#!/usr/bin/env bash
+exec ktlint{% for file in usage.files %} {{ file | quote }}{% endfor %}
+'''
+run_windows = '& { $files = @(ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }}))); & ktlint @files; exit $LASTEXITCODE }'
+
+[tasks."lint:ktlint:fix"]
+description = "Format the given Kotlin files with ktlint"
+usage = 'arg "<files>" var=#true help="Kotlin files to format"'
+shell = "powershell -ExecutionPolicy Bypass -Command"
+run = '''#!/usr/bin/env bash
+exec ktlint -F{% for file in usage.files %} {{ file | quote }}{% endfor %}
+'''
+run_windows = '& { $files = @(ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }}))); & ktlint -F @files; exit $LASTEXITCODE }'
+
+[tasks."lint:ci"]
+description = "Lint the project's Kotlin sources"
+usage = 'arg "[base]" default="origin/main" help="reference to compare against"'
+sources = [
+  "**/*.kt",
+  "**/*.kts",
+  "!**/build/**",
+  "!**/.gradle/**",
+  "!**/.kotlin/**",
+  "!docs/code/example/**",
+  "!docs/code/test/**",
+]
+outputs = []
+run = [
+  '''
+{% if usage.base %}
+  git -c core.whitespace=blank-at-eol,blank-at-eof,cr-at-eol,-space-before-tab diff --check {{ usage.base | quote }}...HEAD
+{% else %}
+  git -c core.whitespace=blank-at-eol,blank-at-eof,cr-at-eol,-space-before-tab diff --check origin/main...HEAD
+{% endif %}
+''',
+  '''
+{% set files = task_source_files() %}
+{% if files | length == 0 %}
+  echo "lint:ci: no Kotlin sources matched"
+{% else %}
+  ktlint{% for file in files %} {{ file | quote }}{% endfor %}
+{% endif %}
+''',
+]
+
 [tasks."hk:install"]
 description = "Install hk git hooks"
 run = "hk install"

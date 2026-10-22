@@ -29,54 +29,32 @@ permissions:
 jobs:
 
   lint:
-    # The linters run on the Kotlin files a change touches. `hk validate` also
-    # catches an hk.pkl that no longer matches the hk version: the config then
-    # fails to load, and every linter silently stops running.
+    # CI uses mise directly; hk configuration is validated by local developer
+    # hooks (`mise x -- hk validate`) rather than running hk in this job.
     #
-    # The linters see the files the change touches, not the whole repository:
-    # the tree still carries ktlint violations that a separate change drains.
+    # ktlint checks every configured Kotlin source through mise templates;
+    # whitespace checks cover the event's changed-file range.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
           fetch-depth: 0
       - name: Setup mise tools
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
-      - name: Validate the hk configuration
-        run: mise x -- hk validate
-      - name: Run the linters on the changed Kotlin files
-        shell: bash
+      - name: Lint Kotlin sources and check changed-file whitespace
         env:
-          BASE_REF: ${{ github.base_ref }}
-          BEFORE_SHA: ${{ github.event.before }}
-          MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
-          REF: ${{ github.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: |
-          if [ -n "$BASE_REF" ]; then
-            # a pull request: compare against the branch it targets
-            base="refs/remotes/origin/$BASE_REF"
-          elif [ -n "$MERGE_GROUP_BASE_SHA" ]; then
-            # a merge group: compare against the branch it merges into
-            base="$MERGE_GROUP_BASE_SHA"
-          elif [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
-            && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
-            # a push to main: compare against the commit before the push
-            base="$BEFORE_SHA"
-          else
-            # a branch push or a manual run: compare against main
-            base=$(git merge-base HEAD refs/remotes/origin/main) || {
-              echo "No main branch to compare against; skipping the linters."
-              exit 0
-            }
+          if [ -z "$BASE_REF" ] || [ "$BASE_REF" = "0000000000000000000000000000000000000000" ]; then
+            BASE_REF=origin/main
           fi
-          files=$(mktemp)
-          git diff --name-only -z --diff-filter=d "$base...HEAD" -- '*.kt' '*.kts' > "$files"
-          echo "Linting the Kotlin files that changed since $base:"
-          tr '\0' '\n' < "$files" | sed 's/^/  /'
-          mise x -- hk check --files0-from "$files"
+          # The task fails if this base cannot be resolved. --force ensures
+          # mise runs the source-glob lint on each fresh CI checkout.
+          mise run --force lint:ci "$BASE_REF"
 
   gradle-check:
     strategy:

@@ -9,10 +9,25 @@ import "package://github.com/jdx/hk/releases/download/v2.5.0/hk@2.5.0#/Builtins.
 // generated directory and stays out with it.)
 exclude = List("docs/code/example/**", "docs/code/test/**")
 
-// The glob covers the Kotlin sources and the Gradle build scripts: the
-// builtin only matches `**/*.kt`.
-local ktlint = (Builtins.ktlint) {
+// The branch local `hk check --pr` and pre-push checks compare against.
+default_branch = "origin/main"
+
+// Keep ktlint's invocation in mise so local hooks and CI use the same pinned
+// tool version. hk still selects the files for local hooks and passes them on.
+local ktlint = new Step {
   glob = List("**/*.kt", "**/*.kts")
+  check = new CommandSpec {
+    command = new Command {
+      argv = List("mise", "run", "--quiet", "lint:ktlint", "--", "{{files}}")
+    }
+    effect = "read"
+  }
+  fix = new CommandSpec {
+    command = new Command {
+      argv = List("mise", "run", "--quiet", "lint:ktlint:fix", "--", "{{files}}")
+    }
+    effect = "write"
+  }
 }
 
 local linters = new Mapping<String, Step> {
