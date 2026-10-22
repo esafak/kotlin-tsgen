@@ -45,129 +45,27 @@ run = "hk check"
 [tasks."lint:ktlint"]
 description = "Run ktlint on the given Kotlin files"
 usage = 'arg "[files]" var=#true help="Kotlin files to lint"'
-shell = "powershell -Command"
-run = '''
-#!/usr/bin/env bash
-set -euo pipefail
-if [ -z "${usage_files:-}" ]; then
-  echo "lint:ktlint: no files"
-  exit 0
-fi
-eval "files=(${usage_files:-})"
-ktlint "${files[@]}"
+shell = "powershell -ExecutionPolicy Bypass -Command"
+run = '''#!/usr/bin/env bash
+exec bash scripts/lint-ktlint.sh check{% for file in usage.files %} {{ file | quote }}{% endfor %}
 '''
-run_windows = '''
-$json = @'
-{{ usage.files | json_encode }}
-'@
-$files = @(ConvertFrom-Json -InputObject $json | Where-Object { $_ })
-if (-not $files -or $files.Count -eq 0) {
-  Write-Output "lint:ktlint: no files"
-  exit 0
-}
-& ktlint @files
-exit $LASTEXITCODE
-'''
+run_windows = '& ./scripts/lint-ktlint.ps1 check {{ usage.files | json_encode | b64_encode | quote }}; exit $LASTEXITCODE'
 
 [tasks."lint:ktlint:fix"]
 description = "Format the given Kotlin files with ktlint"
 usage = 'arg "[files]" var=#true help="Kotlin files to format"'
-shell = "powershell -Command"
-run = '''
-#!/usr/bin/env bash
-set -euo pipefail
-if [ -z "${usage_files:-}" ]; then
-  echo "lint:ktlint:fix: no files"
-  exit 0
-fi
-eval "files=(${usage_files:-})"
-ktlint -F "${files[@]}"
+shell = "powershell -ExecutionPolicy Bypass -Command"
+run = '''#!/usr/bin/env bash
+exec bash scripts/lint-ktlint.sh fix{% for file in usage.files %} {{ file | quote }}{% endfor %}
 '''
-run_windows = '''
-$json = @'
-{{ usage.files | json_encode }}
-'@
-$files = @(ConvertFrom-Json -InputObject $json | Where-Object { $_ })
-if (-not $files -or $files.Count -eq 0) {
-  Write-Output "lint:ktlint:fix: no files"
-  exit 0
-}
-& ktlint -F @files
-exit $LASTEXITCODE
-'''
+run_windows = '& ./scripts/lint-ktlint.ps1 fix {{ usage.files | json_encode | b64_encode | quote }}; exit $LASTEXITCODE'
 
 [tasks."lint:ci"]
 description = "Lint the Kotlin files a change touches"
 usage = 'arg "[base]" help="reference to compare against; defaults to origin/main"'
 # CI runs against a clean checkout. Keep these exclusions aligned with hk.pkl's
 # global exclude until the generated Knit files can be linted safely.
-run = '''
-#!/usr/bin/env bash
-set -euo pipefail
-cd "$(git rev-parse --show-toplevel)"
-
-base="${usage_base:-origin/main}"
-if ! git rev-parse --verify --quiet "${base}^{commit}" >/dev/null; then
-  echo "lint:ci: '$base' does not resolve to a commit" >&2
-  exit 2
-fi
-
-changed_files=$(mktemp)
-ktlint_files=$(mktemp)
-trap 'rm -f "$changed_files" "$ktlint_files"' EXIT
-
-git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
-  . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**' > "$changed_files"
-# Match hk's whitespace rules: report trailing/EOF whitespace, allow ordinary
-# CRLF files, and allow space-before-tab indentation.
-git -c core.whitespace=blank-at-eol,blank-at-eof,cr-at-eol,-space-before-tab \
-  diff --check "$base...HEAD" -- \
-  . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**'
-
-git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
-  '*.kt' '*.kts' \
-  ':(exclude,glob)docs/code/example/**' \
-  ':(exclude,glob)docs/code/test/**' > "$ktlint_files"
-
-if [ -s "$changed_files" ]; then
-  node - "$changed_files" <<'JS'
-const fs = require("node:fs");
-const names = fs.readFileSync(process.argv[2]).toString("utf8").split("\0").filter(Boolean);
-for (const name of names) {
-  if (!fs.statSync(name).isFile()) continue;
-  const fd = fs.openSync(name, "r");
-  const buffer = Buffer.alloc(64 * 1024);
-  let size = 0;
-  let last = -1;
-  let binary = false;
-  try {
-    while (true) {
-      const count = fs.readSync(fd, buffer, 0, buffer.length, null);
-      if (count === 0) break;
-      size += count;
-      last = buffer[count - 1];
-      if (!binary && buffer.subarray(0, count).includes(0)) binary = true;
-    }
-  } finally {
-    fs.closeSync(fd);
-  }
-  if (!binary && size > 0 && last !== 0x0a && last !== 0x0d) {
-    console.error(`${name}: missing final newline`);
-    process.exitCode = 1;
-  }
-}
-JS
-fi
-
-if [ ! -s "$ktlint_files" ]; then
-  echo "lint:ci: no Kotlin files changed since $base"
-  exit 0
-fi
-
-echo "lint:ci: Kotlin files changed since $base:"
-tr '\0' '\n' < "$ktlint_files" | sed 's/^/  /'
-ktlint --patterns-from-stdin='' < "$ktlint_files"
-'''
+run = "bash scripts/lint-ci.sh"
 
 [tasks."hk:install"]
 description = "Install hk git hooks"
