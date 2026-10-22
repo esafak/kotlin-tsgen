@@ -10,13 +10,12 @@ import org.gradle.api.provider.Provider
  *
  * The Kotlin Gradle plugin discards the exit code of the mocha runner: `KotlinMocha` builds
  * its execution spec with `checkExitCode = false`, so a runner that fails leaves the task
- * successful. Gradle's own `failOnNoDiscoveredTests` does not cover this either, because
- * `KotlinJsTest` replaces the test execution spec and never installs the listener that Gradle
- * uses to implement it.
+ * successful. The verdict of the task comes from the TeamCity service messages that the
+ * runner prints, and a runner that fails before it prints any reports none.
  *
- * A runner that fails before it reports anything therefore leaves the task green while
- * writing no results at all, and the build silently runs no JavaScript tests. A mocha, Node,
- * or plugin upgrade that breaks the TeamCity reporter is enough to cause it.
+ * This checks that the task produced a JUnit XML report. It does not check that the reports
+ * cover every test: a filter that matches no test still produces a report, and a runner that
+ * fails halfway through produces a partial one.
  */
 class VerifyJsTestResultsAction(
   private val junitXml: Provider<Directory>,
@@ -34,11 +33,11 @@ class VerifyJsTestResultsAction(
 
     check(results != null && results.isNotEmpty()) {
       """
-      The Kotlin/JS test runner produced no results for '$taskPath': the tests did not run.
-      The Kotlin Gradle plugin discards the exit code of the mocha runner, so a runner that
-      fails to start leaves the task successful. Look for a runner error in the task output
-      above - 'Exception during run:' is what mocha prints when it cannot load the reporter.
-      Expected JUnit XML reports in $directory.
+      No JUnit XML report was produced by '$taskPath': the JavaScript test runner reported no
+      results. The Kotlin Gradle plugin discards the exit code of the mocha runner, so a runner
+      that fails before it reports anything leaves the task successful. Look for a runner error
+      in the task output above - mocha prints 'Exception during run:' when it cannot load its
+      reporter. Expected JUnit XML reports in $directory.
       """.trimIndent()
     }
   }
