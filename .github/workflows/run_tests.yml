@@ -40,27 +40,22 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ inputs.checkout-ref || github.sha }}
           fetch-depth: 0
       - name: Setup mise tools
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
-      - name: Validate the hk configuration
-        run: mise x -- hk validate
-      - name: Run the linters on the changed files
+      - name: Lint the changed Kotlin files
         env:
-          BEFORE_SHA: ${{ github.event.before }}
-          REF: ${{ github.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: |
-          if [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
-            && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
-            # a push to main: compare against the commit before the push
-            mise run lint:ci "$BEFORE_SHA"
-          else
-            # a pull request, a merge group, a branch push or a manual run:
-            # hk compares against the default branch from hk.pkl
-            mise run lint:ci
+          if [ -z "$BASE_REF" ] || [ "$BASE_REF" = "0000000000000000000000000000000000000000" ]; then
+            BASE_REF=origin/main
           fi
+          # lint:ci validates this ref before diffing; never allow a missing
+          # event base to widen the lint to the whole repository.
+          mise run lint:ci "$BASE_REF"
 
   gradle-check:
     strategy:

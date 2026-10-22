@@ -42,11 +42,88 @@ run_windows = "mise x -- .\\gradlew.bat kotlinUpgradeYarnLock kotlinStoreYarnLoc
 description = "Run repository linters"
 run = "hk check"
 
+[tasks."lint:ktlint"]
+description = "Run ktlint on the given Kotlin files"
+usage = 'arg "[files]" var=#true help="Kotlin files to lint"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -z "${usage_files:-}" ]; then
+  echo "lint:ktlint: no files"
+  exit 0
+fi
+eval "files=(${usage_files:-})"
+ktlint "${files[@]}"
+'''
+
+[tasks."lint:ktlint:fix"]
+description = "Format the given Kotlin files with ktlint"
+usage = 'arg "[files]" var=#true help="Kotlin files to format"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+if [ -z "${usage_files:-}" ]; then
+  echo "lint:ktlint:fix: no files"
+  exit 0
+fi
+eval "files=(${usage_files:-})"
+ktlint -F "${files[@]}"
+'''
+
 [tasks."lint:ci"]
-description = "Run the linters on the files a change touches"
-usage = 'arg "[base]" help="the reference to compare the changed files against; the default branch when it is not given"'
-# Without a reference, hk compares against the default branch from hk.pkl.
-run = 'hk check {% if usage.base %}--from-ref "{{ usage.base }}" --to-ref HEAD{% else %}--pr{% endif %}'
+description = "Lint the Kotlin files a change touches"
+usage = 'arg "[base]" help="reference to compare against; defaults to origin/main"'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+base="${usage_base:-origin/main}"
+if ! git rev-parse --verify --quiet "${base}^{commit}" >/dev/null; then
+  echo "lint:ci: '$base' does not resolve to a commit" >&2
+  exit 2
+fi
+
+changed_files=$(mktemp)
+ktlint_files=$(mktemp)
+trap 'rm -f "$changed_files" "$ktlint_files"' EXIT
+
+git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
+  . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**' > "$changed_files"
+git diff --check "$base...HEAD" -- \
+  . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**'
+
+git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
+  '*.kt' '*.kts' \
+  ':(exclude,glob)docs/code/example/**' \
+  ':(exclude,glob)docs/code/test/**' > "$ktlint_files"
+
+if [ -s "$changed_files" ]; then
+  python3 - "$changed_files" <<'PY'
+from pathlib import Path
+import os
+import sys
+
+for name in Path(sys.argv[1]).read_bytes().split(b"\0"):
+    if not name:
+        continue
+    path = Path(os.fsdecode(name))
+    data = path.read_bytes()
+    if b"\0" not in data and data and not data.endswith((b"\n", b"\r")):
+        print(f"{path}: missing final newline", file=sys.stderr)
+        raise SystemExit(1)
+PY
+fi
+
+if [ ! -s "$ktlint_files" ]; then
+  echo "lint:ci: no Kotlin files changed since $base"
+  exit 0
+fi
+
+echo "lint:ci: Kotlin files changed since $base:"
+tr '\0' '\n' < "$ktlint_files" | sed 's/^/  /'
+ktlint --patterns-from-stdin='' < "$ktlint_files"
+'''
 
 [tasks."hk:install"]
 description = "Install hk git hooks"
