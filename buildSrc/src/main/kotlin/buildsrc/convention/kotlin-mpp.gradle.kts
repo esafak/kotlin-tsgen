@@ -1,9 +1,11 @@
 package buildsrc.convention
 
+import buildsrc.config.VerifyJsTestResultsAction
 import buildsrc.config.relocateKotlinJsStore
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 
@@ -14,13 +16,11 @@ plugins {
   id("com.google.devtools.ksp")
 }
 
-
 relocateKotlinJsStore()
-
 
 // IJ still doesn't support script plugins???
 extensions.configure<KotlinMultiplatformExtension> {
-//kotlin {
+// kotlin {
   js {
     browser()
     nodejs()
@@ -36,9 +36,11 @@ extensions.configure<KotlinMultiplatformExtension> {
   jvm {
     compilerOptions {
       jvmTarget = JvmTarget.JVM_11
-      freeCompilerArgs.add(jvmTarget.map { target ->
-        "-Xjdk-release=${target.target}"
-      })
+      freeCompilerArgs.add(
+        jvmTarget.map { target ->
+          "-Xjdk-release=${target.target}"
+        },
+      )
     }
   }
 }
@@ -51,6 +53,51 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 
 tasks.withType<JavaCompile>().configureEach {
   targetCompatibility = "11"
+}
+
+// The Kotlin Gradle plugin does not check the exit code of the mocha runner: `KotlinMocha`
+// builds its execution spec with `checkExitCode = false`, so the runner's exit status is
+// discarded. Gradle's own `failOnNoDiscoveredTests` does not cover this either, because
+// `KotlinJsTest` replaces the test execution spec and never installs the listener that
+// Gradle uses to implement it.
+//
+// The result is that a runner which crashes before it reports anything - a mocha, Node, or
+// plugin upgrade that breaks the TeamCity reporter, for example - leaves the task green
+// while writing no results at all. The build would then silently run no JavaScript tests.
+//
+// Assert that the task produced results, so that a broken runner fails the build instead
+// of passing it.
+val jsTarget = extensions.getByType<KotlinMultiplatformExtension>().targets.getByName("js")
+
+// The hand-written sources live under 'src'. The generated ones live under 'build', and
+// they would make every target look like it has tests even when it has none.
+val jsSourceRoot =
+  layout.projectDirectory
+    .dir("src")
+    .asFile
+    .toPath()
+
+tasks.withType<KotlinJsTest>().configureEach {
+  // A JavaScript target without test sources has no results to write, so the guard would
+  // fail it for the wrong reason. Only guard the targets that actually have tests.
+  val hasTests =
+    jsTarget.compilations
+      .getByName("test")
+      .allKotlinSourceSets
+      .any { sourceSet ->
+        sourceSet.kotlin.srcDirs
+          .map { it.toPath() }
+          .filter { it.startsWith(jsSourceRoot) }
+          .any { dir -> dir.toFile().walkTopDown().any { it.isFile } }
+      }
+
+  doLast(
+    VerifyJsTestResultsAction(
+      junitXml = reports.junitXml.outputLocation,
+      taskPath = path,
+      hasTests = hasTests,
+    ),
+  )
 }
 
 tasks.withType<Test>().configureEach {
