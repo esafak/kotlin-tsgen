@@ -44,16 +44,9 @@ run = "hk check"
 
 [tasks."lint:ci"]
 description = "Run the linters on the files a change touches"
-# The default branch comes from hk.pkl. CI_BASE_REF overrides it for a push
-# to that branch, where the commit before the push is the only base that
-# names the pushed commits.
-run = """
-if [ -n "$CI_BASE_REF" ]; then
-  hk check --from-ref "$CI_BASE_REF" --to-ref HEAD
-else
-  hk check --pr
-fi
-"""
+usage = 'arg "[base]" help="the reference to compare the changed files against; the default branch when it is not given"'
+# Without a reference, hk compares against the default branch from hk.pkl.
+run = 'hk check {% if usage.base %}--from-ref "{{ usage.base }}" --to-ref HEAD{% else %}--pr{% endif %}'
 
 [tasks."hk:install"]
 description = "Install hk git hooks"

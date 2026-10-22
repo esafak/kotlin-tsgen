@@ -55,7 +55,7 @@ jobs:
           if [ "$REF" = "refs/heads/main" ] && [ -n "$BEFORE_SHA" ] \
             && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
             # a push to main: compare against the commit before the push
-            CI_BASE_REF="$BEFORE_SHA" mise run lint:ci
+            mise run lint:ci "$BEFORE_SHA"
           else
             # a pull request, a merge group, a branch push or a manual run:
             # hk compares against the default branch from hk.pkl
