@@ -97,7 +97,15 @@ jobs:
           cache-cleanup: on-success
       - name: Run check on Unix
         if: inputs.gradle-task == 'check' && runner.os != 'Windows'
-        run: mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+        run: |
+          # The advisory audits read a checked-in lockfile and ask the npm
+          # registry for the advisories of that tree, so the answer is the
+          # same on every runner. The matrix runs them once, on Linux.
+          audit_flags=""
+          if [ "$RUNNER_OS" != "Linux" ]; then
+            audit_flags="-x :yarnAudit -x :site:pnpmAudit"
+          fi
+          mise x -- ./gradlew check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace $audit_flags
 
       - name: Test the build logic
         if: inputs.gradle-task == 'check' && runner.os != 'Windows'
@@ -105,7 +113,9 @@ jobs:
 
       - name: Run check on Windows
         if: inputs.gradle-task == 'check' && runner.os == 'Windows'
-        run: mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace
+        # The advisory audits are OS-independent, so the matrix runs them on
+        # Linux only. See the Unix step above.
+        run: mise x -- .\\gradlew.bat check -Pkotlin_tsgen_enableTsCompileTests=true --stacktrace -x :yarnAudit -x :site:pnpmAudit
 
       - name: Run site build
         if: inputs.gradle-task == 'docusaurusBuild' && runner.os != 'Windows'
