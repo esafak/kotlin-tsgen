@@ -29,24 +29,23 @@ permissions:
 jobs:
 
   lint:
-    # The linters run on the Kotlin files a change touches. `hk validate` also
-    # catches an hk.pkl that no longer matches the hk version: the config then
-    # fails to load, and every linter silently stops running.
+    # CI uses mise directly; hk configuration is validated by local developer
+    # hooks (`mise x -- hk validate`) rather than running hk in this job.
     #
-    # The linters see the files the change touches, not the whole repository:
-    # the tree still carries ktlint violations that a separate change drains.
+    # ktlint sees changed Kotlin files; whitespace checks cover all changed
+    # files. The repository still carries ktlint violations outside the diff.
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.checkout-ref || github.sha }}
+          ref: ${{ inputs.checkout-ref || github.ref }}
           fetch-depth: 0
       - name: Setup mise tools
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           cache: false
-      - name: Lint the changed Kotlin files
+      - name: Lint changed Kotlin files and check whitespace
         env:
           BASE_REF: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: |

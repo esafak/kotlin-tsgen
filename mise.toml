@@ -55,6 +55,18 @@ fi
 eval "files=(${usage_files:-})"
 ktlint "${files[@]}"
 '''
+run_windows = '''
+$json = @'
+{{ usage.files | json_encode }}
+'@
+$files = @(ConvertFrom-Json -InputObject $json)
+if ($files.Count -eq 0) {
+  Write-Output "lint:ktlint: no files"
+  exit 0
+}
+& ktlint @files
+exit $LASTEXITCODE
+'''
 
 [tasks."lint:ktlint:fix"]
 description = "Format the given Kotlin files with ktlint"
@@ -69,10 +81,24 @@ fi
 eval "files=(${usage_files:-})"
 ktlint -F "${files[@]}"
 '''
+run_windows = '''
+$json = @'
+{{ usage.files | json_encode }}
+'@
+$files = @(ConvertFrom-Json -InputObject $json)
+if ($files.Count -eq 0) {
+  Write-Output "lint:ktlint:fix: no files"
+  exit 0
+}
+& ktlint -F @files
+exit $LASTEXITCODE
+'''
 
 [tasks."lint:ci"]
 description = "Lint the Kotlin files a change touches"
 usage = 'arg "[base]" help="reference to compare against; defaults to origin/main"'
+# CI runs against a clean checkout. Keep these exclusions aligned with hk.pkl's
+# global exclude until the generated Knit files can be linted safely.
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -90,7 +116,10 @@ trap 'rm -f "$changed_files" "$ktlint_files"' EXIT
 
 git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
   . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**' > "$changed_files"
-git diff --check "$base...HEAD" -- \
+# Match hk's whitespace rules: report trailing/EOF whitespace and CR-at-EOL,
+# but allow space-before-tab indentation and ordinary CRLF files.
+git -c core.whitespace=blank-at-eol,blank-at-eof,cr-at-eol,-space-before-tab \
+  diff --check "$base...HEAD" -- \
   . ':(exclude,glob)docs/code/example/**' ':(exclude,glob)docs/code/test/**'
 
 git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
@@ -99,20 +128,33 @@ git diff --name-only -z --diff-filter=d "$base...HEAD" -- \
   ':(exclude,glob)docs/code/test/**' > "$ktlint_files"
 
 if [ -s "$changed_files" ]; then
-  python3 - "$changed_files" <<'PY'
-from pathlib import Path
-import os
-import sys
-
-for name in Path(sys.argv[1]).read_bytes().split(b"\0"):
-    if not name:
-        continue
-    path = Path(os.fsdecode(name))
-    data = path.read_bytes()
-    if b"\0" not in data and data and not data.endswith((b"\n", b"\r")):
-        print(f"{path}: missing final newline", file=sys.stderr)
-        raise SystemExit(1)
-PY
+  node - "$changed_files" <<'JS'
+const fs = require("node:fs");
+const names = fs.readFileSync(process.argv[2]).toString("utf8").split("\0").filter(Boolean);
+for (const name of names) {
+  if (!fs.statSync(name).isFile()) continue;
+  const fd = fs.openSync(name, "r");
+  const buffer = Buffer.alloc(64 * 1024);
+  let size = 0;
+  let last = -1;
+  let binary = false;
+  try {
+    while (true) {
+      const count = fs.readSync(fd, buffer, 0, buffer.length, null);
+      if (count === 0) break;
+      size += count;
+      last = buffer[count - 1];
+      if (!binary && buffer.subarray(0, count).includes(0)) binary = true;
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  if (!binary && size > 0 && last !== 0x0a && last !== 0x0d) {
+    console.error(`${name}: missing final newline`);
+    process.exitCode = 1;
+  }
+}
+JS
 fi
 
 if [ ! -s "$ktlint_files" ]; then
