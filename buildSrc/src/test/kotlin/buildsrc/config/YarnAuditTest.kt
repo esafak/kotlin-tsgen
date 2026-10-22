@@ -29,7 +29,7 @@ class YarnAuditTest :
     test("reads several selectors that share one entry") {
       YarnAudit.packagesIn(
         """
-      mocha@^11.0.0, mocha@^11.7.0:
+      "mocha@^11.0.0", "mocha@^11.7.0":
         version "11.7.5"
         resolved "https://registry.yarnpkg.com/mocha/-/mocha-11.7.5.tgz"
         """.trimIndent(),
@@ -72,13 +72,55 @@ class YarnAuditTest :
 
     test("reads a lockfile with windows line endings") {
       YarnAudit.packagesIn(
-        "mocha@^11.0.0:\r\n  version \"11.7.5\"\r\n  resolved \"https://example.invalid\"\r\n",
-      ) shouldBe mapOf("mocha" to setOf("11.7.5"))
+        "# yarn lockfile v1\r\n" +
+          "\r\n" +
+          "mocha@^11.0.0:\r\n" +
+          "  version \"11.7.5\"\r\n" +
+          "  resolved \"https://example.invalid\"\r\n" +
+          "\r\n" +
+          "\"@types/node@^1.2.3\":\r\n" +
+          "  version \"1.2.3\"\r\n",
+      ) shouldBe
+        mapOf(
+          "mocha" to setOf("11.7.5"),
+          "@types/node" to setOf("1.2.3"),
+        )
     }
 
     test("fails when the lockfile holds no packages") {
       val error = runCatching { YarnAudit.packagesIn("# a comment\n") }.exceptionOrNull()
       error?.message shouldBe "No packages were parsed from the yarn.lock"
+    }
+
+    test("fails when an entry has no version") {
+      val error =
+        runCatching {
+          YarnAudit.packagesIn(
+            """
+        mocha@^11.0.0:
+          version "11.7.5"
+
+        broken@^1.0.0:
+          resolved "https://example.invalid"
+            """.trimIndent(),
+          )
+        }.exceptionOrNull()
+      error?.message shouldBe "No version in yarn.lock entry: broken@^1.0.0:"
+    }
+
+    test("fails when an entry has no header") {
+      val error =
+        runCatching {
+          YarnAudit.packagesIn(
+            """
+        mocha@^11.0.0:
+          version "11.7.5"
+
+        not a header
+            """.trimIndent(),
+          )
+        }.exceptionOrNull()
+      error?.message shouldBe "Invalid yarn.lock entry: not a header"
     }
 
     test("fails on a selector without a package name") {

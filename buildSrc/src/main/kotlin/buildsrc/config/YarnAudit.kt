@@ -120,10 +120,16 @@ object YarnAudit {
     val versions = mutableMapOf<String, MutableSet<String>>()
     val normalized = lockFile.replace("\r\n", "\n").replace('\r', '\n')
     for (block in normalized.split("\n\n")) {
-      val lines = block.lines()
-      if (lines.isEmpty() || !lines[0].endsWith(":")) continue
-      val version = VERSION.find(block)?.groupValues?.get(1) ?: continue
-      for (key in lines[0].dropLast(1).split(", ")) {
+      val lines = block.lines().dropWhile { it.isBlank() || it.trimStart().startsWith("#") }
+      if (lines.isEmpty()) continue
+
+      // Every entry has to be readable. An entry that is skipped would shrink
+      // the tree, and the audit would report the smaller tree as clean.
+      val header = lines.first()
+      check(header.endsWith(":")) { "Invalid yarn.lock entry: $header" }
+      val version = VERSION.find(lines.joinToString("\n"))?.groupValues?.get(1)
+        ?: error("No version in yarn.lock entry: $header")
+      for (key in header.dropLast(1).split(", ")) {
         val name = packageName(key)
         versions.getOrPut(name) { mutableSetOf() } += version
       }
