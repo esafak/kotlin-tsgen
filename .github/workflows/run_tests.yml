@@ -28,6 +28,60 @@ permissions:
 
 jobs:
 
+  changes:
+    runs-on: ubuntu-latest
+    # If filtering fails, expose true outputs so dependent checks fail open.
+    continue-on-error: true
+    outputs:
+      all: ${{ steps.filter.outcome != 'success' || steps.filter.outputs.workflows == 'true' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000') || (github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.event_name != 'push' && github.event_name != 'workflow_dispatch') }}
+      gradle: ${{ steps.filter.outputs.gradle }}
+      site: ${{ steps.filter.outputs.site }}
+      mise-task: ${{ steps.filter.outputs.mise }}
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
+          fetch-depth: 0
+      - name: Filter changed paths
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          # Empty token uses git diff, including for PRs, so push, merge queue,
+          # release, and manual events can share the same filter definitions.
+          token: ""
+          base: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || (github.event.before != '0000000000000000000000000000000000000000' && github.event.before) || 'origin/main' }}
+          predicate-quantifier: some-with-excludes
+          filters: |
+            mise: &mise
+              - 'mise.toml'
+              - 'mise.lock'
+            docs: &docs
+              - 'docs/**'
+              - '!docs/plans/**'
+            build-model: &build-model
+              - '**/*.gradle*'
+              - 'buildSrc/**'
+              - 'gradle/**'
+              - 'gradle.properties'
+              - 'gradlew*'
+              - *mise
+            gradle:
+              - *build-model
+              - '**/*.kt'
+              - '**/*.kts'
+              - '**/*.java'
+              - *docs
+              - 'site/pnpm-lock.yaml'
+              - 'site/pnpm-workspace.yaml'
+            site:
+              - *build-model
+              - *docs
+              - 'site/**'
+            workflows:
+              - '.github/workflows/**'
+              - '.github/actions/**'
+
   lint:
     # CI uses mise directly; hk configuration is validated by local developer
     # hooks (`mise x -- hk validate`) rather than running hk in this job.
@@ -57,6 +111,8 @@ jobs:
           mise run --force lint:ci "$BASE_REF"
 
   gradle-check:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.all != 'false' || needs.changes.outputs.gradle == 'true') }}
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
@@ -68,9 +124,27 @@ jobs:
       checkout-ref: ${{ inputs.checkout-ref }}
 
   build-site:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.all != 'false' || needs.changes.outputs.site == 'true') }}
     # verify that the site can be built, but don't deploy it
     uses: ./.github/workflows/run_gradle_task.yml
     with:
       runs-on: ubuntu-latest
       gradle-task: docusaurusBuild
       checkout-ref: ${{ inputs.checkout-ref }}
+
+  mise-task-smoke:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.all != 'false' || needs.changes.outputs.mise-task == 'true') }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
+      - name: Setup mise tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          cache: false
+      - name: Smoke-test the Windows ktlint task
+        run: mise run lint:ktlint -- modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/KotlinTsConfig.kt

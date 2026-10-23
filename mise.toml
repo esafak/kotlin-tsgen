@@ -49,7 +49,7 @@ shell = "powershell -ExecutionPolicy Bypass -Command"
 run = '''#!/usr/bin/env bash
 exec ktlint{% for file in usage.files %} {{ file | quote }}{% endfor %}
 '''
-run_windows = '& { $files = @(ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }}))); & ktlint @files; exit $LASTEXITCODE }'
+run_windows = '& { $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }})); $files = @(ConvertFrom-Json -InputObject $json); & ktlint @files; exit $LASTEXITCODE }'
 
 [tasks."lint:ktlint:fix"]
 description = "Format the given Kotlin files with ktlint"
@@ -58,7 +58,7 @@ shell = "powershell -ExecutionPolicy Bypass -Command"
 run = '''#!/usr/bin/env bash
 exec ktlint -F{% for file in usage.files %} {{ file | quote }}{% endfor %}
 '''
-run_windows = '& { $files = @(ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }}))); & ktlint -F @files; exit $LASTEXITCODE }'
+run_windows = '& { $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String({{ usage.files | json_encode | b64_encode | quote }})); $files = @(ConvertFrom-Json -InputObject $json); & ktlint -F @files; exit $LASTEXITCODE }'
 
 [tasks."lint:ci"]
 description = "Lint the project's Kotlin sources"
