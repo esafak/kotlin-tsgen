@@ -20,7 +20,7 @@ overrides:
   # GHSA-w5hq-g745-h8pq / CVE-2026-41907. webpack-dev-server -> sockjs ->
   # uuid; remove when the upstream dependency chain resolves 14.0.0+ without
   # an override.
-  uuid: 14.0.2
+  uuid: 14.0.3
   # GHSA-4mjr-xmp4-gh2g / CVE-2026-82417 and GHSA-x5fp-wj9c-mxmx /
   # CVE-2026-82562: qs versions before 6.16.0 are affected.
   # Remove when the upstream dependency chain resolves 6.16.0+ without an
