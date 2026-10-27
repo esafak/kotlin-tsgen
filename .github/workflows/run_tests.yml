@@ -33,7 +33,7 @@ jobs:
     # If filtering fails, expose true outputs so dependent checks fail open.
     continue-on-error: true
     outputs:
-      all: ${{ steps.filter.outcome != 'success' || steps.filter.outputs.workflows == 'true' || github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000') || (github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.event_name != 'push' && github.event_name != 'workflow_dispatch') }}
+      all: ${{ steps.filter.outcome != 'success' || steps.filter.outputs.workflows == 'true' || github.event_name == 'workflow_dispatch' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || (github.event_name == 'push' && github.event.before == '0000000000000000000000000000000000000000') || (github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.event_name != 'push' && github.event_name != 'workflow_dispatch') }}
       gradle: ${{ steps.filter.outputs.gradle }}
       site: ${{ steps.filter.outputs.site }}
       mise-task: ${{ steps.filter.outputs.mise }}
@@ -49,8 +49,13 @@ jobs:
         with:
           # Empty token uses git diff, including for PRs, so push, merge queue,
           # release, and manual events can share the same filter definitions.
+          # Use the bare default-branch name (e.g. `main`): paths-filter
+          # fetches `origin <base>`, so `origin/main` fails as a remote ref.
+          # Pushes to feature branches (e.g. `renovate/**`) diff against the
+          # default branch; pushes to the default branch itself run everything
+          # via the `all` output above and do not rely on this base.
           token: ""
-          base: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || (github.event.before != '0000000000000000000000000000000000000000' && github.event.before) || 'origin/main' }}
+          base: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.repository.default_branch }}
           predicate-quantifier: some-with-excludes
           filters: |
             mise: &mise
@@ -101,10 +106,27 @@ jobs:
           cache: false
       - name: Lint Kotlin sources and check changed-file whitespace
         env:
-          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          MG_BASE: ${{ github.event.merge_group.base_sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          if [ -z "$BASE_REF" ] || [ "$BASE_REF" = "0000000000000000000000000000000000000000" ]; then
-            BASE_REF=origin/main
+          DEFAULT_BRANCH="${DEFAULT_BRANCH:-main}"
+          BASE_REF=""
+          if [ -n "$PR_BASE" ]; then
+            BASE_REF="$PR_BASE"
+          elif [ -n "$MG_BASE" ]; then
+            BASE_REF="$MG_BASE"
+          elif [ "$GITHUB_REF" = "refs/heads/$DEFAULT_BRANCH" ] && [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            # Pushes to the default branch itself diff the pushed range.
+            BASE_REF="$PUSH_BEFORE"
+          else
+            # Pushes to feature branches (e.g. renovate/**) and manual events
+            # diff against the default branch. The local remote-tracking ref
+            # exists because the checkout fetches all branches; unlike the
+            # paths-filter `base` input, this value is never fetched as a
+            # remote ref, so `origin/<branch>` is correct here.
+            BASE_REF="origin/$DEFAULT_BRANCH"
           fi
           # The task fails if this base cannot be resolved. --force ensures
           # mise runs the source-glob lint on each fresh CI checkout.

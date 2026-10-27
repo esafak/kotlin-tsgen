@@ -21,7 +21,10 @@ fun Project.relocateKotlinJsStore() {
       // No patched 7.x release exists for this advisory; 8.0.3 is required.
       resolution("diff", "8.0.3") // GHSA-73rr-hh4g-fpgx / CVE-2026-24001
       // Keep this aligned with the documentation site's patched pin.
-      resolution("serialize-javascript", "7.1.2") // GHSA-qj8w-gfj5-8c6v, GHSA-5c6j-r48x-rmvq
+      // GHSA-qj8w-gfj5-8c6v, GHSA-5c6j-r48x-rmvq, GHSA-m5mm-p8h7-m29v
+      resolution("serialize-javascript", "7.1.4")
+      // GHSA-27r3-jxmh-p828: global pin; only consumer is karma's ^1.19.0
+      resolution("body-parser", "1.20.9")
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
       resolution("follow-redirects", "1.16.1") // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8
     }

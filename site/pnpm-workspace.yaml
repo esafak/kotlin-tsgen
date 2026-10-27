@@ -13,10 +13,10 @@ audit:
 overrides:
   # When adding an override, first try unpinning stale overrides above;
   # remove any override whose upstream dependency chain now resolves safely.
-  # GHSA-qj8w-gfj5-8c6v / CVE-2026-34043. copy-webpack-plugin ->
-  # serialize-javascript; remove when the upstream dependency chain resolves
-  # 7.0.5+ without an override.
-  serialize-javascript: 7.1.2
+  # GHSA-qj8w-gfj5-8c6v / CVE-2026-34043 and GHSA-m5mm-p8h7-m29v.
+  # copy-webpack-plugin -> serialize-javascript; remove when the upstream
+  # dependency chain resolves 7.1.4+ without an override.
+  serialize-javascript: 7.1.4
   # GHSA-w5hq-g745-h8pq / CVE-2026-41907. webpack-dev-server -> sockjs ->
   # uuid; remove when the upstream dependency chain resolves 14.0.0+ without
   # an override.
@@ -46,3 +46,15 @@ overrides:
   # 6.x and resolves patched versions (7.1.6+) without an override.
   # Tracked in #68.
   'postcss-selector-parser@<7.1.6': '7.1.7'
+  # GHSA-27r3-jxmh-p828: body-parser 1.x before 1.20.9 is affected (DoS via
+  # trailing bytes after a compressed request body), reachable via
+  # @docusaurus/core -> webpack-dev-server -> express@4 -> body-parser.
+  # The chain is Express 4, so the fix stays in the 1.x line; 1.20.9 is the
+  # latest 1.x. body-parser 2.x is the Express 5 engine (needs >=2.4.0 for
+  # this advisory), so a '>=1.20.9' range would cross a major and pull
+  # content-type@2.x / iconv-lite@0.7.x into a 1.x consumer. Scoped to <1.20.9
+  # so a future legitimate 2.x consumer is not forced back; a 2.0.0-2.3.x
+  # consumer would still be caught by the audit (that range is also in the
+  # advisory). Remove when the upstream chain resolves 1.20.9+ without an
+  # override.
+  'body-parser@<1.20.9': '1.20.9'
