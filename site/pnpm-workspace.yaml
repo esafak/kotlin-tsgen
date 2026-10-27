@@ -46,3 +46,9 @@ overrides:
   # 6.x and resolves patched versions (7.1.6+) without an override.
   # Tracked in #68.
   'postcss-selector-parser@<7.1.6': '7.1.7'
+  # GHSA-27r3-jxmh-p828: body-parser versions before 1.20.9 are affected
+  # (DoS via trailing bytes after a compressed request body), reachable via
+  # @docusaurus/core -> webpack-dev-server -> express -> body-parser.
+  # Remove when the upstream dependency chain resolves 1.20.9+ without an
+  # override.
+  'body-parser@<1.20.9': '>=1.20.9'
