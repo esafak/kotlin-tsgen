@@ -1,0 +1,16 @@
+site/pnpm-lock.yaml
+  h_ea91e2db23540f 172,2325-2327,2572-2575,3352-3353,3744-3747,4681-4683,5291-5294,8710,8713-8714,8716,8719-8720,8983-8984,9463,9906,10354-10355,11457,11461,12132-12137
+site/pnpm-workspace.yaml
+  h_ea91e2db23540f 49-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3fa07a5c9e1b29271edc4a81416ba9f3a93674c4",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
