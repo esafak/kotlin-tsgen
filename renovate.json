@@ -52,6 +52,11 @@
       "enabled": false
     },
     {
+      "description": "block vulnerable body-parser 2.0.0-2.3.x for GHSA-27r3-jxmh-p828; allow patched 1.x and >=2.4.0",
+      "matchPackageNames": ["body-parser"],
+      "allowedVersions": ">=1.20.9 <2.0.0 || >=2.4.0"
+    },
+    {
       "description": "auto-merge all but major releases",
       "matchUpdateTypes": [
         "minor",
