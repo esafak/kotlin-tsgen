@@ -101,7 +101,7 @@ jobs:
           ref: ${{ inputs.checkout-ref || github.ref }}
           fetch-depth: 0
       - name: Setup mise tools
-        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           cache: false
       - name: Lint Kotlin sources and check changed-file whitespace
@@ -165,7 +165,7 @@ jobs:
         with:
           ref: ${{ inputs.checkout-ref || github.ref }}
       - name: Setup mise tools
-        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           cache: false
       - name: Smoke-test the Windows ktlint task
