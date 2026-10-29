@@ -25,7 +25,7 @@ overrides:
   # CVE-2026-82562: qs versions before 6.16.0 are affected.
   # Remove when the upstream dependency chain resolves 6.16.0+ without an
   # override.
-  qs: 6.16.0
+  qs: 6.16.1
   # GHSA-8r9p-f939-6h3c / CVE-2026-111755 and GHSA-q3jh-wrc6-jgq8 /
   # CVE-2026-111756: follow-redirects versions before 1.16.1 are affected.
   # Remove when the upstream dependency chain resolves 1.16.1+ without an
