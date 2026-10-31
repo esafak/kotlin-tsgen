@@ -96,6 +96,31 @@ class AuditReportTest :
       @Suppress("UNCHECKED_CAST")
       val accepted = report["accepted"] as List<Map<String, Any?>>
       accepted.single()["id"] shouldBe "GHSA-vfj7-8cjw-p6xm"
+      // The JSON has to carry the reason, or the artifact cannot explain an
+      // acceptance without the build log next to it.
+      accepted.single()["reason"] shouldBe "braces 3.0.3 is the latest release"
+    }
+
+    test("the summary and the report carry the advisories the tool skips") {
+      val skipped =
+        outcome.copy(
+          findings = emptyList(),
+          accepted = emptyList(),
+          ignored = listOf(AuditAcceptance("GHSA-vfj7-8cjw-p6xm", "braces 3.0.3 is the latest")),
+        )
+      val summary = AuditReport.markdown(skipped)
+      summary shouldContain "Skipped by `audit.ignore`"
+      summary shouldContain "GHSA-vfj7-8cjw-p6xm — braces 3.0.3 is the latest"
+
+      @Suppress("UNCHECKED_CAST")
+      val report = groovy.json.JsonSlurper().parseText(
+        AuditReport.json(skipped),
+      ) as Map<String, Any?>
+
+      @Suppress("UNCHECKED_CAST")
+      val ignored = report["ignored"] as List<Map<String, Any?>>
+      ignored.single() shouldBe
+        mapOf("id" to "GHSA-vfj7-8cjw-p6xm", "reason" to "braces 3.0.3 is the latest")
     }
 
     test("the message says which pin holds the advisory") {

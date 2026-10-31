@@ -31,9 +31,10 @@ dependencies {
  * advisory. Dependabot only reports what it recognizes, so this is what
  * surfaces the rest.
  *
- * `pnpm audit` reads the lockfile, not `node_modules`, and the advisories
- * live in `pnpm-workspace.yaml` under `audit.ignore`. Every entry there needs
- * a reason: a patched version that upstream does not release yet.
+ * `pnpm audit` reads the lockfile, not `node_modules`. The advisories it
+ * accepts live in `pnpm-workspace.yaml` under `audit.ignore`, which pnpm
+ * removes from its own output, so they are read from that file and reported
+ * with the reason written above them.
  */
 val pnpmAudit by tasks.registering {
   group = "verification"
@@ -57,15 +58,21 @@ val pnpmAudit by tasks.registering {
   val report = rootProject.layout.buildDirectory.file("reports/site-audit.json").get().asFile
 
   doLast {
+    val execution = audit.result.get()
     val parsed = PnpmAudit.parse(audit.standardOutput.asText.get())
-    val pins =
-      PnpmAudit.pinsIn(workspace.readText(), "site/pnpm-workspace.yaml")
+    PnpmAudit.requireReported(
+      execution.exitValue,
+      parsed.findings,
+      audit.standardError.asText.get(),
+    )
+    val pins = PnpmAudit.pinsIn(workspace.readText(), "site/pnpm-workspace.yaml")
     val outcome =
       AuditOutcome(
         kind = "site",
         lockFile = "site/pnpm-lock.yaml",
         checkedPackages = parsed.checkedPackages,
         findings = parsed.findings.map { it.copy(pin = pins[it.packageName]) },
+        ignored = PnpmAudit.ignoredIn(workspace.readText()),
       )
     AuditReport.publish(logger, report, outcome)
     logger.lifecycle(

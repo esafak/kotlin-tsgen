@@ -27,6 +27,15 @@ data class AuditFinding(
 data class AuditPin(val file: String, val line: Int, val version: String?)
 
 /**
+ * An advisory a tool was told to skip before it reported anything, so only its
+ * identity and the reason are known.
+ *
+ * `pnpm audit` removes the advisories listed under `audit.ignore` from its
+ * output, so the site's acceptances cannot arrive as [AuditFinding]s.
+ */
+data class AuditAcceptance(val id: String, val reason: String?)
+
+/**
  * What one advisory audit found, and where it read it from.
  */
 data class AuditOutcome(
@@ -36,6 +45,7 @@ data class AuditOutcome(
   val findings: List<AuditFinding>,
   val accepted: List<AuditFinding> = emptyList(),
   val acceptedReasons: Map<String, String> = emptyMap(),
+  val ignored: List<AuditAcceptance> = emptyList(),
 )
 
 /**
@@ -124,12 +134,24 @@ object AuditReport {
         "\nAccepted, with the reason from the build:\n\n" +
           outcome.accepted.joinToString(separator = "\n") { finding ->
             "- ${finding.id} ${finding.severity} ${finding.packageName} " +
-              "${finding.versions.joinToString()} — ${outcome.acceptedReasons[finding.id] ?: "no reason given"}"
+              "${finding.versions.joinToString()} — " +
+              "${outcome.acceptedReasons[finding.id] ?: "no reason given"}"
           } +
           "\n"
       }
 
-    return headline + "\n\n" + summary + table + accepted
+    val ignored =
+      if (outcome.ignored.isEmpty()) {
+        ""
+      } else {
+        "\nSkipped by `audit.ignore` in the workspace file, with the reason above it:\n\n" +
+          outcome.ignored.joinToString(separator = "\n") { acceptance ->
+            "- ${acceptance.id} — ${acceptance.reason ?: "no reason given"}"
+          } +
+          "\n"
+      }
+
+    return headline + "\n\n" + summary + table + accepted + ignored
   }
 
   /** The report for tooling and for anyone reading the artifact. */
@@ -139,8 +161,11 @@ object AuditReport {
         "kind" to outcome.kind,
         "lockFile" to outcome.lockFile,
         "checkedPackages" to outcome.checkedPackages,
-        "unaccepted" to outcome.findings.map(::findingJson),
-        "accepted" to outcome.accepted.map(::findingJson),
+        "unaccepted" to outcome.findings.map { findingJson(it, null) },
+        "accepted" to
+          outcome.accepted.map { findingJson(it, outcome.acceptedReasons[it.id]) },
+        "ignored" to
+          outcome.ignored.map { mapOf("id" to it.id, "reason" to it.reason) },
       ),
     ),
   )
@@ -160,7 +185,7 @@ object AuditReport {
     )}$line,title=${escapeProperty(finding.id)}::${escapeData(text)}"
   }
 
-  private fun findingJson(finding: AuditFinding): Map<String, Any?> = mapOf(
+  private fun findingJson(finding: AuditFinding, reason: String?): Map<String, Any?> = mapOf(
     "id" to finding.id,
     "severity" to finding.severity,
     "package" to finding.packageName,
@@ -168,6 +193,7 @@ object AuditReport {
     "title" to finding.title,
     "url" to finding.url,
     "patched" to finding.patched,
+    "reason" to reason,
     "pin" to
       finding.pin?.let { mapOf("file" to it.file, "line" to it.line, "version" to it.version) },
   )
