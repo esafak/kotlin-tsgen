@@ -13,6 +13,7 @@
 ## Notes
 [things that did not fit above. omit section otherwise]
 ```
+* Before committing, loop until a reviewer subagent signs off, then ask the user whether they want to review it too.
 * Do not commit directly on `main`; create or switch to a feature branch first.
 * Follow-up commits in the PR do not need to repeat the template and may use regular conventional commits.
 * Do not amend or force-push over existing commits once a PR is opened; create a new commit.

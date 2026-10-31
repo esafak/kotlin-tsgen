@@ -26,7 +26,9 @@ fun Project.relocateKotlinJsStore() {
       resolution("glob", "14.0.3") // GHSA-3g3m-2fjr-6pw4
       resolution("minimatch", "11.0.3") // GHSA-g3hv-75wg-m249
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
-      resolution("follow-redirects", "1.16.2") // GHSA-mrwp-f3q8-3g9p and prior advisories
+      // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8, GHSA-mrwp-f3q8-3g9p: the last
+      // one covers 1.16.0 and 1.16.1, the two releases the earlier pins needed.
+      resolution("follow-redirects", "1.16.2")
     }
   }
 }
