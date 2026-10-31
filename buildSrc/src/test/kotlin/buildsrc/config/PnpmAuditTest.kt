@@ -65,6 +65,106 @@ class PnpmAuditTest :
       (error?.message ?: "") shouldContain "No advisories in the pnpm audit output"
     }
 
+    test("fails on an advisory entry that is not an object") {
+      val error =
+        runCatching { PnpmAudit.parse("""{"advisories":{"1244003":null}}""") }
+          .exceptionOrNull()
+      (error?.message ?: "") shouldContain "advisory 1244003"
+    }
+
+    test("fails on an advisory without a severity") {
+      val payload = """{"advisories":{"1":{"module_name":"follow-redirects"}}}"""
+      val error = runCatching { PnpmAudit.parse(payload) }.exceptionOrNull()
+      (error?.message ?: "") shouldContain "without a severity"
+    }
+
+    test("fails on an advisory with an unknown severity") {
+      val payload =
+        """{"advisories":{"1":{"severity":"urgent","module_name":"x","id":1}}}"""
+      val error = runCatching { PnpmAudit.parse(payload) }.exceptionOrNull()
+      (error?.message ?: "") shouldContain "unknown severity"
+    }
+
+    test("fails on an advisory without a package name") {
+      val payload = """{"advisories":{"1":{"severity":"high","id":1}}}"""
+      val error = runCatching { PnpmAudit.parse(payload) }.exceptionOrNull()
+      (error?.message ?: "") shouldContain "without a package name"
+    }
+
+    test("fails on an advisory without an identifier") {
+      val payload =
+        """{"advisories":{"1":{"severity":"high","module_name":"x"}}}"""
+      val error = runCatching { PnpmAudit.parse(payload) }.exceptionOrNull()
+      (error?.message ?: "") shouldContain "without an identifier"
+    }
+
+    test("fails when the audit exited non-zero without a blocking advisory") {
+      val error = runCatching { PnpmAudit.requireReported(1, emptyList(), "ERR_PNPM no registry") }
+        .exceptionOrNull()
+      (error?.message ?: "") shouldContain "without reporting a blocking advisory"
+      (error?.message ?: "") shouldContain "ERR_PNPM no registry"
+    }
+
+    test("allows a clean exit and a reported advisory") {
+      PnpmAudit.requireReported(0, emptyList())
+      PnpmAudit.requireReported(1, listOf(AuditFinding("GHSA-1", "high", "x", listOf("1"), "", "")))
+    }
+
+    test("reads the ignored advisories with the reason above each one") {
+      val ignored =
+        PnpmAudit.ignoredIn(
+          """
+          audit:
+            ignore:
+              # GHSA-aaaa-bbbb-cccc: the patched release needs node 26.
+              # Remove when the site moves to node 26.
+              - GHSA-aaaa-bbbb-cccc
+              # GHSA-dddd-eeee-ffff: no patched release exists.
+              - 'GHSA-dddd-eeee-ffff'
+            reporter:
+              ignored-looking-list:
+                - GHSA-1111-2222-3333
+
+          overrides:
+            # GHSA-1111-2222-3333 is an override, not an ignore.
+            'glob@<14': 14.0.3
+            ignored-looking-list:
+              - GHSA-1111-2222-3333
+          """.trimIndent(),
+        )
+      ignored shouldBe
+        listOf(
+          AuditAcceptance(
+            "GHSA-aaaa-bbbb-cccc",
+            "the patched release needs node 26. Remove when the site moves to node 26.",
+          ),
+          AuditAcceptance("GHSA-dddd-eeee-ffff", "no patched release exists."),
+        )
+    }
+
+    test("reads an indentless ignore sequence and stops at its sibling section") {
+      PnpmAudit.ignoredIn(
+        """
+        audit:
+          ignore:
+          - GHSA-eeee-ffff-aaaa
+          reporter:
+            ignored-looking-list:
+              - GHSA-1111-2222-3333
+        """.trimIndent(),
+      ) shouldBe listOf(AuditAcceptance("GHSA-eeee-ffff-aaaa", null))
+    }
+
+    test("keeps an ignored advisory even when its reason is missing") {
+      PnpmAudit.ignoredIn(
+        """
+        audit:
+          ignore:
+            - GHSA-aaaa-bbbb-cccc
+        """.trimIndent(),
+      ) shouldBe listOf(AuditAcceptance("GHSA-aaaa-bbbb-cccc", null))
+    }
+
     test("reads quoted and unquoted override keys") {
       val pins =
         PnpmAudit.pinsIn(
