@@ -1,0 +1,14 @@
+buildSrc/src/main/kotlin/buildsrc/config/YarnAudit.kt
+  h_ea91e2db23540f 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ce36a4fb6653292aa2fa9c8f733ef9c2be005ce9",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
