@@ -21,6 +21,17 @@ private val acceptedAdvisories = mapOf(
   // needs deeply nested glob patterns, which the build does not take from user
   // input.
   "GHSA-vfj7-8cjw-p6xm" to "braces 3.0.3 is the latest release",
+  // GHSA-3g3m-2fjr-6pw4: glob 10.5.0 arrives through mocha 11, and every
+  // patched release (14.0.2 and later) removed the `glob.Glob` class and the
+  // callback API that Karma 6.4.4 and rimraf 3 use. Yarn v1 resolutions are
+  // global and path-scoped keys are not honoured by the Kotlin plugin's yarn,
+  // so pinning glob would take the browser test runner with it.
+  "GHSA-3g3m-2fjr-6pw4" to "patched glob removes the API Karma and rimraf require",
+  // GHSA-g3hv-75wg-m249: every patched release (11.0.1 and later) drops the
+  // callable CommonJS export that Karma 6.4.4 requires. Karma's minimatch
+  // 3.1.5 is reached only through the configuration globs this repository
+  // writes. Track the Karma release that moves off minimatch 3.x.
+  "GHSA-g3hv-75wg-m249" to "patched minimatch drops the CommonJS export Karma requires",
 )
 
 /** Where the Kotlin/JS dependency pins live, repo-relative. */
