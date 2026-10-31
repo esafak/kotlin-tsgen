@@ -1,0 +1,19 @@
+gradle/kotlin-js-store/yarn.lock
+  s_a66ae37a8cdd04::t_a82945dea2e81d 5-8,10-13,75,264-267,274-277,279,362-365,372,381,416,502-505,512-515,532-535,537-539,541,551,570,658-661,692-695,707,714-717,719-720,722,727-730,817-820,822-823,837-840,842-845,847-849,895,955,1045-1054,1073
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6b4cf2ba53f697913f43ee51007a65ae226ce7b5",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
