@@ -15,13 +15,7 @@ import java.time.Duration
  * The documentation site keeps its list in site/pnpm-workspace.yaml, under
  * `audit.ignore`. Yarn v1 has no equivalent, so the list lives here.
  */
-private val acceptedAdvisories = mapOf(
-  // GHSA-vfj7-8cjw-p6xm: braces 3.0.3 is the latest release, so there is no
-  // patched version to move to. It is a stack-exhaustion denial of service that
-  // needs deeply nested glob patterns, which the build does not take from user
-  // input.
-  "GHSA-vfj7-8cjw-p6xm" to "braces 3.0.3 is the latest release",
-)
+private val acceptedAdvisories = emptyMap<String, String>()
 
 /** Where the Kotlin/JS dependency pins live, repo-relative. */
 private const val PIN_FILE = "buildSrc/src/main/kotlin/buildsrc/config/Kmm.kt"
