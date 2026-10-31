@@ -1,0 +1,19 @@
+buildSrc/src/test/kotlin/buildsrc/config/AuditReportTest.kt
+  s_a66ae37a8cdd04::t_2eb9f54f378e62 99-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5aa2075002073b9180658d33595b416222a20ef1",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
