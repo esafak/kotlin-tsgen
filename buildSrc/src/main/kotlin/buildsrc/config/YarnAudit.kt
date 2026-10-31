@@ -2,7 +2,6 @@ package buildsrc.config
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import java.net.URI
 import java.net.http.HttpClient
@@ -22,7 +21,24 @@ private val acceptedAdvisories = mapOf(
   // needs deeply nested glob patterns, which the build does not take from user
   // input.
   "GHSA-vfj7-8cjw-p6xm" to "braces 3.0.3 is the latest release",
+  // GHSA-3g3m-2fjr-6pw4: glob 10.5.0 arrives through mocha 11, and every
+  // patched release (14.0.2 and later) removed the `glob.Glob` class and the
+  // callback API that Karma 6.4.4 and rimraf 3 use. Yarn v1 resolutions are
+  // global and path-scoped keys are not honoured by the Kotlin plugin's yarn,
+  // so pinning glob would take the browser test runner with it.
+  "GHSA-3g3m-2fjr-6pw4" to "patched glob removes the API Karma and rimraf require",
+  // GHSA-g3hv-75wg-m249: every patched release (11.0.1 and later) drops the
+  // callable CommonJS export that Karma 6.4.4 requires. Karma's minimatch
+  // 3.1.5 is reached only through the configuration globs this repository
+  // writes. Track the Karma release that moves off minimatch 3.x.
+  "GHSA-g3hv-75wg-m249" to "patched minimatch drops the CommonJS export Karma requires",
 )
+
+/** Where the Kotlin/JS dependency pins live, repo-relative. */
+private const val PIN_FILE = "buildSrc/src/main/kotlin/buildsrc/config/Kmm.kt"
+
+/** The Kotlin/JS lockfile, repo-relative. */
+private const val LOCK_FILE = "gradle/kotlin-js-store/yarn.lock"
 
 /**
  * Fails the build when the Kotlin/JS dependency tree has an advisory that the
@@ -34,12 +50,15 @@ private val acceptedAdvisories = mapOf(
  * same source pnpm's audit uses, so the tree is checked against it here.
  */
 fun Project.yarnAudit() {
-  val lockFile = rootProject.layout.projectDirectory.file("gradle/kotlin-js-store/yarn.lock")
+  val lockFile = rootProject.layout.projectDirectory.file(LOCK_FILE)
+  val pinSource = rootProject.layout.projectDirectory.file(PIN_FILE)
+  val report = rootProject.layout.buildDirectory.file("reports/yarn-audit.json").get().asFile
   val task = tasks.register("yarnAudit") {
     group = "verification"
     description = "fails when the Kotlin/JS dependencies have an unaccepted advisory"
 
     inputs.file(lockFile)
+    inputs.file(pinSource)
     // The advisory database changes without the lockfile changing.
     outputs.upToDateWhen { false }
 
@@ -50,16 +69,27 @@ fun Project.yarnAudit() {
     doLast {
       val packages = YarnAudit.packagesIn(lockFile.asFile.readText())
       val advisories = YarnAudit.advisoriesIn(packages)
-      val unaccepted = advisories.filter { it.id !in acceptedAdvisories }
-      if (unaccepted.isNotEmpty()) {
-        val details =
-          unaccepted.joinToString(separator = "\n") {
-            "  ${it.id} ${it.severity} ${it.packageName} ${it.title}\n    ${it.url}"
-          }
-        throw GradleException(
-          "The Kotlin/JS dependencies have advisories that are not accepted:\n$details",
+      val pins = YarnAudit.pinsIn(pinSource.asFile.readText(), PIN_FILE)
+      fun finding(advisory: YarnAudit.Advisory) = AuditFinding(
+        id = advisory.id,
+        severity = advisory.severity,
+        packageName = advisory.packageName,
+        versions = packages[advisory.packageName].orEmpty().sorted(),
+        title = advisory.title,
+        url = advisory.url,
+        pin = pins[advisory.packageName],
+      )
+
+      val outcome =
+        AuditOutcome(
+          kind = "yarn",
+          lockFile = LOCK_FILE,
+          checkedPackages = packages.size,
+          findings = advisories.filter { it.id !in acceptedAdvisories }.map(::finding),
+          accepted = advisories.filter { it.id in acceptedAdvisories }.map(::finding),
+          acceptedReasons = acceptedAdvisories,
         )
-      }
+      AuditReport.publish(logger, report, outcome)
       logger.lifecycle(
         "The Kotlin/JS dependencies have no unaccepted advisories " +
           "(${packages.size} packages checked).",
@@ -162,6 +192,22 @@ object YarnAudit {
     require(name.isNotEmpty()) { "Invalid yarn.lock selector: $key" }
     return name
   }
+
+  /**
+   * The pins in a Kotlin source file, by package, with the line that declares
+   * each one.
+   *
+   * Yarn v1 resolutions are global, so a pin is also the only place that can
+   * hold a transitive package at a version. A commented-out call is not a pin.
+   */
+  fun pinsIn(source: String, file: String): Map<String, AuditPin> =
+    source.lines().mapIndexedNotNull { index, line ->
+      if (line.trimStart().startsWith("//")) return@mapIndexedNotNull null
+      val match = RESOLUTION.find(line) ?: return@mapIndexedNotNull null
+      match.groupValues[1] to AuditPin(file, index + 1, match.groupValues[2])
+    }.toMap()
+
+  private val RESOLUTION = Regex("""resolution\("([^"]+)",\s*"([^"]+)"\)""")
 
   private val VERSION = Regex("""^\s+version "([^"]+)"""", RegexOption.MULTILINE)
 }

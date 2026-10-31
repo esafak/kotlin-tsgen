@@ -139,4 +139,37 @@ class YarnAuditTest :
       packages.getValue("braces") shouldBe setOf("3.0.3")
       packages.getValue("mocha") shouldBe setOf("11.7.5")
     }
+
+    test("reads the package and line of each pin") {
+      val pins =
+        YarnAudit.pinsIn(
+          """
+        fun pins() {
+          resolution("diff", "8.0.3") // a comment after the call
+          resolution("webpack", "5.104.1")
+        }
+          """.trimIndent(),
+          "Kmm.kt",
+        )
+      pins shouldBe
+        mapOf(
+          "diff" to AuditPin("Kmm.kt", 2, "8.0.3"),
+          "webpack" to AuditPin("Kmm.kt", 3, "5.104.1"),
+        )
+    }
+
+    test("ignores a commented-out pin") {
+      YarnAudit.pinsIn("// resolution(\"diff\", \"8.0.3\")", "Kmm.kt") shouldBe emptyMap()
+    }
+
+    test("reads the pins of the repository build") {
+      val source = File("../buildSrc/src/main/kotlin/buildsrc/config/Kmm.kt").readText()
+      val pins = YarnAudit.pinsIn(source, "Kmm.kt")
+      val calls =
+        source.lines().count { !it.trimStart().startsWith("//") && it.contains("resolution(") }
+      // A pin the parser misses would report an advisory without its owner.
+      pins.size shouldBe calls
+      pins.keys.contains("follow-redirects") shouldBe true
+      (pins.getValue("follow-redirects").line > 0) shouldBe true
+    }
   })

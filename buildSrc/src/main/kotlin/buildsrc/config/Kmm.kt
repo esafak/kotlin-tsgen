@@ -26,7 +26,14 @@ fun Project.relocateKotlinJsStore() {
       // GHSA-27r3-jxmh-p828: global pin; only consumer is karma's ^1.19.0
       resolution("body-parser", "1.20.9")
       resolution("webpack", "5.104.1") // GHSA-8fgc-7cc6-rx7x, GHSA-38r7-794h-5758
-      resolution("follow-redirects", "1.16.1") // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8
+      // GHSA-8r9p-f939-6h3c, GHSA-q3jh-wrc6-jgq8, GHSA-mrwp-f3q8-3g9p: the last
+      // one covers 1.16.0 and 1.16.1, the two releases the earlier pins needed.
+      resolution("follow-redirects", "1.16.2")
+      // GHSA-3g3m-2fjr-6pw4 and GHSA-g3hv-75wg-m249 are not pinned here: the
+      // only patched releases (glob 14.0.2, minimatch 11.0.1) removed the
+      // `glob.Glob` class and the callable CommonJS export that Karma 6.4.4,
+      // the browser test runner, needs. Yarn v1 resolutions are global, so a
+      // pin would take Karma with it. See acceptedAdvisories in YarnAudit.kt.
     }
   }
 }
