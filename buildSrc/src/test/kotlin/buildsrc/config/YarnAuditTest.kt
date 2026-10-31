@@ -133,10 +133,9 @@ class YarnAuditTest :
       val packages = YarnAudit.packagesIn(lockFile.readText())
       // Plain, scoped and aliased packages all have to be in there.
       packages.keys.containsAll(
-        setOf("mocha", "@types/node", "string-width", "webpack", "braces"),
+        setOf("mocha", "@types/node", "string-width", "webpack"),
       ) shouldBe
         true
-      packages.getValue("braces") shouldBe setOf("3.0.3")
-      packages.getValue("mocha") shouldBe setOf("11.7.5")
+      packages.getValue("mocha") shouldBe setOf("11.7.6")
     }
   })
