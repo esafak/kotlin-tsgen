@@ -1,5 +1,9 @@
+import buildsrc.config.AuditOutcome
+import buildsrc.config.AuditReport
+import buildsrc.config.PnpmAudit
 import buildsrc.config.args
 import com.github.gradle.node.pnpm.task.PnpmTask
+import java.io.File
 import java.net.URI
 
 plugins {
@@ -31,17 +35,44 @@ dependencies {
  * live in `pnpm-workspace.yaml` under `audit.ignore`. Every entry there needs
  * a reason: a patched version that upstream does not release yet.
  */
-val pnpmAudit by tasks.registering(Exec::class) {
+val pnpmAudit by tasks.registering {
   group = "verification"
   description = "fails when the site has high or critical dependency advisories"
-
-  workingDir = projectDir
-  commandLine("mise", "x", "--", "pnpm", "audit", "--audit-level=high")
 
   // The advisory database changes without the lockfile changing, so the
   // audit runs every time. The lockfile is not declared as an input, because
   // pnpmInstall produces it and the audit must not force that install.
   outputs.upToDateWhen { false }
+
+  // Configured here, executed when the value is read: a task action may not
+  // reach for the project, but it may read a provider.
+  val audit =
+    providers.exec {
+      workingDir = projectDir
+      commandLine("mise", "x", "--", "pnpm", "audit", "--json", "--audit-level=high")
+      // `pnpm audit` exits non-zero when it finds what this task looks for.
+      setIgnoreExitValue(true)
+    }
+  val workspace = File(projectDir, "pnpm-workspace.yaml")
+  val report = rootProject.layout.buildDirectory.file("reports/site-audit.json").get().asFile
+
+  doLast {
+    val parsed = PnpmAudit.parse(audit.standardOutput.asText.get())
+    val pins =
+      PnpmAudit.pinsIn(workspace.readText(), "site/pnpm-workspace.yaml")
+    val outcome =
+      AuditOutcome(
+        kind = "site",
+        lockFile = "site/pnpm-lock.yaml",
+        checkedPackages = parsed.checkedPackages,
+        findings = parsed.findings.map { it.copy(pin = pins[it.packageName]) },
+      )
+    AuditReport.publish(logger, report, outcome)
+    logger.lifecycle(
+      "The site dependencies have no unaccepted advisories " +
+        "(${parsed.checkedPackages} packages checked).",
+    )
+  }
 }
 
 tasks.check {
