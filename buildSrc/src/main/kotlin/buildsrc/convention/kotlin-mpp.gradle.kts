@@ -3,6 +3,7 @@ package buildsrc.convention
 import buildsrc.config.ClearJsTestResultsAction
 import buildsrc.config.VerifyJsTestResultsAction
 import buildsrc.config.relocateKotlinJsStore
+import org.jetbrains.kotlin.gradle.ExperimentalJsTestDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
@@ -23,7 +24,12 @@ relocateKotlinJsStore()
 extensions.configure<KotlinMultiplatformExtension> {
 // kotlin {
   js {
-    browser()
+    browser {
+      @OptIn(ExperimentalJsTestDsl::class)
+      test {
+        chromium()
+      }
+    }
     nodejs()
   }
 
