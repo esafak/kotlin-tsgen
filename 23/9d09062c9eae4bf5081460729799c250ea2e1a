@@ -1,0 +1,19 @@
+buildSrc/src/main/kotlin/buildsrc/config/PnpmAudit.kt
+  s_a66ae37a8cdd04::t_02f381f944ae86 10-12,15-17,27-30,46-47,51-81,88-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "239d09062c9eae4bf5081460729799c250ea2e1a",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}

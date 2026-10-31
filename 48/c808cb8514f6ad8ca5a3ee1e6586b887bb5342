@@ -1,0 +1,25 @@
+buildSrc/src/main/kotlin/buildsrc/config/Kmm.kt
+  s_a66ae37a8cdd04::t_6537667e5d7919 29-31
+gradle/kotlin-js-store/yarn.lock
+  s_a66ae37a8cdd04::t_2ccb5a332380a0 503-505
+site/pnpm-lock.yaml
+  s_a66ae37a8cdd04::t_be1f1a4bc4ccf6 169-170,3104-3105,3565-3566,7576,7627,9555,9882,10055
+site/pnpm-workspace.yaml
+  s_a66ae37a8cdd04::t_d6c21cf3b1b8bd 29-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "48c808cb8514f6ad8ca5a3ee1e6586b887bb5342",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
