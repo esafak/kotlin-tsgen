@@ -1,0 +1,14 @@
+VITEPLUS_SPIKE.md
+  h_ea91e2db23540f 1-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2ef824f0387bc9f19fdc9f6affbff919c26d609c",
+  "prompts": {},
+  "humans": {
+    "h_ea91e2db23540f": {
+      "author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
