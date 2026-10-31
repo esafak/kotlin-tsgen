@@ -1,0 +1,29 @@
+buildSrc/src/main/kotlin/buildsrc/config/AuditReport.kt
+  s_a66ae37a8cdd04::t_fad5e640168548 1-189
+buildSrc/src/main/kotlin/buildsrc/config/PnpmAudit.kt
+  s_a66ae37a8cdd04::t_e0e4ce58f0197c 1-92
+buildSrc/src/main/kotlin/buildsrc/config/YarnAudit.kt
+  s_a66ae37a8cdd04::t_e2f18a176db95c 26-31,42-44,50,61-79,81,185-200
+buildSrc/src/test/kotlin/buildsrc/config/AuditReportTest.kt
+  s_a66ae37a8cdd04::t_1647e105032eb1 1-134
+buildSrc/src/test/kotlin/buildsrc/config/PnpmAuditTest.kt
+  s_a66ae37a8cdd04::t_ee10a7ed3e027a 1-95
+site/build.gradle.kts
+  s_a66ae37a8cdd04::t_f69523a48f04db 1-3,6,38,46-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "647dee7bd88ebddd04f1c556002bf5845b13ff49",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
