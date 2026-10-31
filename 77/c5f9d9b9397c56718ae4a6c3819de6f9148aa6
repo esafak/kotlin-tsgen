@@ -1,0 +1,35 @@
+AGENTS.md
+  s_a66ae37a8cdd04::t_368202869e01fa 16
+buildSrc/src/main/kotlin/buildsrc/config/AuditReport.kt
+  s_a66ae37a8cdd04::t_8b19f0e7ea85f9 1-215
+buildSrc/src/main/kotlin/buildsrc/config/PnpmAudit.kt
+  s_a66ae37a8cdd04::t_446843d9eac297 1-189
+buildSrc/src/test/kotlin/buildsrc/config/AuditReportTest.kt
+  s_a66ae37a8cdd04::t_3cd2972d6b7f64 1-159
+buildSrc/src/test/kotlin/buildsrc/config/PnpmAuditTest.kt
+  s_a66ae37a8cdd04::t_dd4df9324d7e19 1-195
+buildSrc/src/test/kotlin/buildsrc/config/YarnAuditTest.kt
+  s_a66ae37a8cdd04::t_ea5f49b7502024 141-173
+site/build.gradle.kts
+  s_a66ae37a8cdd04::t_6360887562baef 1-3,6,34-37,39,47-82
+site/pnpm-lock.yaml
+  s_a66ae37a8cdd04::t_cfa717200fc183 169-170,3104-3105,3565-3566,7576,7627,9555,9882,10055
+site/pnpm-workspace.yaml
+  s_a66ae37a8cdd04::t_009d788173c0ca 29-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "77c5f9d9b9397c56718ae4a6c3819de6f9148aa6",
+  "prompts": {},
+  "sessions": {
+    "s_a66ae37a8cdd04": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e6d7ea480ffediXRCBwk5suckN",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
