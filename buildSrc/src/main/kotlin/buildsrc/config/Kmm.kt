@@ -12,7 +12,9 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 fun Project.relocateKotlinJsStore() {
   afterEvaluate {
     rootProject.extensions.findByType<YarnRootExtension>()?.apply {
-      lockFileDirectory = project.rootDir.resolve("gradle/kotlin-js-store")
+      lockFileDirectoryProperty.set(
+        rootProject.layout.projectDirectory.dir("gradle/kotlin-js-store"),
+      )
 
       // Keep transitive dependencies in the Kotlin/JS Yarn lockfile past
       // versions with open Dependabot advisories. Before adding a resolution,
