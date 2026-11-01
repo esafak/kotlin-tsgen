@@ -35,7 +35,7 @@ overrides:
   # @docusaurus/types, whose ^17 range the fix satisfies, so the pin stays in
   # the 17 line rather than floating to joi 18. Remove when that chain
   # resolves 17.13.9+ without an override.
-  'joi@<17.13.9': '17.13.9'
+  'joi@<17.13.9': '18.3.0'
   # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
   # 2.1.2 are affected. The 1.x line has no patched release. This overrides
   # @docusaurus/core's ^1.0.2 requirement across a major version; tinypool
