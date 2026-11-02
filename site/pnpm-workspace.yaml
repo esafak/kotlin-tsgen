@@ -31,11 +31,10 @@ overrides:
   # so 1.16.2 is the first patched release. Remove when the upstream
   # dependency chain resolves 1.16.2+ without an override.
   'follow-redirects@<1.16.2': '>=1.16.2'
-  # GHSA-4528-x5fx-h6hg: joi before 17.13.9 is affected. It arrives through
-  # @docusaurus/types, whose ^17 range the fix satisfies, so the pin stays in
-  # the 17 line rather than floating to joi 18. Remove when that chain
-  # resolves 17.13.9+ without an override.
-  'joi@<17.13.9': '18.3.0'
+  # GHSA-4528-x5fx-h6hg: joi 18.3.0 is affected; 18.3.1 is patched. This
+  # override crosses the ^17 range from @docusaurus/types. Remove when that
+  # dependency chain no longer needs an override.
+  'joi@<17.13.9': '18.3.1'
   # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
   # 2.1.2 are affected. The 1.x line has no patched release. This overrides
   # @docusaurus/core's ^1.0.2 requirement across a major version; tinypool
