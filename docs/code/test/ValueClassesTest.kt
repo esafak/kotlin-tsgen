@@ -79,9 +79,14 @@ class ValueClassesTest : FunSpec({
       actual.shouldBe(
         // language=TypeScript
         """
-          |export type ULong = Long & { __ULong__: void };
+          |export interface Membership {
+          |  user: UserId;
+          |  group: UserGroupId;
+          |}
           |
-          |export type Long = number & { __Long__: void };
+          |export type UserId = string & { readonly __brand: "UserId" };
+          |
+          |export type UserGroupId = string & { readonly __brand: "UserGroupId" };
         """.trimMargin()
         .normalize()
       )

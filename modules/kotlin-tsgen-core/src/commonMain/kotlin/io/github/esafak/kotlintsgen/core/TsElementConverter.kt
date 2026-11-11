@@ -225,7 +225,29 @@ fun interface TsElementConverter {
       val resultId = elementIdConverter(structDescriptor)
       val fieldDescriptor = structDescriptor.elementDescriptors.first()
       val fieldTypeRef = typeRefConverter(fieldDescriptor)
-      return TsDeclaration.TsTypeAlias(resultId, fieldTypeRef)
+      val brand =
+        structDescriptor.annotations
+          .filterIsInstance<TsBrand>()
+          .firstOrNull()
+          ?.let { if (it.name.isEmpty()) resultId.name else it.name }
+      if (brand != null) {
+        generateSequence(fieldDescriptor) { current ->
+          when {
+            !current.isInline || current.elementsCount == 0 -> null
+            else -> current.elementDescriptors.firstOrNull()
+          }
+        }.firstOrNull { it.annotations.filterIsInstance<TsBrand>().firstOrNull() != null }
+          ?.let { brandedInner ->
+            throw InvalidTsIdentifierException(
+              resultId.name,
+              "branded value class '${structDescriptor.serialName}'",
+              "it wraps branded '${brandedInner.serialName}' (transitively); " +
+                "intersection of two __brand literals is never. " +
+                "Brand only the leaf, or leave the outer unbranded (`type Outer = Inner`).",
+            )
+          }
+      }
+      return TsDeclaration.TsTypeAlias(resultId, fieldTypeRef, brand)
     }
 
     open fun convertInterface(descriptor: SerialDescriptor): TsDeclaration {

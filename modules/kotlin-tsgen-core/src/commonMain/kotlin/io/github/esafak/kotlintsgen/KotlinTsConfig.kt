@@ -9,14 +9,12 @@ import kotlin.jvm.JvmInline
  * @param[indent] Define the indentation that is used when generating source code
  * @param[declarationSeparator] The string that is used when joining [TsDeclaration]s
  * @param[namespaceConfig] How elements are grouped into [TsDeclaration.TsNamespace]s.
- * @param[typeAliasTyping] Control whether type aliases are simple, or 'branded'.
  * @param[serializersModule] Used to obtain contextual and polymorphic information.
  */
 data class KotlinTsConfig(
   val indent: String = "  ",
   val declarationSeparator: String = "\n\n",
   val namespaceConfig: NamespaceConfig = NamespaceConfig.Disabled,
-  val typeAliasTyping: TypeAliasTypingConfig = TypeAliasTypingConfig.None,
   val serializersModule: SerializersModule = EmptySerializersModule(),
   val onWarning: (String) -> Unit = {},
 ) {
@@ -30,10 +28,5 @@ data class KotlinTsConfig(
 
     @JvmInline
     value class Static(val namespace: String) : NamespaceConfig
-  }
-
-  sealed interface TypeAliasTypingConfig {
-    object None : TypeAliasTypingConfig
-    object BrandTyping : TypeAliasTypingConfig
   }
 }

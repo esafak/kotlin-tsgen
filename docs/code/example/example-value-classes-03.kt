@@ -5,17 +5,22 @@ package io.github.esafak.kotlintsgen.example.exampleValueClasses03
 import kotlinx.serialization.*
 import io.github.esafak.kotlintsgen.*
 
-import io.github.esafak.kotlintsgen.KotlinTsConfig.TypeAliasTypingConfig.BrandTyping
-import kotlinx.serialization.builtins.serializer
+import io.github.esafak.kotlintsgen.core.TsBrand
+
+@TsBrand
+@Serializable
+@JvmInline
+value class UserId(val value: String)
+
+@TsBrand
+@Serializable
+@JvmInline
+value class UserGroupId(val value: String)
+
+@Serializable
+data class Membership(val user: UserId, val group: UserGroupId)
 
 fun main() {
-
-  val tsConfig = KotlinTsConfig(typeAliasTyping = BrandTyping)
-
-  val tsGenerator = KotlinTsGenerator(config = tsConfig)
-  println(
-    tsGenerator.generate(
-      ULong.serializer(),
-    )
-  )
+  val tsGenerator = KotlinTsGenerator()
+  println(tsGenerator.generate(Membership.serializer()))
 }
