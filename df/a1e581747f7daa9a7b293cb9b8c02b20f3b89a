@@ -1,0 +1,25 @@
+docs/code/example/example-value-classes-03.kt
+  s_87f420e5c866fe::t_6102bd16c2783c 8,10-18,20-21,23-25
+docs/code/test/ValueClassesTest.kt
+  s_87f420e5c866fe::t_9c283f8664be65 82-85,87-89
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsElementBuilders.kt
+  s_87f420e5c866fe::t_cf172d5df894cd 27-48
+modules/kotlin-tsgen-core/src/commonMain/kotlin/io/github/esafak/kotlintsgen/core/TsSourceCodeGenerator.kt
+  s_87f420e5c866fe::t_f37966d5dd3edb 143-147,149-163,202-227
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dfa1e581747f7daa9a7b293cb9b8c02b20f3b89a",
+  "prompts": {},
+  "sessions": {
+    "s_87f420e5c866fe": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e372d9ff0ffeC3XIEo3sDGoKz8",
+        "model": "unknown"
+      },
+      "human_author": "Emre Şafak <3928300+esafak@users.noreply.github.com>"
+    }
+  }
+}
