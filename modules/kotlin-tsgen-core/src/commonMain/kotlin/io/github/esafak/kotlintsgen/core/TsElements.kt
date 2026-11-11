@@ -40,7 +40,16 @@ sealed interface TsDeclaration : TsElement {
   val id: TsElementId
 
   /** A named reference to another type. */
-  data class TsTypeAlias(override val id: TsElementId, val typeRef: TsTypeRef) : TsDeclaration
+  data class TsTypeAlias(
+    override val id: TsElementId,
+    val typeRef: TsTypeRef,
+    /**
+     * Brand literal. When non-null the alias is emitted as
+     * `export type Name = Target & { readonly __brand: "Brand" };`.
+     * Null (the default) emits a plain alias.
+     */
+    val brand: String? = null,
+  ) : TsDeclaration
 
   /** A named reference to one or more other types. */
   data class TsTypeUnion(override val id: TsElementId, val typeRefs: Set<TsTypeRef>) :

@@ -140,29 +140,27 @@ interface TsSourceCodeGenerator {
     }
 
     override fun generateTypeAlias(element: TsDeclaration.TsTypeAlias): String {
-      val aliasedRef = generateTypeReference(element.typeRef)
-
-      return when (config.typeAliasTyping) {
-        KotlinTsConfig.TypeAliasTypingConfig.None ->
-          """
-            |export type ${element.id.name} = $aliasedRef;
-          """.trimMargin()
-
-        KotlinTsConfig.TypeAliasTypingConfig.BrandTyping -> {
-          val brandType = element.id.name
-            .mapNotNull { c ->
-              when {
-                c == '.' -> '_'
-                !c.isLetter() -> null
-                else -> c
-              }
-            }.joinToString("")
-
-          """
-            |export type ${element.id.name} = $aliasedRef & { __${brandType}__: void };
-          """.trimMargin()
+      val nullable = element.typeRef.nullable
+      val nonNullableRef =
+        when (val ref = element.typeRef) {
+          is TsTypeRef.Literal -> ref.copy(nullable = false)
+          is TsTypeRef.Declaration -> ref.copy(nullable = false)
         }
-      }
+      val aliasedRef = generateTypeReference(nonNullableRef)
+      // `&` binds tighter than `|`, so `string | number & { brand }` would leave `string`
+      // unbranded. Parenthesize union targets: `(string | number) & { brand }`.
+      val brandedBase =
+        if (element.brand != null && '|' in aliasedRef) "($aliasedRef)" else aliasedRef
+      val brandSuffix =
+        element.brand?.let { brand ->
+          """ & { readonly __brand: "${escapeBrandLiteral(brand)}" }"""
+        }
+          ?: ""
+      val nullSuffix = if (nullable) " | ${generatePrimitive(TsLiteral.Primitive.TsNull)}" else ""
+
+      return """
+        |export type ${element.id.name} = $brandedBase$brandSuffix$nullSuffix;
+      """.trimMargin()
     }
 
     override fun generateTypeUnion(element: TsDeclaration.TsTypeUnion): String =
@@ -199,6 +197,32 @@ interface TsSourceCodeGenerator {
         ¦$types
         ¦];
       """.trimMargin("¦")
+    }
+
+    private fun escapeBrandLiteral(brand: String): String = buildString {
+      brand.forEach { character ->
+        when (character) {
+          '\\' -> append("\\\\")
+
+          '"' -> append("\\\"")
+
+          '\b' -> append("\\b")
+
+          '\u000C' -> append("\\f")
+
+          '\n' -> append("\\n")
+
+          '\r' -> append("\\r")
+
+          '\t' -> append("\\t")
+
+          else -> if (character.code < 0x20) {
+            append("\\u${character.code.toString(16).padStart(4, '0')}")
+          } else {
+            append(character)
+          }
+        }
+      }
     }
 
     private fun quotePropertyName(name: String): String = buildString {

@@ -76,24 +76,32 @@ incompatible numeric values.
 
 ### Brand typing
 
-To make value classes a little more strict, we can use brand typing
+To keep nominal IDs nominal in TypeScript, brand individual value classes with `@TsBrand`.
+Only the alias declaration changes: every use of the type is emitted by name, so fields, lists
+and map values pick the brand up unchanged. (Map keys are still unwrapped to `string`/`number`
+for index signatures.)
 
 <!-- IMPORT -->
 
 ```kotlin
-import io.github.esafak.kotlintsgen.KotlinTsConfig.TypeAliasTypingConfig.BrandTyping
-import kotlinx.serialization.builtins.serializer
+import io.github.esafak.kotlintsgen.core.TsBrand
+
+@TsBrand
+@Serializable
+@JvmInline
+value class UserId(val value: String)
+
+@TsBrand
+@Serializable
+@JvmInline
+value class UserGroupId(val value: String)
+
+@Serializable
+data class Membership(val user: UserId, val group: UserGroupId)
 
 fun main() {
-
-  val tsConfig = KotlinTsConfig(typeAliasTyping = BrandTyping)
-
-  val tsGenerator = KotlinTsGenerator(config = tsConfig)
-  println(
-    tsGenerator.generate(
-      ULong.serializer(),
-    )
-  )
+  val tsGenerator = KotlinTsGenerator()
+  println(tsGenerator.generate(Membership.serializer()))
 }
 ```
 
@@ -102,14 +110,18 @@ fun main() {
 > You can get the full code [here](./code/example/example-value-classes-03.kt).
 
 ```typescript
-export type ULong = Long & { __ULong__: void };
+export interface Membership {
+  user: UserId;
+  group: UserGroupId;
+}
 
-export type Long = number & { __Long__: void };
+export type UserId = string & { readonly __brand: "UserId" };
+
+export type UserGroupId = string & { readonly __brand: "UserGroupId" };
 ```
 
-Now numeric types must be manually converted type aliases.
-
-This does not mean
+Use `@TsBrand("Custom")` to override the brand literal, or `mapTypes { UserId.serializer() mapsTo branded("UserId", "string") }`
+for types you don't own (e.g. library primitives with a custom serializer).
 
 <!--- TEST -->
 
