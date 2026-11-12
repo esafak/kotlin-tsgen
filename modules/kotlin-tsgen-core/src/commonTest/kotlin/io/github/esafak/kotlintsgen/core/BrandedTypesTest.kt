@@ -4,9 +4,16 @@ import io.github.esafak.kotlintsgen.KotlinTsGenerator
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.EmptySerializersModule
 import kotlin.jvm.JvmInline
 
 class BrandedTypesTest :
@@ -97,6 +104,48 @@ class BrandedTypesTest :
       generator.generate(PlainToken.serializer()) shouldBe
         "export type PlainToken = (string | number) & { readonly __brand: \"PlainToken\" };"
     }
+
+    test("custom branded mapping is applied inside lists") {
+      val generator = KotlinTsGenerator()
+      generator.mapTypes {
+        AccountId.serializer() mapsTo branded("AccountId", "string")
+      }
+
+      generator.generate(Request.serializer()) shouldContain "accountIds: AccountId[];"
+    }
+
+    test("custom branded mapping is applied to map values") {
+      val generator = KotlinTsGenerator()
+      generator.mapTypes {
+        AccountId.serializer() mapsTo branded("AccountId", "string")
+      }
+
+      generator.generate(AccountMapValueHolder.serializer()) shouldContain
+        "{ [key: string]: AccountId }"
+    }
+
+    test("custom branded map keys use Map with the branded alias") {
+      val generator = KotlinTsGenerator()
+      generator.mapTypes {
+        AccountId.serializer() mapsTo branded("AccountId", "string")
+      }
+
+      val ts = generator.generate(AccountMapKeyHolder.serializer())
+      ts shouldContain "values: Map<AccountId, string>;"
+      ts shouldContain "export type AccountId = string & { readonly __brand: \"AccountId\" };"
+    }
+
+    test("Default trailing-lambda still binds to index-signature override") {
+      val converter = TsTypeRefConverter.Default(
+        TsElementIdConverter.Default,
+        TsMapTypeConverter.Default,
+        EmptySerializersModule(),
+        null,
+      ) { null }
+
+      converter.indexSignatureKeyTypeRefOverride shouldNotBe null
+      converter.nestedTypeRefConverterProvider shouldBe null
+    }
   })
 
 @TsBrand
@@ -147,3 +196,26 @@ private value class MiddleUnbranded(val inner: InnerBranded)
 @Serializable
 @JvmInline
 private value class OuterViaMiddle(val middle: MiddleUnbranded)
+
+@Serializable(with = AccountIdSerializer::class)
+@JvmInline
+private value class AccountId(val value: Long)
+
+private object AccountIdSerializer : KSerializer<AccountId> {
+  override val descriptor =
+    PrimitiveSerialDescriptor("AccountId", PrimitiveKind.STRING)
+
+  override fun serialize(encoder: Encoder, value: AccountId) =
+    encoder.encodeString(value.value.toString())
+
+  override fun deserialize(decoder: Decoder) = AccountId(decoder.decodeString().toLong())
+}
+
+@Serializable
+private data class Request(val accountIds: List<AccountId>)
+
+@Serializable
+private data class AccountMapValueHolder(val values: Map<String, AccountId>)
+
+@Serializable
+private data class AccountMapKeyHolder(val values: Map<AccountId, String>)
