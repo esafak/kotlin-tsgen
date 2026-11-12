@@ -24,8 +24,24 @@ fun interface TsTypeRefConverter {
     val indexSignatureKeyTypeRefOverride: ((SerialDescriptor) -> TsTypeRef.Literal?)? = null,
   ) : TsTypeRefConverter {
 
+    /**
+     * Resolver for nested list elements, map values (and non-index-signature map keys) and
+     * contextual targets. Defaults to null (meaning `this`). Wrappers that intercept [invoke]
+     * for mapping overrides (e.g. branded aliases) supply their override-aware converter here
+     * so nested positions see the same overrides as top-level descriptors. Index-signature
+     * keys stay unwrapped to `string`/`number` and never use this resolver.
+     *
+     * Kept as a mutable property (rather than a constructor parameter) so existing
+     * five-parameter constructor calls — including trailing-lambda calls binding to
+     * [indexSignatureKeyTypeRefOverride] — keep compiling and linking.
+     */
+    var nestedTypeRefConverterProvider: (() -> TsTypeRefConverter)? = null
+
     /** Override the type reference used for non-index-signature map keys. */
     open fun mapKeyTypeRefOverride(descriptor: SerialDescriptor): TsTypeRef? = null
+
+    private fun nestedConverter(): TsTypeRefConverter =
+      nestedTypeRefConverterProvider?.invoke() ?: this
 
     override operator fun invoke(descriptor: SerialDescriptor): TsTypeRef {
       primitiveTypeRefOverride?.invoke(descriptor)?.let { return it }
@@ -55,7 +71,7 @@ fun interface TsTypeRefConverter {
         serializersModule.getContextualDescriptor(descriptor)
       }.getOrNull() ?: return declarationTypeRef(descriptor)
 
-      return withNullable(this(resolved), descriptor.isNullable)
+      return withNullable(nestedConverter()(resolved), descriptor.isNullable)
     }
 
     private fun withNullable(typeRef: TsTypeRef, nullable: Boolean): TsTypeRef = when (typeRef) {
@@ -88,9 +104,9 @@ fun interface TsTypeRefConverter {
       val keyTypeRef = if (type == TsLiteral.TsMap.Type.INDEX_SIGNATURE) {
         indexSignatureKeyTypeRef(keyDescriptor)
       } else {
-        mapKeyTypeRefOverride(keyDescriptor) ?: this(keyDescriptor)
+        mapKeyTypeRefOverride(keyDescriptor) ?: nestedConverter()(keyDescriptor)
       }
-      val valueTypeRef = this(valueDescriptor)
+      val valueTypeRef = nestedConverter()(valueDescriptor)
       val map = TsLiteral.TsMap(keyTypeRef, valueTypeRef, type)
       return TsTypeRef.Literal(map, descriptor.isNullable)
     }
@@ -124,7 +140,7 @@ fun interface TsTypeRefConverter {
 
     fun listTypeRef(descriptor: SerialDescriptor): TsTypeRef.Literal {
       val elementDescriptor = descriptor.elementDescriptors.first()
-      val elementTypeRef = this(elementDescriptor)
+      val elementTypeRef = nestedConverter()(elementDescriptor)
       val listRef = TsLiteral.TsList(elementTypeRef)
       return TsTypeRef.Literal(listRef, descriptor.isNullable)
     }

@@ -175,6 +175,11 @@ open class KotlinTsGenerator(
             (findOverride(descriptor) as? TsLiteral)?.let {
               TsTypeRef.Literal(it, descriptor.isNullable)
             }
+        }.apply {
+          // Lazy provider breaks the self-reference cycle: evaluated only during generate(),
+          // after typeRefConverter is initialized, so nested list/map/contextual positions
+          // resolve through the override-aware wrapper.
+          nestedTypeRefConverterProvider = { typeRefConverter }
         }
 
       override fun invoke(descriptor: SerialDescriptor): TsTypeRef =
