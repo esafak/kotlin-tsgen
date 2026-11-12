@@ -293,14 +293,17 @@ fun interface TsElementConverter {
     }
 
     open fun convertMap(mapDescriptor: SerialDescriptor): TsLiteral.TsMap {
-      val (keyDescriptor, valueDescriptor) = mapDescriptor.elementDescriptors.toList()
-
-      val keyTypeRef = typeRefConverter(keyDescriptor)
-      val valueTypeRef = typeRefConverter(valueDescriptor)
-
-      val type = mapTypeConverter(keyDescriptor, valueDescriptor)
-
-      return TsLiteral.TsMap(keyTypeRef, valueTypeRef, type)
+      // Reuse the override-aware map conversion so explicit primitive key
+      // overrides, branded widening, and index-key diagnostics stay consistent
+      // with property positions (TsTypeRefConverter.mapTypeRef). Index
+      // signatures cannot use aliases (`[key: Branded]` is rejected by TS), so
+      // branded/inline keys are widened to `string`/`number` there.
+      val typeRef = typeRefConverter(mapDescriptor)
+      val literal =
+        typeRef as? TsTypeRef.Literal
+          ?: error("Expected literal type reference for map descriptor ${mapDescriptor.serialName}")
+      return literal.element as? TsLiteral.TsMap
+        ?: error("Expected map literal for map descriptor ${mapDescriptor.serialName}")
     }
 
     open fun createTypeAliasAny(descriptor: SerialDescriptor): TsDeclaration.TsTypeAlias {

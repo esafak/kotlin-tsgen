@@ -124,14 +124,14 @@ class BrandedTypesTest :
         "{ [key: string]: AccountId }"
     }
 
-    test("custom branded map keys use Map with the branded alias") {
+    test("custom branded string map keys preserve object shape") {
       val generator = KotlinTsGenerator()
       generator.mapTypes {
         AccountId.serializer() mapsTo branded("AccountId", "string")
       }
 
       val ts = generator.generate(AccountMapKeyHolder.serializer())
-      ts shouldContain "values: Map<AccountId, string>;"
+      ts shouldContain "values: { [key: string]: string };"
       ts shouldContain "export type AccountId = string & { readonly __brand: \"AccountId\" };"
     }
 
