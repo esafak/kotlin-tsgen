@@ -92,8 +92,14 @@ open class KotlinTsGenerator(
     }?.value
 
   open fun findMapTypeOverride(descriptor: SerialDescriptor): TsLiteral.TsMap.Type? =
-    when (findOverride(descriptor)) {
+    when (val override = findOverride(descriptor)) {
       null -> null
+
+      // Branded aliases preserve the wire shape: a branded string/number key still
+      // serializes as a JSON object, so defer to the default converter (which uses
+      // the descriptor kind / unwrapped inline type). The index-signature key is
+      // widened to `string`/`number`; the branded alias itself is still emitted.
+      is TsDeclaration.TsTypeAlias if override.brand != null -> null
 
       is TsDeclaration.TsEnum -> TsLiteral.TsMap.Type.MAPPED_OBJECT
 
@@ -158,6 +164,11 @@ open class KotlinTsGenerator(
           indexSignatureKeyTypeRefOverride = { descriptor ->
             when (val override = findOverride(descriptor)) {
               null -> null
+
+              // Branded aliases cannot appear in `[key: T]` positions (TypeScript
+              // rejects aliases there). Widen to the underlying primitive by
+              // deferring to the default unwrapping logic below.
+              is TsDeclaration.TsTypeAlias if override.brand != null -> null
 
               TsLiteral.Primitive.TsNumber,
               TsLiteral.Primitive.TsString,
