@@ -34,7 +34,7 @@ overrides:
   # GHSA-4528-x5fx-h6hg: joi 18.3.0 is affected; 18.3.1 is patched. This
   # override crosses the ^17 range from @docusaurus/types. Remove when that
   # dependency chain no longer needs an override.
-  'joi@<17.13.9': '18.3.1'
+  'joi@<17.13.9': '18.3.2'
   # GHSA-5gmw-xhrv-c9v3 and GHSA-85c8-ppgw-ccpr: tinypool versions before
   # 2.1.2 are affected. The 1.x line has no patched release. This overrides
   # @docusaurus/core's ^1.0.2 requirement across a major version; tinypool
